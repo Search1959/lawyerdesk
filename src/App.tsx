@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './components/DashboardView';
@@ -31,6 +31,7 @@ import { ManageTeamView } from './components/ManageTeamView';
 import { RemindersView } from './components/RemindersView';
 import { SettingsView } from './components/SettingsView';
 import { Lock, AlertCircle, Database, RefreshCw, X, Sparkles, Plus } from 'lucide-react';
+import { subscribeCollection, saveDocument } from './lib/firebase';
 
 import {
   mockMatters,
@@ -80,6 +81,31 @@ export default function App() {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(mockAuditLogs);
 
   const [selectedMatter, setSelectedMatter] = useState<Matter>(mockMatters[0]);
+
+  // Firestore Subscriptions for Cloud Database Persistence
+  useEffect(() => {
+    const unsubMatters = subscribeCollection<Matter>('matters', setAllMatters, mockMatters);
+    const unsubDocs = subscribeCollection<Document>('documents', setAllDocuments, mockDocuments);
+    const unsubHearings = subscribeCollection<Hearing>('hearings', setAllHearings, mockHearings);
+    const unsubClients = subscribeCollection<Client>('clients', setAllClients, mockClients);
+    const unsubInvoices = subscribeCollection<Invoice>('invoices', setAllInvoices, mockInvoices);
+    const unsubApts = subscribeCollection<Appointment>('appointments', setAllAppointments, mockAppointments);
+    const unsubTasks = subscribeCollection<Task>('tasks', setAllTasks, mockTasks);
+    const unsubFirms = subscribeCollection<LawFirm>('firms', setFirms, mockFirms);
+    const unsubUsers = subscribeCollection<User>('users', setUsers, mockUsers);
+
+    return () => {
+      unsubMatters();
+      unsubDocs();
+      unsubHearings();
+      unsubClients();
+      unsubInvoices();
+      unsubApts();
+      unsubTasks();
+      unsubFirms();
+      unsubUsers();
+    };
+  }, []);
 
   // Check if current user has permission to access demo benchmark data
   const isDemoOrSystemAdmin = (currentUser as any)?.isDemoUser || currentUser.role === 'Super Admin';
@@ -138,7 +164,7 @@ export default function App() {
   };
 
   // Handlers
-  const handleCreateMatter = (matterData: Partial<Matter>) => {
+  const handleCreateMatter = async (matterData: Partial<Matter>) => {
     if (checkReadOnlyDemo('Create New Matter')) return;
 
     const prefix = 'matter-custom-';
@@ -172,13 +198,14 @@ export default function App() {
       createdAt: new Date().toISOString().split('T')[0],
     };
 
+    await saveDocument('matters', newM);
     setAllMatters((prev) => [newM, ...prev]);
     setSelectedMatter(newM);
     setShowNewMatterModal(false);
     setActiveTab('matters');
   };
 
-  const handleUploadDocument = (file: File | null, matterId: string, category: string) => {
+  const handleUploadDocument = async (file: File | null, matterId: string, category: string) => {
     if (checkReadOnlyDemo('Upload Legal Document')) return;
 
     const targetM = matters.find((m) => m.id === matterId) || selectedMatter;
@@ -231,17 +258,20 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       ],
     };
 
+    await saveDocument('documents', newDoc);
     setAllDocuments((prev) => [newDoc, ...prev]);
 
     // Update document count in matter
     if (targetM) {
+      const updatedM = { ...targetM, documentsCount: targetM.documentsCount + 1 };
+      await saveDocument('matters', updatedM);
       setAllMatters((prev) =>
-        prev.map((m) => (m.id === targetM.id ? { ...m, documentsCount: m.documentsCount + 1 } : m))
+        prev.map((m) => (m.id === targetM.id ? updatedM : m))
       );
     }
   };
 
-  const handleAddNewHearing = (hrg: Partial<Hearing>) => {
+  const handleAddNewHearing = async (hrg: Partial<Hearing>) => {
     if (checkReadOnlyDemo('Schedule Court Hearing')) return;
 
     const targetM = matters.find((m) => m.id === hrg.matterId) || selectedMatter;
@@ -261,10 +291,11 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       synopsis: hrg.synopsis || 'Hearing scheduled.',
     };
 
+    await saveDocument('hearings', newH);
     setAllHearings((prev) => [newH, ...prev]);
   };
 
-  const handleAddNewClient = (c: Partial<Client>) => {
+  const handleAddNewClient = async (c: Partial<Client>) => {
     if (checkReadOnlyDemo('Register Client Entity')) return;
 
     const prefix = 'client-custom-';
@@ -286,10 +317,11 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       createdAt: new Date().toISOString().split('T')[0],
     };
 
+    await saveDocument('clients', newC);
     setAllClients((prev) => [newC, ...prev]);
   };
 
-  const handleAddNewInvoice = (inv: Partial<Invoice>) => {
+  const handleAddNewInvoice = async (inv: Partial<Invoice>) => {
     if (checkReadOnlyDemo('Generate GST Invoice')) return;
 
     const prefix = 'inv-custom-';
@@ -309,11 +341,12 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       items: inv.items || [{ description: 'High Court Senior Counsel Appearance Fee', amountINR: 100000 }],
     };
 
+    await saveDocument('invoices', newI);
     setAllInvoices((prev) => [newI, ...prev]);
   };
 
   // Account creation handlers from AccountManagerModal
-  const handleAddFirm = (firmData: Partial<LawFirm>, adminEmail: string, adminName: string) => {
+  const handleAddFirm = async (firmData: Partial<LawFirm>, adminEmail: string, adminName: string) => {
     const newFirmId = `firm-${Date.now()}`;
     const newFirm: LawFirm = {
       id: newFirmId,
@@ -341,11 +374,13 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       permissions: ['all_access', 'firm_manage', 'user_manage'],
     };
 
+    await saveDocument('firms', newFirm);
+    await saveDocument('users', newAdmin);
     setFirms((prev) => [...prev, newFirm]);
     setUsers((prev) => [...prev, newAdmin]);
   };
 
-  const handleAddUser = (userData: Partial<User>) => {
+  const handleAddUser = async (userData: Partial<User>) => {
     const newU: User = {
       id: `usr-${Date.now()}`,
       name: userData.name || 'New Lawyer',
@@ -358,6 +393,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       permissions: ['matter_read', 'matter_write', 'ai_copilot'],
     };
 
+    await saveDocument('users', newU);
     setUsers((prev) => [...prev, newU]);
   };
 
@@ -369,7 +405,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
     }
   };
 
-  const handleLoginSuccess = (email: string, role: UserRole, name: string, isDemoUser?: boolean) => {
+  const handleLoginSuccess = async (email: string, role: UserRole, name: string, isDemoUser?: boolean) => {
     let targetFirm = firms[0];
     const existingUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
 
@@ -404,6 +440,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         ],
         createdAt: new Date().toISOString().split('T')[0],
       };
+      await saveDocument('firms', newFirm);
       setFirms((prev) => [...prev, newFirm]);
       targetFirm = newFirm;
     }
@@ -419,6 +456,8 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       permissions: ['all_access'],
       isDemoUser: !!isDemoUser,
     };
+
+    await saveDocument('users', newUser);
 
     setCurrentFirm(targetFirm);
     setCurrentUser(newUser);

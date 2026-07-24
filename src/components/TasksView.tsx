@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckSquare, Search, Plus, Filter, Calendar, User as UserIcon, CheckCircle2, Clock, AlertTriangle, Edit3, Trash2, Eye } from 'lucide-react';
 import { Task, Matter, User } from '../types';
+import { saveDocument, removeDocument } from '../lib/firebase';
 
 interface TasksViewProps {
   tasks: Task[];
@@ -48,15 +49,23 @@ export const TasksView: React.FC<TasksViewProps> = ({
     return matchesSearch && matchesPriority && matchesStatus;
   });
 
-  const toggleTaskCompleted = (id: string) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  const toggleTaskCompleted = async (id: string) => {
+    const updated = tasks.map((t) => {
+      if (t.id === id) {
+        const item = { ...t, completed: !t.completed };
+        saveDocument('tasks', item);
+        return item;
+      }
+      return t;
+    });
+    setTasks(updated);
   };
 
-  const handleCreateTask = (e: React.FormEvent) => {
+  const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     const matter = matters.find((m) => m.id === newTask.matterId);
     const created: Task = {
-      id: `tsk-${Date.now()}`,
+      id: `task-custom-${Date.now()}`,
       matterId: newTask.matterId,
       matterTitle: matter ? `${matter.caseNumber} - ${matter.title}` : 'General Legal Task',
       title: newTask.title,
@@ -65,6 +74,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
       assignedTo: newTask.assignedTo,
       completed: false,
     };
+    await saveDocument('tasks', created);
     setTasks([created, ...tasks]);
     setShowAddModal(false);
     setNewTask({
@@ -383,8 +393,9 @@ export const TasksView: React.FC<TasksViewProps> = ({
             </div>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
+                await saveDocument('tasks', editingTask);
                 setTasks(tasks.map((t) => (t.id === editingTask.id ? editingTask : t)));
                 setEditingTask(null);
               }}
@@ -480,9 +491,12 @@ export const TasksView: React.FC<TasksViewProps> = ({
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  setTasks(tasks.filter((t) => t.id !== deletingTaskId));
-                  setDeletingTaskId(null);
+                onClick={async () => {
+                  if (deletingTaskId) {
+                    await removeDocument('tasks', deletingTaskId);
+                    setTasks(tasks.filter((t) => t.id !== deletingTaskId));
+                    setDeletingTaskId(null);
+                  }
                 }}
                 className="px-4 py-2 text-xs font-bold rounded-lg bg-rose-600 text-white hover:bg-rose-700 shadow-sm"
               >

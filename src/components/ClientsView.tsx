@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Users,
   Building,
@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import { Client } from '../types';
+import { saveDocument, removeDocument } from '../lib/firebase';
 
 interface ClientsViewProps {
   clients: Client[];
@@ -27,6 +28,13 @@ interface ClientsViewProps {
 export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClient }) => {
   const [clientList, setClientList] = useState<Client[]>(clients);
   const [selectedClient, setSelectedClient] = useState<Client | null>(clients[0] || null);
+
+  useEffect(() => {
+    setClientList(clients);
+    if (!selectedClient && clients.length > 0) {
+      setSelectedClient(clients[0]);
+    }
+  }, [clients]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
@@ -83,9 +91,10 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
     });
   };
 
-  const handleUpdateClient = (e: React.FormEvent) => {
+  const handleUpdateClient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingClient) return;
+    await saveDocument('clients', editingClient);
     const updated = clientList.map((c) => (c.id === editingClient.id ? editingClient : c));
     setClientList(updated);
     if (selectedClient?.id === editingClient.id) {
@@ -94,7 +103,8 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
     setEditingClient(null);
   };
 
-  const handleDeleteClient = (id: string) => {
+  const handleDeleteClient = async (id: string) => {
+    await removeDocument('clients', id);
     const updated = clientList.filter((c) => c.id !== id);
     setClientList(updated);
     if (selectedClient?.id === id) {

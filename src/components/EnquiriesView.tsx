@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserPlus, Search, Plus, Filter, Phone, Mail, FileText, CheckCircle2, Clock, XCircle, ChevronRight, Edit3, Trash2, Eye, X } from 'lucide-react';
 import { Enquiry } from '../types';
 import { mockEnquiries } from '../data/mockData';
+import { saveDocument, removeDocument } from '../lib/firebase';
 
 export const EnquiriesView: React.FC = () => {
   const [enquiries, setEnquiries] = useState<Enquiry[]>(mockEnquiries);
@@ -32,10 +33,10 @@ export const EnquiriesView: React.FC = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const handleCreateEnquiry = (e: React.FormEvent) => {
+  const handleCreateEnquiry = async (e: React.FormEvent) => {
     e.preventDefault();
     const created: Enquiry = {
-      id: `enq-${Date.now()}`,
+      id: `enq-custom-${Date.now()}`,
       clientName: newEnquiry.clientName,
       phone: newEnquiry.phone,
       email: newEnquiry.email,
@@ -47,6 +48,7 @@ export const EnquiriesView: React.FC = () => {
       date: new Date().toISOString().split('T')[0],
       notes: newEnquiry.notes,
     };
+    await saveDocument('enquiries', created);
     setEnquiries([created, ...enquiries]);
     setShowAddModal(false);
     setNewEnquiry({
@@ -61,8 +63,16 @@ export const EnquiriesView: React.FC = () => {
     });
   };
 
-  const handleStatusChange = (id: string, newStatus: Enquiry['status']) => {
-    setEnquiries(enquiries.map(e => e.id === id ? { ...e, status: newStatus } : e));
+  const handleStatusChange = async (id: string, newStatus: Enquiry['status']) => {
+    const updated = enquiries.map((e) => {
+      if (e.id === id) {
+        const item = { ...e, status: newStatus };
+        saveDocument('enquiries', item);
+        return item;
+      }
+      return e;
+    });
+    setEnquiries(updated);
   };
 
   return (
@@ -441,8 +451,9 @@ export const EnquiriesView: React.FC = () => {
             </div>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
+                await saveDocument('enquiries', editingEnquiry);
                 setEnquiries(enquiries.map((item) => (item.id === editingEnquiry.id ? editingEnquiry : item)));
                 setEditingEnquiry(null);
               }}
@@ -532,9 +543,12 @@ export const EnquiriesView: React.FC = () => {
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  setEnquiries(enquiries.filter((e) => e.id !== deletingEnquiryId));
-                  setDeletingEnquiryId(null);
+                onClick={async () => {
+                  if (deletingEnquiryId) {
+                    await removeDocument('enquiries', deletingEnquiryId);
+                    setEnquiries(enquiries.filter((e) => e.id !== deletingEnquiryId));
+                    setDeletingEnquiryId(null);
+                  }
                 }}
                 className="px-4 py-2 text-xs font-bold rounded-lg bg-rose-600 text-white hover:bg-rose-700 shadow-sm"
               >
