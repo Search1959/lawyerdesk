@@ -205,7 +205,13 @@ export default function App() {
     setActiveTab('matters');
   };
 
-  const handleUploadDocument = async (file: File | null, matterId: string, category: string) => {
+  const handleUploadDocument = async (
+    file: File | null,
+    matterId: string,
+    category: string,
+    folderId?: string,
+    folderName?: string
+  ) => {
     if (checkReadOnlyDemo('Upload Legal Document')) return;
 
     const targetM = matters.find((m) => m.id === matterId) || selectedMatter;
@@ -220,7 +226,8 @@ MATTER: ${targetM?.title || 'Legal Brief'}
 DOCUMENT DETAILS & STATEMENT OF FACTS:
 1. Document Name: ${fileName}
 2. Category: ${category || 'Evidence Annexure'}
-3. Official legal brief / evidence annexure (${fileName}) has been successfully processed, indexed, and vector-embedded via PaddleOCR GPU Engine.`;
+3. Folder: ${folderName || 'General Brief Vault'}
+4. Official legal brief / evidence annexure (${fileName}) has been successfully processed, indexed, and vector-embedded via PaddleOCR GPU Engine.`;
 
     const newDoc: Document = {
       id: `${prefix}${Date.now()}`,
@@ -234,6 +241,8 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       category: category as any,
       uploadedBy: currentUser.name,
       uploadedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+      folderId,
+      folderName,
       metadata: {
         ocrEngineUsed: 'PaddleOCR (Primary)',
         confidenceScore: 99.2,
@@ -620,6 +629,8 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
             <DocumentEngineView
               documents={documents}
               matters={matters}
+              selectedMatter={matters.find((m) => m.id === selectedMatter?.id) || selectedMatter || matters[0] || null}
+              onSelectMatter={setSelectedMatter}
               onUploadDocument={handleUploadDocument}
             />
           )}

@@ -203,6 +203,15 @@ export interface TextChunk {
   embeddingVectorSample?: number[];
 }
 
+export interface DocumentFolder {
+  id: string;
+  matterId?: string;
+  name: string;
+  description?: string;
+  color?: string;
+  createdAt: string;
+}
+
 export interface Document {
   id: string;
   matterId: string;
@@ -218,6 +227,8 @@ export interface Document {
   ocrText: string;
   chunks: TextChunk[];
   metadata: OCRMetadata;
+  folderId?: string;
+  folderName?: string;
 }
 
 export interface Task {
