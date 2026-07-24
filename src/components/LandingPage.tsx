@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Footer } from './Footer';
 import {
   Scale,
   Sparkles,
@@ -336,7 +337,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <div className="lg:col-span-6 space-y-6 text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-950/90 border border-indigo-700/60 text-indigo-300 text-xs font-semibold shadow-inner">
               <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400 animate-pulse" />
-              <span>Powered by Gemini 2.5 Flash & PaddleOCR Vector Search</span>
+              <span>Powered by Grounded Gemini 3.6 Flash & PaddleOCR Vector Search</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
@@ -596,10 +597,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-slate-800 text-center text-xs text-slate-500 space-y-2">
-        <div>LAWYERDESK AI • Legal Operating System for Indian Practice</div>
-        <div>Designed for High Courts, District Courts, NCLT, DRT, & Corporate Law Chambers</div>
-      </footer>
+      <Footer />
     </div>
   );
 };

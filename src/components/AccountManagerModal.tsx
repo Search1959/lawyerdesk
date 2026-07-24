@@ -15,6 +15,9 @@ import {
   Phone,
   FileText,
   BadgeCheck,
+  Eye,
+  EyeOff,
+  Key,
 } from 'lucide-react';
 import { UserRole, LawFirm, User as UserType } from '../types';
 
@@ -55,23 +58,42 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
   const [firmCity, setFirmCity] = useState('New Delhi');
   const [firmAdminName, setFirmAdminName] = useState('');
   const [firmAdminEmail, setFirmAdminEmail] = useState('');
+  const [firmAdminPassword, setFirmAdminPassword] = useState('');
+  const [firmAdminConfirmPassword, setFirmAdminConfirmPassword] = useState('');
+  const [showFirmPassword, setShowFirmPassword] = useState(false);
   const [firmPlan, setFirmPlan] = useState<'Enterprise Unlimited' | 'Partner Suite' | 'Standard Firm'>('Partner Suite');
 
   // New User Form State
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [userConfirmPassword, setUserConfirmPassword] = useState('');
+  const [showUserPassword, setShowUserPassword] = useState(false);
   const [userRole, setUserRole] = useState<UserRole>('Senior Lawyer');
   const [userPhone, setUserPhone] = useState('+91 98765 43210');
   const [barRegNo, setBarRegNo] = useState('D/1982/2020');
 
   const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   if (!isOpen) return null;
 
   const handleCreateFirm = (e: React.FormEvent) => {
     e.preventDefault();
     if (isDemo) return;
-    if (!firmName || !firmAdminEmail) return;
+    setErrorMsg('');
+    if (!firmName || !firmAdminEmail) {
+      setErrorMsg('Firm Name and Admin Email are required.');
+      return;
+    }
+    if (!firmAdminPassword) {
+      setErrorMsg('Please enter a password for the Firm Admin account.');
+      return;
+    }
+    if (firmAdminPassword !== firmAdminConfirmPassword) {
+      setErrorMsg('Passwords do not match.');
+      return;
+    }
 
     onAddFirm(
       {
@@ -98,6 +120,8 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
     setFirmCode('');
     setFirmAdminName('');
     setFirmAdminEmail('');
+    setFirmAdminPassword('');
+    setFirmAdminConfirmPassword('');
 
     setTimeout(() => setSuccessMsg(''), 4000);
   };
@@ -105,7 +129,19 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
   const handleCreateUser = (e: React.FormEvent) => {
     e.preventDefault();
     if (isDemo) return;
-    if (!userName || !userEmail) return;
+    setErrorMsg('');
+    if (!userName || !userEmail) {
+      setErrorMsg('User Name and Email are required.');
+      return;
+    }
+    if (!userPassword) {
+      setErrorMsg('Please enter a password for the new account.');
+      return;
+    }
+    if (userPassword !== userConfirmPassword) {
+      setErrorMsg('Passwords do not match.');
+      return;
+    }
 
     onAddUser({
       name: userName,
@@ -119,6 +155,8 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
     setSuccessMsg(`Account created successfully for ${userName} (${userRole})!`);
     setUserName('');
     setUserEmail('');
+    setUserPassword('');
+    setUserConfirmPassword('');
 
     setTimeout(() => setSuccessMsg(''), 4000);
   };
@@ -172,6 +210,14 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
             <span>
               <strong>Demo Read-Only Mode:</strong> You are currently logged in as Demo Evaluator. To register new Law Firms or Lawyers, please log in with System Admin or Firm credentials.
             </span>
+          </div>
+        )}
+
+        {/* Error Alert */}
+        {errorMsg && (
+          <div className="p-3 bg-rose-500/10 border-b border-rose-500/20 text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2 px-6">
+            <Lock className="w-4 h-4 shrink-0 text-rose-500" />
+            <span>{errorMsg}</span>
           </div>
         )}
 
@@ -319,7 +365,44 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="e.g. admin@khaitanpartners.in"
                     value={firmAdminEmail}
                     onChange={(e) => setFirmAdminEmail(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Firm Admin Password *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showFirmPassword ? 'text' : 'password'}
+                      required
+                      placeholder="••••••••••••"
+                      value={firmAdminPassword}
+                      onChange={(e) => setFirmAdminPassword(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowFirmPassword(!showFirmPassword)}
+                      className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200"
+                    >
+                      {showFirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Confirm Password *
+                  </label>
+                  <input
+                    type={showFirmPassword ? 'text' : 'password'}
+                    required
+                    placeholder="••••••••••••"
+                    value={firmAdminConfirmPassword}
+                    onChange={(e) => setFirmAdminConfirmPassword(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
                   />
                 </div>
               </div>
@@ -371,7 +454,44 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="e.g. meenakshi@lawyerdesk.in"
                     value={userEmail}
                     onChange={(e) => setUserEmail(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Account Password *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showUserPassword ? 'text' : 'password'}
+                      required
+                      placeholder="••••••••••••"
+                      value={userPassword}
+                      onChange={(e) => setUserPassword(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowUserPassword(!showUserPassword)}
+                      className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200"
+                    >
+                      {showUserPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Confirm Password *
+                  </label>
+                  <input
+                    type={showUserPassword ? 'text' : 'password'}
+                    required
+                    placeholder="••••••••••••"
+                    value={userConfirmPassword}
+                    onChange={(e) => setUserConfirmPassword(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
                   />
                 </div>
 
