@@ -1,0 +1,11 @@
+{
+  "name": "Lawyer Desk AI",
+  "description": "Enterprise AI-First Legal Operating System for Indian Law Firms with Grounded Case Intelligence, OCR, Document Drafting & Cause List Management",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
