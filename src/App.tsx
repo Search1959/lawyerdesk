@@ -50,7 +50,7 @@ import {
 import { Matter, Document, Hearing, Client, Invoice, AuditLog, LawFirm, User, UserRole, NavTab } from './types';
 
 export default function App() {
-  const [viewMode, setViewMode] = useState<'app' | 'landing' | 'login'>('app');
+  const [viewMode, setViewMode] = useState<'app' | 'landing' | 'login'>('landing');
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
 
   // User & Organization Hierarchy State
