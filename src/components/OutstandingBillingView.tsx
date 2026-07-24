@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertCircle, Search, Send, FileText, CheckCircle, Clock, DollarSign, ArrowUpRight } from 'lucide-react';
+import { AlertCircle, Search, Send, FileText, CheckCircle, Clock, DollarSign, ArrowUpRight, Eye, Edit3, Trash2, X } from 'lucide-react';
 import { Invoice } from '../types';
 import { mockInvoices, mockClients } from '../data/mockData';
 
@@ -8,11 +8,33 @@ export const OutstandingBillingView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [reminderSent, setReminderSent] = useState<{ [id: string]: boolean }>({});
 
-  const pendingInvoices = invoices.filter(i => i.status === 'Pending' || i.status === 'Overdue');
+  const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
+  const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+  const [deletingInvoiceId, setDeletingInvoiceId] = useState<string | null>(null);
+
+  const pendingInvoices = invoices.filter(
+    (i) =>
+      (i.status === 'Pending' || i.status === 'Overdue') &&
+      (i.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        i.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        i.feeType.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
   const totalOutstandingINR = pendingInvoices.reduce((acc, i) => acc + i.totalINR, 0);
 
   const handleSendReminder = (invoiceId: string) => {
     setReminderSent({ ...reminderSent, [invoiceId]: true });
+  };
+
+  const handleUpdateInvoice = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingInvoice) return;
+    setInvoices(invoices.map((inv) => (inv.id === editingInvoice.id ? editingInvoice : inv)));
+    setEditingInvoice(null);
+  };
+
+  const handleDeleteInvoice = (id: string) => {
+    setInvoices(invoices.filter((inv) => inv.id !== id));
+    setDeletingInvoiceId(null);
   };
 
   return (
@@ -90,7 +112,8 @@ export const OutstandingBillingView: React.FC = () => {
                 <th className="p-3">Issue Date</th>
                 <th className="p-3">Due Date</th>
                 <th className="p-3">Total (Incl GST)</th>
-                <th className="p-3 text-right">Reminder Action</th>
+                <th className="p-3">Reminder Action</th>
+                <th className="p-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
@@ -104,7 +127,7 @@ export const OutstandingBillingView: React.FC = () => {
                   <td className="p-3 text-xs font-mono text-slate-600 dark:text-slate-400">{inv.issueDate}</td>
                   <td className="p-3 text-xs font-mono text-rose-600 dark:text-rose-400 font-bold">{inv.dueDate}</td>
                   <td className="p-3 font-extrabold text-slate-900 dark:text-white">₹{inv.totalINR.toLocaleString()}</td>
-                  <td className="p-3 text-right">
+                  <td className="p-3">
                     {reminderSent[inv.id] ? (
                       <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
                         <CheckCircle className="w-3.5 h-3.5" /> Reminder Sent
@@ -112,11 +135,36 @@ export const OutstandingBillingView: React.FC = () => {
                     ) : (
                       <button
                         onClick={() => handleSendReminder(inv.id)}
-                        className="inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm"
+                        className="inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white px-3 py-1 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm"
                       >
                         <Send className="w-3.5 h-3.5" /> Send Fee Alert
                       </button>
                     )}
+                  </td>
+                  <td className="p-3 text-right whitespace-nowrap">
+                    <div className="inline-flex items-center gap-1">
+                      <button
+                        onClick={() => setViewingInvoice(inv)}
+                        className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
+                        title="View Invoice"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setEditingInvoice(inv)}
+                        className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 hover:bg-amber-200"
+                        title="Edit Invoice"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setDeletingInvoiceId(inv.id)}
+                        className="p-1.5 rounded-lg bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 hover:bg-rose-200"
+                        title="Delete Invoice"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -124,6 +172,179 @@ export const OutstandingBillingView: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* View Invoice Modal */}
+      {viewingInvoice && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold">Invoice Details #{viewingInvoice.invoiceNumber}</h3>
+              <button onClick={() => setViewingInvoice(null)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-3 text-xs">
+              <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl space-y-1">
+                <div className="font-bold text-slate-900 dark:text-white">{viewingInvoice.clientName}</div>
+                <div className="text-slate-500">Fee Type: {viewingInvoice.feeType}</div>
+                <div className="text-slate-500">Status: <span className="font-bold text-rose-600">{viewingInvoice.status}</span></div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Issue Date</span>
+                  <div className="font-mono font-bold">{viewingInvoice.issueDate}</div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Due Date</span>
+                  <div className="font-mono font-bold text-rose-600">{viewingInvoice.dueDate}</div>
+                </div>
+              </div>
+
+              <div className="p-3 bg-indigo-50 dark:bg-indigo-950/50 rounded-xl flex justify-between items-center border border-indigo-100 dark:border-indigo-900">
+                <span className="font-bold text-indigo-900 dark:text-indigo-200">Total Payable (Incl. GST)</span>
+                <span className="text-lg font-black text-indigo-600 dark:text-indigo-400">₹{viewingInvoice.totalINR.toLocaleString()}</span>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  onClick={() => {
+                    setEditingInvoice(viewingInvoice);
+                    setViewingInvoice(null);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs"
+                >
+                  Edit Invoice
+                </button>
+                <button
+                  onClick={() => setViewingInvoice(null)}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Invoice Modal */}
+      {editingInvoice && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold">Edit Invoice #{editingInvoice.invoiceNumber}</h3>
+              <button onClick={() => setEditingInvoice(null)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateInvoice} className="space-y-3 text-xs">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Client Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editingInvoice.clientName}
+                  onChange={(e) => setEditingInvoice({ ...editingInvoice, clientName: e.target.value })}
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-xs font-bold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Fee Category</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingInvoice.feeType}
+                    onChange={(e) => setEditingInvoice({ ...editingInvoice, feeType: e.target.value })}
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-xs font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Total Amount (₹)</label>
+                  <input
+                    type="number"
+                    required
+                    value={editingInvoice.totalINR}
+                    onChange={(e) => setEditingInvoice({ ...editingInvoice, totalINR: Number(e.target.value) })}
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-xs font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Issue Date</label>
+                  <input
+                    type="text"
+                    value={editingInvoice.issueDate}
+                    onChange={(e) => setEditingInvoice({ ...editingInvoice, issueDate: e.target.value })}
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-xs font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Due Date</label>
+                  <input
+                    type="text"
+                    value={editingInvoice.dueDate}
+                    onChange={(e) => setEditingInvoice({ ...editingInvoice, dueDate: e.target.value })}
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-xs font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingInvoice(null)}
+                  className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Invoice Confirmation Modal */}
+      {deletingInvoiceId && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-center">
+            <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Delete Invoice</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Are you sure you want to delete this invoice record from billing collections?
+              </p>
+            </div>
+            <div className="flex justify-center gap-3 pt-2">
+              <button
+                onClick={() => setDeletingInvoiceId(null)}
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteInvoice(deletingInvoiceId)}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

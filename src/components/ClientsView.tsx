@@ -12,6 +12,10 @@ import {
   MessageSquare,
   ShieldCheck,
   Building2,
+  Edit3,
+  Trash2,
+  Eye,
+  X,
 } from 'lucide-react';
 import { Client } from '../types';
 
@@ -21,9 +25,13 @@ interface ClientsViewProps {
 }
 
 export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClient }) => {
-  const [selectedClient, setSelectedClient] = useState<Client>(clients[0] || null);
+  const [clientList, setClientList] = useState<Client[]>(clients);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(clients[0] || null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
+
   const [newClientData, setNewClientData] = useState({
     name: '',
     type: 'Corporate Entity' as const,
@@ -34,7 +42,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
     address: '',
   });
 
-  const filteredClients = clients.filter(
+  const filteredClients = clientList.filter(
     (c) =>
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.panNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -43,6 +51,20 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
+    const created: Client = {
+      id: `client-${Date.now()}`,
+      name: newClientData.name,
+      type: newClientData.type,
+      email: newClientData.email,
+      phone: newClientData.phone,
+      panNumber: newClientData.panNumber,
+      gstin: newClientData.gstin,
+      address: newClientData.address,
+      totalBilledINR: 0,
+      familyMembers: [],
+    };
+    setClientList([created, ...clientList]);
+    setSelectedClient(created);
     onAddNewClient(newClientData);
     setShowModal(false);
     setNewClientData({
@@ -54,6 +76,26 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
       gstin: '',
       address: '',
     });
+  };
+
+  const handleUpdateClient = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingClient) return;
+    const updated = clientList.map((c) => (c.id === editingClient.id ? editingClient : c));
+    setClientList(updated);
+    if (selectedClient?.id === editingClient.id) {
+      setSelectedClient(editingClient);
+    }
+    setEditingClient(null);
+  };
+
+  const handleDeleteClient = (id: string) => {
+    const updated = clientList.filter((c) => c.id !== id);
+    setClientList(updated);
+    if (selectedClient?.id === id) {
+      setSelectedClient(updated[0] || null);
+    }
+    setDeletingClientId(null);
   };
 
   return (
@@ -129,10 +171,28 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
           <div className="lg:col-span-8 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
             <div className="flex items-start justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
               <div>
-                <span className="px-2.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] uppercase">
-                  {selectedClient.type}
-                </span>
-                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white mt-1">{selectedClient.name}</h2>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] uppercase">
+                    {selectedClient.type}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setEditingClient(selectedClient)}
+                      className="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 hover:bg-amber-200 font-bold text-[10px] flex items-center gap-1 transition-colors"
+                      title="Edit Client Information"
+                    >
+                      <Edit3 className="w-3 h-3" /> Edit
+                    </button>
+                    <button
+                      onClick={() => setDeletingClientId(selectedClient.id)}
+                      className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 hover:bg-rose-200 font-bold text-[10px] flex items-center gap-1 transition-colors"
+                      title="Delete Client"
+                    >
+                      <Trash2 className="w-3 h-3" /> Delete
+                    </button>
+                  </div>
+                </div>
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">{selectedClient.name}</h2>
                 <p className="text-xs text-slate-500 mt-1">{selectedClient.address}</p>
               </div>
 
@@ -257,6 +317,145 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Edit Client Modal */}
+      {editingClient && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-lg font-bold">Edit Client Profile</h3>
+              <button
+                onClick={() => setEditingClient(null)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateClient} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold mb-1">Client / Entity Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editingClient.name}
+                  onChange={(e) => setEditingClient({ ...editingClient, name: e.target.value })}
+                  className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border text-slate-900 dark:text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold mb-1">Type</label>
+                  <select
+                    value={editingClient.type}
+                    onChange={(e) => setEditingClient({ ...editingClient, type: e.target.value as any })}
+                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border text-slate-900 dark:text-white"
+                  >
+                    <option value="Corporate Entity">Corporate Entity</option>
+                    <option value="Individual">Individual</option>
+                    <option value="Partnership Firm">Partnership Firm</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold mb-1">PAN Number</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingClient.panNumber}
+                    onChange={(e) => setEditingClient({ ...editingClient, panNumber: e.target.value })}
+                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={editingClient.email}
+                    onChange={(e) => setEditingClient({ ...editingClient, email: e.target.value })}
+                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1">Phone</label>
+                  <input
+                    type="text"
+                    value={editingClient.phone}
+                    onChange={(e) => setEditingClient({ ...editingClient, phone: e.target.value })}
+                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1">GSTIN / CIN</label>
+                <input
+                  type="text"
+                  value={editingClient.gstin || ''}
+                  onChange={(e) => setEditingClient({ ...editingClient, gstin: e.target.value })}
+                  className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1">Address</label>
+                <input
+                  type="text"
+                  value={editingClient.address || ''}
+                  onChange={(e) => setEditingClient({ ...editingClient, address: e.target.value })}
+                  className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingClient(null)}
+                  className="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-bold">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Client Confirmation Modal */}
+      {deletingClientId && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-center">
+            <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Delete Client</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Are you sure you want to delete this client and remove their KYC vault profile?
+              </p>
+            </div>
+            <div className="flex justify-center gap-3 pt-2">
+              <button
+                onClick={() => setDeletingClientId(null)}
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteClient(deletingClientId)}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs"
+              >
+                Yes, Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

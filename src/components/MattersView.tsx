@@ -74,6 +74,15 @@ export const MattersView: React.FC<MattersViewProps> = ({
   const [showAddHearingModal, setShowAddHearingModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleDeleteMatter = () => {
+    if (!selectedMatter) return;
+    const updated = mattersList.filter(m => m.id !== selectedMatter.id);
+    setMattersList(updated);
+    setSelectedMatter(updated[0] || null);
+    setShowDeleteModal(false);
+  };
 
   // Form states
   const [diaryNoteInput, setDiaryNoteInput] = useState('');
@@ -354,10 +363,18 @@ export const MattersView: React.FC<MattersViewProps> = ({
                       setEditJudge(selectedMatter.judgeName || '');
                       setShowEditModal(true);
                     }}
-                    className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-all"
+                    className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                     <span>Edit</span>
+                  </button>
+
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    <span>Delete</span>
                   </button>
 
                   <button
@@ -929,6 +946,36 @@ export const MattersView: React.FC<MattersViewProps> = ({
                 <button type="submit" className="px-4 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-xs">Save Changes</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedMatter && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-center text-slate-900 dark:text-white">
+            <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+              <X className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold">Delete Case Record</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Are you sure you want to delete <strong className="font-mono text-slate-800 dark:text-slate-200">{selectedMatter.caseNumber}</strong>? This action will remove all case diary entries and associated timelines.
+              </p>
+            </div>
+            <div className="flex justify-center gap-3 pt-2">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteMatter}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs"
+              >
+                Yes, Delete Matter
+              </button>
+            </div>
           </div>
         </div>
       )}
