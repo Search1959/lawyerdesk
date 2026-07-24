@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
-import { Calendar, Search, Plus, Filter, Clock, MapPin, User, Video, PhoneCall, CheckCircle2, Eye, Edit3, Trash2, X } from 'lucide-react';
-import { Appointment } from '../types';
-import { mockAppointments, mockMatters, mockUsers } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { Calendar, Search, Plus, Filter, Clock, MapPin, User as UserIcon, Video, PhoneCall, CheckCircle2, Eye, Edit3, Trash2, X } from 'lucide-react';
+import { Appointment, Matter, User } from '../types';
 
-export const AppointmentsView: React.FC = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
+interface AppointmentsViewProps {
+  appointments: Appointment[];
+  matters?: Matter[];
+  users?: User[];
+}
+
+export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
+  appointments: initialAppointments,
+  matters = [],
+  users = [],
+}) => {
+  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMode, setSelectedMode] = useState<string>('All');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -12,10 +21,14 @@ export const AppointmentsView: React.FC = () => {
   const [editingApt, setEditingApt] = useState<Appointment | null>(null);
   const [deletingAptId, setDeletingAptId] = useState<string | null>(null);
 
+  useEffect(() => {
+    setAppointments(initialAppointments);
+  }, [initialAppointments]);
+
   const [newApt, setNewApt] = useState({
     clientName: '',
-    matterTitle: mockMatters[0]?.title || '',
-    lawyerName: mockUsers[0]?.name || 'Adv. Rajeshwar V. Sharma',
+    matterTitle: matters[0]?.title || '',
+    lawyerName: users[0]?.name || 'Adv. Rajeshwar V. Sharma',
     date: new Date().toISOString().split('T')[0],
     time: '03:00 PM',
     mode: 'Chamber Meeting' as Appointment['mode'],
@@ -46,8 +59,8 @@ export const AppointmentsView: React.FC = () => {
     setShowAddModal(false);
     setNewApt({
       clientName: '',
-      matterTitle: mockMatters[0]?.title || '',
-      lawyerName: mockUsers[0]?.name || 'Adv. Rajeshwar V. Sharma',
+      matterTitle: matters[0]?.title || '',
+      lawyerName: users[0]?.name || 'Adv. Rajeshwar V. Sharma',
       date: new Date().toISOString().split('T')[0],
       time: '03:00 PM',
       mode: 'Chamber Meeting',
@@ -167,7 +180,7 @@ export const AppointmentsView: React.FC = () => {
                   <span><strong>{apt.date}</strong> at {apt.time}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <User className="w-3.5 h-3.5 text-slate-400" />
+                  <UserIcon className="w-3.5 h-3.5 text-slate-400" />
                   <span>Assigned Advocate: <strong>{apt.lawyerName}</strong></span>
                 </div>
               </div>
@@ -470,7 +483,7 @@ export const AppointmentsView: React.FC = () => {
                   className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">-- Standalone Consultation --</option>
-                  {mockMatters.map(m => (
+                  {matters.map((m) => (
                     <option key={m.id} value={`${m.caseNumber} - ${m.title}`}>
                       {m.caseNumber} - {m.title}
                     </option>
@@ -523,7 +536,7 @@ export const AppointmentsView: React.FC = () => {
                     onChange={(e) => setNewApt({ ...newApt, lawyerName: e.target.value })}
                     className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
                   >
-                    {mockUsers.map(u => (
+                    {users.map((u) => (
                       <option key={u.id} value={u.name}>{u.name}</option>
                     ))}
                   </select>

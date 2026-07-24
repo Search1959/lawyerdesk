@@ -1,36 +1,34 @@
 import React, { useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Scale, Clock, User, FileText } from 'lucide-react';
-import { Hearing } from '../types';
-import { mockHearings, mockMatters } from '../data/mockData';
+import { Hearing, Matter } from '../types';
 
-export const HearingCalendarView: React.FC = () => {
+interface HearingCalendarViewProps {
+  hearings: Hearing[];
+  matters: Matter[];
+  onSelectMatter?: (matter: Matter) => void;
+}
+
+export const HearingCalendarView: React.FC<HearingCalendarViewProps> = ({
+  hearings,
+  matters,
+  onSelectMatter,
+}) => {
   const [currentMonth, setCurrentMonth] = useState('August 2026');
   const [selectedDay, setSelectedDay] = useState<number>(4);
 
-  // August 2026 days mapping (31 days)
+  // Days in month
   const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
 
-  // Highlight days with hearings
-  const hearingDaysMap: { [day: number]: Hearing[] } = {
-    4: [mockHearings[0]],
-    12: [mockHearings[1]],
-    20: [mockHearings[2]],
-    28: [
-      {
-        id: 'hrg-4',
-        matterId: 'matter-4',
-        date: '2026-08-28',
-        time: '11:30 AM',
-        courtName: 'District Court',
-        courtHallNo: 'Court Room No. 3, Barasat',
-        judgeName: 'Hon’ble Ld. 3rd Civil Judge',
-        stage: 'Injunction Notice & Service Verification',
-        synopsis: 'Order 39 Rule 1 Injunction application hearing for Belghoria partition suit.',
-        assignedLawyerId: 'usr-1',
-        assignedLawyerName: 'Adv. Rajeshwar V. Sharma',
-      },
-    ],
-  };
+  // Dynamic hearing days map from hearings prop
+  const hearingDaysMap: { [day: number]: Hearing[] } = {};
+  hearings.forEach((h) => {
+    const parts = h.date.split('-');
+    const dayNum = parseInt(parts[2] || '0', 10);
+    if (dayNum > 0) {
+      if (!hearingDaysMap[dayNum]) hearingDaysMap[dayNum] = [];
+      hearingDaysMap[dayNum].push(h);
+    }
+  });
 
   const selectedHearings = hearingDaysMap[selectedDay] || [];
 
@@ -154,7 +152,7 @@ export const HearingCalendarView: React.FC = () => {
             ) : (
               <div className="space-y-4">
                 {selectedHearings.map((h) => {
-                  const matter = mockMatters.find(m => m.id === h.matterId);
+                  const matter = matters.find((m) => m.id === h.matterId);
 
                   return (
                     <div

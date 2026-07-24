@@ -102,11 +102,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         {onOpenLanding && (
           <button
             onClick={onOpenLanding}
-            className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all"
-            title="Public LawyerDesk Landing Page"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 text-xs font-bold text-indigo-700 dark:text-indigo-300 transition-all shadow-xs"
+            title="Return to Main Homepage"
           >
-            <Globe className="w-3.5 h-3.5 text-indigo-500" />
-            <span>Home Page</span>
+            <Globe className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+            <span className="hidden xs:inline">Home Page</span>
           </button>
         )}
 
@@ -114,7 +114,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         {onOpenHelp && (
           <button
             onClick={onOpenHelp}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all"
+            className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all"
             title="Help Center & User Guide"
           >
             <HelpCircle className="w-3.5 h-3.5 text-amber-500" />
@@ -134,8 +134,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Logged in User Profile Pill */}
         <div
           onClick={onOpenLogin}
-          className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer group shrink-0"
-          title={`Logged in as ${currentUser.name} (${currentUser.role}) — Click to switch account`}
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer group shrink-0"
+          title={`Logged in as ${currentUser.name} at ${currentFirm?.name || 'Firm'} (${currentUser.role}) — Click to switch account`}
         >
           <div className="relative shrink-0">
             {currentUser.avatarUrl ? (
@@ -152,12 +152,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
           </div>
 
-          <div className="hidden md:flex flex-col text-left">
-            <span className="text-xs font-bold text-slate-900 dark:text-white leading-tight truncate max-w-[120px]">
-              {currentUser.name}
-            </span>
-            <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 leading-tight truncate max-w-[120px]">
-              {currentUser.role}
+          <div className="hidden sm:flex flex-col text-left">
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] uppercase font-bold text-slate-400">Logged in:</span>
+              <span className="text-xs font-bold text-slate-900 dark:text-white leading-tight truncate max-w-[130px]">
+                {currentUser.name}
+              </span>
+            </div>
+            <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 leading-tight truncate max-w-[140px]">
+              {currentFirm?.name ? `${currentFirm.name.slice(0, 16)} • ${currentUser.role}` : currentUser.role}
             </span>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserPlus, Search, Plus, Filter, Phone, Mail, FileText, CheckCircle2, Clock, XCircle, ChevronRight } from 'lucide-react';
+import { UserPlus, Search, Plus, Filter, Phone, Mail, FileText, CheckCircle2, Clock, XCircle, ChevronRight, Edit3, Trash2, Eye, X } from 'lucide-react';
 import { Enquiry } from '../types';
 import { mockEnquiries } from '../data/mockData';
 
@@ -8,6 +8,9 @@ export const EnquiriesView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('All');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [viewingEnquiry, setViewingEnquiry] = useState<Enquiry | null>(null);
+  const [editingEnquiry, setEditingEnquiry] = useState<Enquiry | null>(null);
+  const [deletingEnquiryId, setDeletingEnquiryId] = useState<string | null>(null);
 
   const [newEnquiry, setNewEnquiry] = useState({
     clientName: '',
@@ -206,19 +209,45 @@ export const EnquiriesView: React.FC = () => {
               )}
             </div>
 
-            {/* Quick Status Actions */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">Date: {enquiry.date}</span>
-              <select
-                value={enquiry.status}
-                onChange={(e) => handleStatusChange(enquiry.id, e.target.value as any)}
-                className="text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              >
-                <option value="New Lead">New Lead</option>
-                <option value="Consultation Fixed">Consultation Fixed</option>
-                <option value="Converted to Matter">Converted to Matter</option>
-                <option value="Declined">Declined</option>
-              </select>
+            {/* Quick Status Actions & Action Buttons */}
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">Date: {enquiry.date}</span>
+                <select
+                  value={enquiry.status}
+                  onChange={(e) => handleStatusChange(enquiry.id, e.target.value as any)}
+                  className="text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                >
+                  <option value="New Lead">New Lead</option>
+                  <option value="Consultation Fixed">Consultation Fixed</option>
+                  <option value="Converted to Matter">Converted to Matter</option>
+                  <option value="Declined">Declined</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                <button
+                  onClick={() => setViewingEnquiry(enquiry)}
+                  className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                  title="View Enquiry Details"
+                >
+                  <Eye className="w-3 h-3" /> View
+                </button>
+                <button
+                  onClick={() => setEditingEnquiry(enquiry)}
+                  className="px-2 py-1 rounded bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 hover:bg-amber-200 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                  title="Edit Enquiry"
+                >
+                  <Edit3 className="w-3 h-3" /> Edit
+                </button>
+                <button
+                  onClick={() => setDeletingEnquiryId(enquiry.id)}
+                  className="px-2 py-1 rounded bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 hover:bg-rose-200 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                  title="Delete Enquiry"
+                >
+                  <Trash2 className="w-3 h-3" /> Delete
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -346,6 +375,172 @@ export const EnquiriesView: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Enquiry Modal */}
+      {viewingEnquiry && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-lg font-bold">Enquiry Details: {viewingEnquiry.clientName}</h3>
+              <button onClick={() => setViewingEnquiry(null)} className="text-slate-400 hover:text-slate-600 p-1">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-3 text-xs">
+              <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl space-y-1">
+                <div className="font-bold text-slate-900 dark:text-white">{viewingEnquiry.subject}</div>
+                <div className="text-slate-500">Category: {viewingEnquiry.category} • Status: {viewingEnquiry.status}</div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Phone</span>
+                  <div className="font-mono font-bold">{viewingEnquiry.phone}</div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Email</span>
+                  <div className="font-mono font-bold truncate">{viewingEnquiry.email}</div>
+                </div>
+              </div>
+
+              <div className="p-3 bg-indigo-50 dark:bg-indigo-950/50 rounded-xl flex justify-between items-center border border-indigo-100 dark:border-indigo-900">
+                <span className="font-bold text-indigo-900 dark:text-indigo-200">Consultation Fee Quote</span>
+                <span className="text-lg font-black text-indigo-600 dark:text-indigo-400">₹{viewingEnquiry.consultFeeINR.toLocaleString()}</span>
+              </div>
+
+              {viewingEnquiry.notes && (
+                <div className="p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl italic text-slate-700 dark:text-slate-300">
+                  "{viewingEnquiry.notes}"
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setViewingEnquiry(null)}
+                className="px-4 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Enquiry Modal */}
+      {editingEnquiry && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Edit Enquiry Details</h3>
+              <button onClick={() => setEditingEnquiry(null)} className="text-slate-400 hover:text-slate-600 p-1">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setEnquiries(enquiries.map((item) => (item.id === editingEnquiry.id ? editingEnquiry : item)));
+                setEditingEnquiry(null);
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Prospective Client Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editingEnquiry.clientName}
+                  onChange={(e) => setEditingEnquiry({ ...editingEnquiry, clientName: e.target.value })}
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingEnquiry.phone}
+                    onChange={(e) => setEditingEnquiry({ ...editingEnquiry, phone: e.target.value })}
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={editingEnquiry.email}
+                    onChange={(e) => setEditingEnquiry({ ...editingEnquiry, email: e.target.value })}
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Subject / Legal Issue</label>
+                <input
+                  type="text"
+                  required
+                  value={editingEnquiry.subject}
+                  onChange={(e) => setEditingEnquiry({ ...editingEnquiry, subject: e.target.value })}
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingEnquiry(null)}
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                >
+                  Update Lead
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingEnquiryId && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-center text-slate-900 dark:text-white">
+            <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold">Delete Client Enquiry?</h3>
+              <p className="text-xs text-slate-500 mt-1">This lead record will be permanently deleted.</p>
+            </div>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => setDeletingEnquiryId(null)}
+                className="px-4 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setEnquiries(enquiries.filter((e) => e.id !== deletingEnquiryId));
+                  setDeletingEnquiryId(null);
+                }}
+                className="px-4 py-2 text-xs font-bold rounded-lg bg-rose-600 text-white hover:bg-rose-700 shadow-sm"
+              >
+                Confirm Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

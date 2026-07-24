@@ -50,6 +50,7 @@ export interface User {
   phone: string;
   barCouncilRegNo?: string;
   permissions: string[];
+  isDemoUser?: boolean;
 }
 
 export interface ClientFamilyMember {
@@ -337,6 +338,7 @@ export interface Enquiry {
 
 export interface Appointment {
   id: string;
+  firmId?: string;
   clientName: string;
   matterTitle?: string;
   lawyerName: string;

@@ -1,15 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Plus, Search, Shield, Briefcase, Mail, Phone, Award, Eye, Edit3, Trash2, X } from 'lucide-react';
-import { TeamMember } from '../types';
+import { TeamMember, User, LawFirm } from '../types';
 import { mockTeamMembers } from '../data/mockData';
 
-export const ManageTeamView: React.FC = () => {
-  const [team, setTeam] = useState<TeamMember[]>(mockTeamMembers);
+interface ManageTeamViewProps {
+  currentUser?: User;
+  currentFirm?: LawFirm;
+}
+
+export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
+  currentUser,
+  currentFirm,
+}) => {
+  const getInitialTeam = (): TeamMember[] => {
+    if (!currentFirm || currentFirm.id === 'firm-1') {
+      return mockTeamMembers;
+    }
+    return [
+      {
+        id: currentUser?.id || 'usr-admin',
+        name: currentUser?.name || 'Law Firm Managing Partner',
+        role: 'Firm Admin',
+        department: 'Practice Lead',
+        email: currentUser?.email || 'admin@lawfirm.in',
+        phone: '+91 98000 00000',
+        barCouncilNo: 'D/2024/001',
+        activeCasesCount: 0,
+        monthlyBillableHours: 0,
+        hourlyRateINR: 15000,
+        status: 'Active',
+      },
+    ];
+  };
+
+  const [team, setTeam] = useState<TeamMember[]>(getInitialTeam());
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewingMember, setViewingMember] = useState<TeamMember | null>(null);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setTeam(getInitialTeam());
+  }, [currentFirm?.id, currentUser?.id]);
 
   const [newMember, setNewMember] = useState({
     name: '',

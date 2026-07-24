@@ -53,6 +53,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
     e.preventDefault();
     const created: Client = {
       id: `client-${Date.now()}`,
+      firmId: 'firm-1',
       name: newClientData.name,
       type: newClientData.type,
       email: newClientData.email,
@@ -60,7 +61,11 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
       panNumber: newClientData.panNumber,
       gstin: newClientData.gstin,
       address: newClientData.address,
+      kycVerified: true,
+      mattersCount: 0,
       totalBilledINR: 0,
+      totalPaidINR: 0,
+      createdAt: new Date().toISOString().split('T')[0],
       familyMembers: [],
     };
     setClientList([created, ...clientList]);

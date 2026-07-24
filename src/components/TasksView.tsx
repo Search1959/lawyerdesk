@@ -1,21 +1,36 @@
-import React, { useState } from 'react';
-import { CheckSquare, Search, Plus, Filter, Calendar, User, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
-import { Task } from '../types';
-import { mockTasks, mockMatters, mockUsers } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { CheckSquare, Search, Plus, Filter, Calendar, User as UserIcon, CheckCircle2, Clock, AlertTriangle, Edit3, Trash2, Eye } from 'lucide-react';
+import { Task, Matter, User } from '../types';
 
-export const TasksView: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
+interface TasksViewProps {
+  tasks: Task[];
+  matters?: Matter[];
+  users?: User[];
+}
+
+export const TasksView: React.FC<TasksViewProps> = ({
+  tasks: initialTasks,
+  matters = [],
+  users = [],
+}) => {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPriority, setSelectedPriority] = useState<string>('All');
   const [selectedStatus, setSelectedStatus] = useState<'All' | 'Pending' | 'Completed'>('All');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, [initialTasks]);
 
   const [newTask, setNewTask] = useState({
-    matterId: mockMatters[0]?.id || '',
+    matterId: matters[0]?.id || '',
     title: '',
     priority: 'High' as 'High' | 'Medium' | 'Low',
     dueDate: new Date().toISOString().split('T')[0],
-    assignedTo: mockUsers[0]?.name || 'Adv. Rajeshwar V. Sharma',
+    assignedTo: users[0]?.name || 'Adv. Rajeshwar V. Sharma',
   });
 
   const filteredTasks = tasks.filter((t) => {
@@ -39,7 +54,7 @@ export const TasksView: React.FC = () => {
 
   const handleCreateTask = (e: React.FormEvent) => {
     e.preventDefault();
-    const matter = mockMatters.find(m => m.id === newTask.matterId);
+    const matter = matters.find((m) => m.id === newTask.matterId);
     const created: Task = {
       id: `tsk-${Date.now()}`,
       matterId: newTask.matterId,
@@ -53,11 +68,11 @@ export const TasksView: React.FC = () => {
     setTasks([created, ...tasks]);
     setShowAddModal(false);
     setNewTask({
-      matterId: mockMatters[0]?.id || '',
+      matterId: matters[0]?.id || '',
       title: '',
       priority: 'High',
       dueDate: new Date().toISOString().split('T')[0],
-      assignedTo: mockUsers[0]?.name || 'Adv. Rajeshwar V. Sharma',
+      assignedTo: users[0]?.name || 'Adv. Rajeshwar V. Sharma',
     });
   };
 
@@ -168,12 +183,13 @@ export const TasksView: React.FC = () => {
                 <th className="p-4">Assigned To</th>
                 <th className="p-4">Priority</th>
                 <th className="p-4">Due Date</th>
+                <th className="p-4 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
               {filteredTasks.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-slate-400 dark:text-slate-500">
+                  <td colSpan={7} className="p-8 text-center text-slate-400 dark:text-slate-500">
                     No tasks found matching current filters.
                   </td>
                 </tr>
@@ -202,7 +218,7 @@ export const TasksView: React.FC = () => {
                       {task.matterTitle}
                     </td>
                     <td className="p-4 text-xs font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <UserIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span className="truncate">{task.assignedTo}</span>
                     </td>
                     <td className="p-4">
@@ -222,6 +238,24 @@ export const TasksView: React.FC = () => {
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
                         <span>{task.dueDate}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => setEditingTask(task)}
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                          title="Edit Task"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => setDeletingTaskId(task.id)}
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                          title="Delete Task"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -254,7 +288,7 @@ export const TasksView: React.FC = () => {
                   onChange={(e) => setNewTask({ ...newTask, matterId: e.target.value })}
                   className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
                 >
-                  {mockMatters.map(m => (
+                  {matters.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.caseNumber} - {m.title}
                     </option>
@@ -306,7 +340,7 @@ export const TasksView: React.FC = () => {
                   onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
                   className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
                 >
-                  {mockUsers.map(u => (
+                  {users.map((u) => (
                     <option key={u.id} value={u.name}>
                       {u.name} ({u.role})
                     </option>
@@ -330,6 +364,131 @@ export const TasksView: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Task Modal */}
+      {editingTask && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Edit Task</h3>
+              <button
+                onClick={() => setEditingTask(null)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setTasks(tasks.map((t) => (t.id === editingTask.id ? editingTask : t)));
+                setEditingTask(null);
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Task Title</label>
+                <input
+                  type="text"
+                  required
+                  value={editingTask.title}
+                  onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Priority Level</label>
+                  <select
+                    value={editingTask.priority}
+                    onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value as any })}
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Due Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={editingTask.dueDate}
+                    onChange={(e) => setEditingTask({ ...editingTask, dueDate: e.target.value })}
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Assignee</label>
+                <select
+                  value={editingTask.assignedTo}
+                  onChange={(e) => setEditingTask({ ...editingTask, assignedTo: e.target.value })}
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                >
+                  {users.map((u) => (
+                    <option key={u.id} value={u.name}>
+                      {u.name} ({u.role})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingTask(null)}
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                >
+                  Update Task
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Task Confirmation Modal */}
+      {deletingTaskId && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-center text-slate-900 dark:text-white">
+            <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Delete Task?</h3>
+              <p className="text-xs text-slate-500 mt-1">This action cannot be undone.</p>
+            </div>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => setDeletingTaskId(null)}
+                className="px-4 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setTasks(tasks.filter((t) => t.id !== deletingTaskId));
+                  setDeletingTaskId(null);
+                }}
+                className="px-4 py-2 text-xs font-bold rounded-lg bg-rose-600 text-white hover:bg-rose-700 shadow-sm"
+              >
+                Confirm Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

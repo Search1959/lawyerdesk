@@ -36,6 +36,7 @@ interface SidebarProps {
   onSelectTab: (tab: NavTab) => void;
   currentUser?: User;
   onLogout?: () => void;
+  onOpenLanding?: () => void;
   highRiskCount?: number;
   pendingOCRCount?: number;
   isOpenMobile?: boolean;
@@ -59,6 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectTab,
   currentUser,
   onLogout,
+  onOpenLanding,
   highRiskCount = 0,
   pendingOCRCount = 0,
   isOpenMobile = false,
@@ -155,12 +157,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         <div className="p-4 border-b border-slate-800/80 flex items-center justify-between bg-[#070D1E]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-sm shadow-md">
+          <div
+            onClick={onOpenLanding}
+            className={`flex items-center gap-2.5 ${onOpenLanding ? 'cursor-pointer group hover:opacity-90' : ''}`}
+            title="Go to LawyerDesk Home Page"
+          >
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 group-hover:bg-indigo-500 flex items-center justify-center text-white font-black text-sm shadow-md transition-all">
               <Scale className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="text-white font-bold text-sm tracking-tight flex items-center gap-1">
+              <div className="text-white font-bold text-sm tracking-tight flex items-center gap-1 group-hover:text-indigo-200 transition-colors">
                 <span>Lawyer Desk</span>
               </div>
               <div className="text-[9px] text-indigo-400 font-semibold uppercase tracking-widest mt-0.5">

@@ -31,11 +31,19 @@ export const AIChatView: React.FC<AIChatViewProps> = ({
   onSelectMatter,
   documents = [],
 }) => {
-  const [messages, setMessages] = useState<AIChatMessage[]>([
-    {
-      id: 'msg-1',
-      sender: 'ai',
-      text: `### **LEGAL MEMORANDUM & CASE COPILOT**
+  const [messages, setMessages] = useState<AIChatMessage[]>([]);
+  const [inputQuery, setInputQuery] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (selectedMatter) {
+      setMessages([
+        {
+          id: `welcome-${selectedMatter.id}-${Date.now()}`,
+          sender: 'ai',
+          text: `### **LEGAL MEMORANDUM & CASE COPILOT**
 **Matter:** ${selectedMatter.title}
 **Case Number:** ${selectedMatter.caseNumber}
 **Court:** ${selectedMatter.court}
@@ -44,28 +52,24 @@ export const AIChatView: React.FC<AIChatViewProps> = ({
 
 Welcome to LAWYER DESK AI Copilot. I am strictly grounded in the case files for **${selectedMatter.title}** (${selectedMatter.caseNumber}).
 
-I search only case documents, court orders, OCR chunks, and hearings. Every response cites exact Document Name, Page Number, Paragraph, and Date.`,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      groundedInCase: true,
-    },
-  ]);
-
-  const [inputQuery, setInputQuery] = useState('');
-  const [isThinking, setIsThinking] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+I search only case documents, court orders, OCR chunks, and hearings for this case. Every response cites exact Document Name, Page Number, Paragraph, and Date.`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          groundedInCase: true,
+        },
+      ]);
+    }
+  }, [selectedMatter?.id]);
 
   const samplePrompts = [
     'Summary of case',
     'Who are the plaintiff and defendants?',
-    'Find "belghoria-property-detail.pdf" and make a summary',
-    'What are the property schedules and valuation?',
-    'What FIR sections or acts are charged?',
+    'What are the legal claims and acts charged?',
+    'Search case documents and summarize findings',
   ];
 
   const handleSendMessage = async (queryText?: string) => {
     const textToSend = queryText || inputQuery;
-    if (!textToSend.trim()) return;
+    if (!textToSend.trim() || !selectedMatter) return;
 
     const userMsg: AIChatMessage = {
       id: `usr-${Date.now()}`,
@@ -85,6 +89,7 @@ I search only case documents, court orders, OCR chunks, and hearings. Every resp
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           matterId: selectedMatter.id,
+          selectedMatter: selectedMatter,
           query: textToSend,
           documents: documents,
         }),

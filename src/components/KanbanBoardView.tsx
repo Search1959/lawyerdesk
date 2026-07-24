@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { FolderKanban, Scale, AlertCircle, Sparkles, Filter, GripVertical, Move } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { FolderKanban, Scale, AlertCircle, Sparkles, Filter, GripVertical, Move, Plus } from 'lucide-react';
 import { Matter } from '../types';
-import { mockMatters } from '../data/mockData';
 
 const KANBAN_STAGES = [
   { id: 'Notice Stage', label: 'Notice & Summons Stage', color: 'bg-amber-500' },
@@ -11,11 +10,25 @@ const KANBAN_STAGES = [
   { id: 'Decreed', label: 'Judgment & Decreed', color: 'bg-emerald-500' },
 ];
 
-export const KanbanBoardView: React.FC = () => {
-  const [matters, setMatters] = useState<Matter[]>(mockMatters);
+interface KanbanBoardViewProps {
+  matters: Matter[];
+  onSelectMatter?: (matter: Matter) => void;
+  onOpenNewMatter?: () => void;
+}
+
+export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
+  matters: initialMatters,
+  onSelectMatter,
+  onOpenNewMatter,
+}) => {
+  const [matters, setMatters] = useState<Matter[]>(initialMatters);
   const [filterCategory, setFilterCategory] = useState<string>('All');
   const [draggedMatterId, setDraggedMatterId] = useState<string | null>(null);
   const [activeDropStage, setActiveDropStage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMatters(initialMatters);
+  }, [initialMatters]);
 
   const filteredMatters = matters.filter(m => filterCategory === 'All' || m.category === filterCategory);
 

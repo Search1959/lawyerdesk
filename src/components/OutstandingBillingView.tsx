@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertCircle, Search, Send, FileText, CheckCircle, Clock, DollarSign, ArrowUpRight, Eye, Edit3, Trash2, X } from 'lucide-react';
 import { Invoice } from '../types';
-import { mockInvoices, mockClients } from '../data/mockData';
 
-export const OutstandingBillingView: React.FC = () => {
-  const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices);
+interface OutstandingBillingViewProps {
+  invoices: Invoice[];
+  onAddNewInvoice?: () => void;
+}
+
+export const OutstandingBillingView: React.FC<OutstandingBillingViewProps> = ({
+  invoices: initialInvoices,
+  onAddNewInvoice,
+}) => {
+  const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
   const [searchQuery, setSearchQuery] = useState('');
   const [reminderSent, setReminderSent] = useState<{ [id: string]: boolean }>({});
 
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
   const [deletingInvoiceId, setDeletingInvoiceId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setInvoices(initialInvoices);
+  }, [initialInvoices]);
 
   const pendingInvoices = invoices.filter(
     (i) =>
@@ -258,7 +269,7 @@ export const OutstandingBillingView: React.FC = () => {
                     type="text"
                     required
                     value={editingInvoice.feeType}
-                    onChange={(e) => setEditingInvoice({ ...editingInvoice, feeType: e.target.value })}
+                    onChange={(e) => setEditingInvoice({ ...editingInvoice, feeType: e.target.value as any })}
                     className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-xs font-bold"
                   />
                 </div>

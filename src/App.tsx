@@ -43,11 +43,12 @@ import {
   mockCourtOrders,
   mockTimeline,
   mockTasks,
+  mockAppointments,
   mockFirms,
   mockUsers,
 } from './data/mockData';
 
-import { Matter, Document, Hearing, Client, Invoice, AuditLog, LawFirm, User, UserRole, NavTab } from './types';
+import { Matter, Document, Hearing, Client, Invoice, AuditLog, LawFirm, User, UserRole, NavTab, Appointment, Task } from './types';
 
 export default function App() {
   const [viewMode, setViewMode] = useState<'app' | 'landing' | 'login'>('landing');
@@ -74,6 +75,8 @@ export default function App() {
   const [allHearings, setAllHearings] = useState<Hearing[]>(mockHearings);
   const [allClients, setAllClients] = useState<Client[]>(mockClients);
   const [allInvoices, setAllInvoices] = useState<Invoice[]>(mockInvoices);
+  const [allAppointments, setAllAppointments] = useState<Appointment[]>(mockAppointments);
+  const [allTasks, setAllTasks] = useState<Task[]>(mockTasks);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(mockAuditLogs);
 
   const [selectedMatter, setSelectedMatter] = useState<Matter>(mockMatters[0]);
@@ -81,27 +84,47 @@ export default function App() {
   // Check if current user has permission to access demo benchmark data
   const isDemoOrSystemAdmin = (currentUser as any)?.isDemoUser || currentUser.role === 'Super Admin';
 
-  // Active dataset: ONLY Demo User and System Admin can access demo data.
-  // Any other account (Firm, Lawyer, Staff, Client) gets ZERO demo data by default.
+  // Active dataset: ONLY Demo User and System Admin in Benchmark mode see demo benchmark data.
+  // Any other law firm account or user gets clean workspace filtered strictly by their firmId.
   const matters = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allMatters.filter((m) => m.id.startsWith('matter-custom-')) : allMatters)
-    : allMatters.filter((m) => m.id.startsWith('matter-custom-'));
+    : allMatters.filter((m) => m.firmId === currentUser.firmId || m.id.startsWith('matter-custom-'));
 
   const documents = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allDocuments.filter((d) => d.id.startsWith('doc-custom-')) : allDocuments)
-    : allDocuments.filter((d) => d.id.startsWith('doc-custom-'));
+    : allDocuments.filter((d) => {
+        const m = allMatters.find((item) => item.id === d.matterId);
+        return m ? m.firmId === currentUser.firmId : d.id.startsWith('doc-custom-');
+      });
 
   const hearings = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allHearings.filter((h) => h.id.startsWith('hrg-custom-')) : allHearings)
-    : allHearings.filter((h) => h.id.startsWith('hrg-custom-'));
+    : allHearings.filter((h) => {
+        const m = allMatters.find((item) => item.id === h.matterId);
+        return m ? m.firmId === currentUser.firmId : h.id.startsWith('hrg-custom-');
+      });
 
   const clients = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allClients.filter((c) => c.id.startsWith('client-custom-')) : allClients)
-    : allClients.filter((c) => c.id.startsWith('client-custom-'));
+    : allClients.filter((c) => c.firmId === currentUser.firmId || c.id.startsWith('client-custom-'));
 
   const invoices = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allInvoices.filter((i) => i.id.startsWith('inv-custom-')) : allInvoices)
-    : allInvoices.filter((i) => i.id.startsWith('inv-custom-'));
+    : allInvoices.filter((i) => {
+        const c = allClients.find((item) => item.id === i.clientId);
+        return c ? c.firmId === currentUser.firmId : i.id.startsWith('inv-custom-');
+      });
+
+  const appointments = isDemoOrSystemAdmin
+    ? (isZeroDemoDataMode ? allAppointments.filter((a) => a.id.startsWith('apt-custom-')) : allAppointments)
+    : allAppointments.filter((a) => a.firmId === currentUser.firmId || a.id.startsWith('apt-custom-'));
+
+  const tasks = isDemoOrSystemAdmin
+    ? (isZeroDemoDataMode ? allTasks.filter((t) => t.id.startsWith('task-custom-')) : allTasks)
+    : allTasks.filter((t) => {
+        const m = allMatters.find((item) => item.id === t.matterId);
+        return m ? m.firmId === currentUser.firmId : t.id.startsWith('task-custom-');
+      });
 
   // Read-Only check helper
   const checkReadOnlyDemo = (actionName: string): boolean => {
@@ -347,24 +370,59 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
   };
 
   const handleLoginSuccess = (email: string, role: UserRole, name: string, isDemoUser?: boolean) => {
-    setCurrentUser({
-      id: `usr-${Date.now()}`,
+    let targetFirm = firms[0];
+    const existingUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+
+    if (existingUser) {
+      targetFirm = firms.find((f) => f.id === existingUser.firmId) || firms[0];
+    } else if (isDemoUser || email.toLowerCase().includes('demo') || role === 'Super Admin') {
+      targetFirm = firms[0];
+    } else {
+      // Create isolated Law Firm account for new client logins (e.g. Deshna Global)
+      const isDeshna = email.toLowerCase().includes('deshna');
+      const firmName = isDeshna ? 'Deshna Global Law Firm' : `${name || 'New'} Law Chambers`;
+      const newFirm: LawFirm = {
+        id: `firm-${Date.now()}`,
+        name: firmName,
+        code: isDeshna ? 'DGL' : 'NLC',
+        plan: 'Partner Suite',
+        storageQuotaGB: 500,
+        storageUsedGB: 0,
+        branches: [
+          {
+            id: 'branch-1',
+            firmId: `firm-${Date.now()}`,
+            name: 'Head Office',
+            city: 'New Delhi',
+            address: 'Law Chambers, High Court Complex',
+            isHeadquarters: true,
+          },
+        ],
+        departments: [
+          { id: 'dept-1', name: 'Civil & Commercial Litigation', code: 'CIV' },
+          { id: 'dept-2', name: 'Corporate & M&A', code: 'CORP' },
+        ],
+        createdAt: new Date().toISOString().split('T')[0],
+      };
+      setFirms((prev) => [...prev, newFirm]);
+      targetFirm = newFirm;
+    }
+
+    const newUser: User = {
+      id: existingUser?.id || `usr-${Date.now()}`,
       email,
       role,
-      name,
-      firmId: 'firm-1',
+      name: name || existingUser?.name || 'Managing Advocate',
+      firmId: targetFirm.id,
       branchId: 'branch-1',
       phone: '+91 98000 00000',
       permissions: ['all_access'],
-      isDemoUser,
-    } as any);
+      isDemoUser: !!isDemoUser,
+    };
 
-    if (role === 'Firm Admin' || role === 'Senior Lawyer') {
-      setIsZeroDemoDataMode(false);
-    } else {
-      setIsZeroDemoDataMode(false);
-    }
-
+    setCurrentFirm(targetFirm);
+    setCurrentUser(newUser);
+    setIsZeroDemoDataMode(false);
     setViewMode('app');
     setActiveTab('dashboard');
   };
@@ -418,6 +476,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           onSelectTab={setActiveTab}
           currentUser={currentUser}
           onLogout={() => setViewMode('login')}
+          onOpenLanding={() => setViewMode('landing')}
           highRiskCount={matters.filter((m) => m.riskLevel === 'High').length}
           pendingOCRCount={documents.filter((d) => d.ocrStatus === 'Processing' || d.ocrStatus === 'Queued').length}
           isOpenMobile={isMobileSidebarOpen}
@@ -558,17 +617,47 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           {activeTab === 'security' && <SecurityView auditLogs={auditLogs} />}
 
           {activeTab === 'enquiries' && <EnquiriesView />}
-          {activeTab === 'tasks' && <TasksView />}
-          {activeTab === 'kanban' && <KanbanBoardView />}
-          {(activeTab === 'casediary' || activeTab === 'case_diary') && <CaseDiaryView />}
-          {activeTab === 'appointments' && <AppointmentsView />}
-          {activeTab === 'hearing_calendar' && <HearingCalendarView />}
-          {activeTab === 'outstanding' && <OutstandingBillingView />}
+          {activeTab === 'tasks' && <TasksView tasks={tasks} matters={matters} users={users} />}
+          {activeTab === 'kanban' && (
+            <KanbanBoardView
+              matters={matters}
+              onSelectMatter={(m) => {
+                setSelectedMatter(m);
+                setActiveTab('matters');
+              }}
+              onOpenNewMatter={() => setShowNewMatterModal(true)}
+            />
+          )}
+          {(activeTab === 'casediary' || activeTab === 'case_diary') && (
+            <CaseDiaryView
+              hearings={hearings}
+              matters={matters}
+              onSelectMatter={(m) => {
+                setSelectedMatter(m);
+                setActiveTab('matters');
+              }}
+              onAddNewHearing={() => setActiveTab('hearings')}
+            />
+          )}
+          {activeTab === 'appointments' && (
+            <AppointmentsView appointments={appointments} matters={matters} users={users} />
+          )}
+          {activeTab === 'hearing_calendar' && (
+            <HearingCalendarView
+              hearings={hearings}
+              matters={matters}
+              onSelectMatter={(m) => {
+                setSelectedMatter(m);
+                setActiveTab('matters');
+              }}
+            />
+          )}
+          {activeTab === 'outstanding' && <OutstandingBillingView invoices={invoices} />}
           {activeTab === 'expenses' && <ExpensesView />}
           {activeTab === 'messages' && <MessagesView />}
           {activeTab === 'ecourt_tracker' && <ECourtTrackerView />}
           {activeTab === 'reports' && <ReportsView />}
-          {activeTab === 'manage_team' && <ManageTeamView />}
+          {activeTab === 'manage_team' && <ManageTeamView currentUser={currentUser} currentFirm={currentFirm} />}
           {activeTab === 'reminders' && <RemindersView />}
           {activeTab === 'settings' && <SettingsView />}
 

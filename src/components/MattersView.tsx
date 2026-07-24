@@ -27,7 +27,7 @@ import {
   CheckCircle2,
   FileCode2,
 } from 'lucide-react';
-import { Matter, Document, Hearing, CourtOrder, TimelineEvent, Witness, Task } from '../types';
+import { Matter, Document, Hearing, CourtOrder, TimelineEvent, Witness, Task, CourtType } from '../types';
 
 interface MattersViewProps {
   matters: Matter[];
@@ -129,7 +129,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
 
   const handleSetStage = (stageNum: number) => {
     if (!selectedMatter) return;
-    let newStatus = 'Notice Stage';
+    let newStatus: Matter['status'] = 'Notice Stage';
     if (stageNum === 1) newStatus = 'Notice Stage';
     if (stageNum === 2) newStatus = 'Notice Stage';
     if (stageNum === 3) newStatus = 'Active Litigation';
@@ -137,7 +137,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
     if (stageNum === 5) newStatus = 'Pending Order';
     if (stageNum === 6) newStatus = 'Decreed';
 
-    const updated = { ...selectedMatter, status: newStatus };
+    const updated: Matter = { ...selectedMatter, status: newStatus };
     setSelectedMatter(updated);
     setMattersList(prev => prev.map(m => m.id === selectedMatter.id ? updated : m));
   };
@@ -152,6 +152,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
       date: new Date().toISOString().split('T')[0],
       title: 'Court Diary Note',
       description: diaryNoteInput,
+      type: 'Court Order',
       docCitation: 'Daily Proceedings Log',
     };
 
@@ -167,21 +168,21 @@ export const MattersView: React.FC<MattersViewProps> = ({
     const newHrg: Hearing = {
       id: `hrg-${Date.now()}`,
       matterId: selectedMatter.id,
-      caseNumber: selectedMatter.caseNumber,
+      date: newHearingDate,
+      time: '10:30 AM',
       courtName: selectedMatter.court,
-      courtRoomNo: selectedMatter.courtRoomNo || 'Court Room 12',
+      courtHallNo: selectedMatter.courtRoomNo || 'Court Room 12',
       judgeName: selectedMatter.judgeName || 'Hon’ble Bench',
-      hearingDate: newHearingDate,
-      timeSlot: '10:30 AM',
-      purpose: newHearingPurpose,
-      status: 'Scheduled',
-      assignedLawyer: selectedMatter.leadLawyerName,
+      stage: newHearingPurpose || 'Arguments & Further Orders',
+      synopsis: 'Scheduled hearing in cause list.',
+      assignedLawyerId: selectedMatter.leadLawyerId || 'usr-1',
+      assignedLawyerName: selectedMatter.leadLawyerName,
     };
 
     setLocalHearings([newHrg, ...localHearings]);
     
     // Update next hearing date on selected matter
-    const updated = { ...selectedMatter, nextHearingDate: newHearingDate };
+    const updated: Matter = { ...selectedMatter, nextHearingDate: newHearingDate };
     setSelectedMatter(updated);
     setMattersList(prev => prev.map(m => m.id === selectedMatter.id ? updated : m));
 
@@ -192,10 +193,10 @@ export const MattersView: React.FC<MattersViewProps> = ({
     e.preventDefault();
     if (!selectedMatter) return;
 
-    const updated = {
+    const updated: Matter = {
       ...selectedMatter,
       title: editTitle || selectedMatter.title,
-      court: editCourt || selectedMatter.court,
+      court: (editCourt as CourtType) || selectedMatter.court,
       judgeName: editJudge || selectedMatter.judgeName,
     };
 
@@ -502,12 +503,12 @@ export const MattersView: React.FC<MattersViewProps> = ({
                       {matterHearings.map((h) => (
                         <div key={h.id} className="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/60 text-xs">
                           <div className="flex justify-between font-bold text-slate-900 dark:text-white">
-                            <span className="text-indigo-600 dark:text-indigo-400 font-mono">📅 {h.hearingDate}</span>
+                            <span className="text-indigo-600 dark:text-indigo-400 font-mono">📅 {h.date} ({h.time})</span>
                             <span className="text-[10px] bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 px-1.5 py-0.5 rounded">
-                              {h.status}
+                              {h.stage}
                             </span>
                           </div>
-                          <div className="text-slate-600 dark:text-slate-300 font-medium mt-1">{h.purpose}</div>
+                          <div className="text-slate-600 dark:text-slate-300 font-medium mt-1">{h.synopsis}</div>
                         </div>
                       ))}
                     </div>

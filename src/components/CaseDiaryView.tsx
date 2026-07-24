@@ -1,8 +1,20 @@
 import React, { useState } from 'react';
 import { BookOpen, Calendar, Search, Plus, Filter, FileText, CheckCircle, ChevronRight, User } from 'lucide-react';
-import { mockHearings, mockMatters } from '../data/mockData';
+import { Hearing, Matter } from '../types';
 
-export const CaseDiaryView: React.FC = () => {
+interface CaseDiaryViewProps {
+  hearings: Hearing[];
+  matters: Matter[];
+  onSelectMatter?: (matter: Matter) => void;
+  onAddNewHearing?: () => void;
+}
+
+export const CaseDiaryView: React.FC<CaseDiaryViewProps> = ({
+  hearings,
+  matters,
+  onSelectMatter,
+  onAddNewHearing,
+}) => {
   const [selectedDate, setSelectedDate] = useState<string>('2026-08-04');
   const [searchQuery, setSearchQuery] = useState('');
   const [diaryNotes, setDiaryNotes] = useState<{ [key: string]: string }>({
@@ -11,10 +23,10 @@ export const CaseDiaryView: React.FC = () => {
   });
 
   const [newNote, setNewNote] = useState('');
-  const [activeHearingId, setActiveHearingId] = useState<string>('hrg-1');
+  const [activeHearingId, setActiveHearingId] = useState<string>(hearings[0]?.id || 'hrg-1');
 
-  const filteredHearings = mockHearings.filter((h) => {
-    const matter = mockMatters.find(m => m.id === h.matterId);
+  const filteredHearings = hearings.filter((h) => {
+    const matter = matters.find((m) => m.id === h.matterId);
     const text = `${h.courtName} ${h.judgeName} ${h.stage} ${matter?.title || ''}`.toLowerCase();
     return text.includes(searchQuery.toLowerCase());
   });
@@ -72,45 +84,52 @@ export const CaseDiaryView: React.FC = () => {
             </div>
 
             <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
-              {filteredHearings.map((h) => {
-                const matter = mockMatters.find(m => m.id === h.matterId);
-                const isSelected = activeHearingId === h.id;
+              {filteredHearings.length === 0 ? (
+                <div className="p-6 text-center text-slate-500 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
+                  <p className="text-xs font-bold">No hearings listed for this date.</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Schedule a court hearing to log courtroom diary notes.</p>
+                </div>
+              ) : (
+                filteredHearings.map((h) => {
+                  const matter = matters.find((m) => m.id === h.matterId);
+                  const isSelected = activeHearingId === h.id;
 
-                return (
-                  <div
-                    key={h.id}
-                    onClick={() => {
-                      setActiveHearingId(h.id);
-                      setNewNote(diaryNotes[h.id] || '');
-                    }}
-                    className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
-                      isSelected
-                        ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-300 dark:border-indigo-700 ring-2 ring-indigo-500/20 shadow-sm'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-800'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between text-[11px] font-bold">
-                      <span className="text-indigo-600 dark:text-indigo-400 font-mono">{matter?.caseNumber}</span>
-                      <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded">{h.time}</span>
-                    </div>
-
-                    <h4 className="font-bold text-xs text-slate-900 dark:text-white mt-1 line-clamp-1">
-                      {matter?.title}
-                    </h4>
-
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 space-y-0.5">
-                      <div>🏛️ {h.courtName} • {h.courtHallNo}</div>
-                      <div>⚖️ {h.judgeName}</div>
-                    </div>
-
-                    {diaryNotes[h.id] && (
-                      <div className="mt-2 pt-2 border-t border-indigo-100 dark:border-indigo-900/60 text-[10px] text-indigo-700 dark:text-indigo-300 font-medium truncate">
-                        📝 Note Logged
+                  return (
+                    <div
+                      key={h.id}
+                      onClick={() => {
+                        setActiveHearingId(h.id);
+                        setNewNote(diaryNotes[h.id] || '');
+                      }}
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-300 dark:border-indigo-700 ring-2 ring-indigo-500/20 shadow-sm'
+                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-800'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between text-[11px] font-bold">
+                        <span className="text-indigo-600 dark:text-indigo-400 font-mono">{matter?.caseNumber}</span>
+                        <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded">{h.time}</span>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+
+                      <h4 className="font-bold text-xs text-slate-900 dark:text-white mt-1 line-clamp-1">
+                        {matter?.title || 'Court Proceeding'}
+                      </h4>
+
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 space-y-0.5">
+                        <div>🏛️ {h.courtName} • {h.courtHallNo}</div>
+                        <div>⚖️ {h.judgeName}</div>
+                      </div>
+
+                      {diaryNotes[h.id] && (
+                        <div className="mt-2 pt-2 border-t border-indigo-100 dark:border-indigo-900/60 text-[10px] text-indigo-700 dark:text-indigo-300 font-medium truncate">
+                          📝 Note Logged
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
@@ -118,8 +137,20 @@ export const CaseDiaryView: React.FC = () => {
         {/* Right Side: Detailed Court Proceedings & Diary Editor */}
         <div className="lg:col-span-2 space-y-4">
           {(() => {
-            const h = mockHearings.find(item => item.id === activeHearingId) || mockHearings[0];
-            const matter = mockMatters.find(m => m.id === h.matterId);
+            const h = hearings.find((item) => item.id === activeHearingId) || hearings[0];
+            const matter = h ? matters.find((m) => m.id === h.matterId) : null;
+
+            if (!h) {
+              return (
+                <div className="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm text-center space-y-3">
+                  <BookOpen className="w-8 h-8 text-indigo-500 mx-auto opacity-50" />
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">No Active Court Hearing Selected</h3>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto">
+                    Select a hearing from the Cause List or click "+ Register New Case" to log court diary proceedings.
+                  </p>
+                </div>
+              );
+            }
 
             return (
               <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
@@ -164,12 +195,27 @@ export const CaseDiaryView: React.FC = () => {
                     <div className="p-4 bg-indigo-50/50 dark:bg-indigo-950/40 rounded-xl border border-indigo-200 dark:border-indigo-800 space-y-2">
                       <div className="flex items-center justify-between text-xs text-indigo-700 dark:text-indigo-300 font-bold">
                         <span>Recorded Entry</span>
-                        <button
-                          onClick={() => setDiaryNotes({ ...diaryNotes, [h.id]: '' })}
-                          className="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px]"
-                        >
-                          Edit Note
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => {
+                              setNewNote(diaryNotes[h.id]);
+                              setDiaryNotes({ ...diaryNotes, [h.id]: '' });
+                            }}
+                            className="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px] font-bold"
+                          >
+                            Edit Note
+                          </button>
+                          <button
+                            onClick={() => {
+                              const updated = { ...diaryNotes };
+                              delete updated[h.id];
+                              setDiaryNotes(updated);
+                            }}
+                            className="text-rose-600 dark:text-rose-400 hover:underline text-[11px] font-bold"
+                          >
+                            Delete Entry
+                          </button>
+                        </div>
                       </div>
                       <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-serif">
                         "{diaryNotes[h.id]}"

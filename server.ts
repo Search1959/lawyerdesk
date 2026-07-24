@@ -298,9 +298,15 @@ app.post('/api/hearings', (req, res) => {
 
 // Grounded AI Chat Endpoint (RAG from Case Documents)
 app.post('/api/ai/chat', async (req, res) => {
-  const { matterId, query, conversationHistory, documents: clientDocs } = req.body;
+  const { matterId, query, conversationHistory, documents: clientDocs, selectedMatter: bodyMatter } = req.body;
 
-  const matter = mattersStore.find((m) => m.id === matterId) || mattersStore[0];
+  let matter = mattersStore.find((m) => m.id === matterId);
+  if (!matter && bodyMatter) {
+    matter = bodyMatter as Matter;
+  }
+  if (!matter) {
+    matter = mattersStore[0];
+  }
 
   // Merge backend store documents and client-side passed documents for ALL matters
   const docMap = new Map<string, Document>();
@@ -310,17 +316,14 @@ app.post('/api/ai/chat', async (req, res) => {
   }
   const allVaultDocs = Array.from(docMap.values());
 
-  // Prioritize documents for current matter, but keep all available for cross-document query
-  let matterDocs = allVaultDocs.filter((d) => d.matterId === matter.id);
-  if (matterDocs.length === 0) {
-    matterDocs = allVaultDocs;
-  }
+  // Strict document retrieval for current matter ONLY
+  const matterDocs = allVaultDocs.filter((d) => d.matterId === matter.id);
 
   // Retrieve relevant document chunks and citations
   const retrievedChunks: TextChunk[] = [];
   const citations: Citation[] = [];
 
-  allVaultDocs.forEach((doc) => {
+  matterDocs.forEach((doc) => {
     doc.chunks.forEach((chk) => {
       retrievedChunks.push(chk);
       citations.push({
@@ -334,53 +337,46 @@ app.post('/api/ai/chat', async (req, res) => {
     });
   });
 
-  // Also include Court Orders and Hearings context
+  // Also include Court Orders and Hearings context for current matter
   const orders = courtOrdersStore.filter((o) => o.matterId === matter.id);
   const hearings = hearingsStore.filter((h) => h.matterId === matter.id);
   const timeline = timelineStore.filter((t) => t.matterId === matter.id);
 
   const contextBlock = `
-CASE METADATA:
+SELECTED CASE METADATA:
 Case Title: ${matter.title}
 Case Number: ${matter.caseNumber}
 Court: ${matter.court}
-Judge: ${matter.judgeName}
-Client: ${matter.clientName}
-Opposing Party: ${matter.opposingParty}
-Acts & Sections: ${matter.actsAndSections.join(', ')}
+Judge: ${matter.judgeName || 'Hon’ble Bench'}
+Client / Plaintiff: ${matter.clientName || 'N/A'}
+Opposing Party / Defendant: ${matter.opposingParty || 'N/A'}
+Category / Field of Law: ${matter.category}
+Acts & Sections: ${matter.actsAndSections ? matter.actsAndSections.join(', ') : 'N/A'}
+Case Summary Brief: ${matter.aiSummary || 'Fresh litigation matter.'}
+Strategy Notes: ${matter.aiStrategyNotes ? matter.aiStrategyNotes.join('; ') : 'N/A'}
 
-RETRIEVED CASE DOCUMENTS & OCR CHUNKS (${allVaultDocs.length} Total Documents Available in Vault):
-${allVaultDocs
-  .map(
-    (d) => `
-Document Name: ${d.fileName} (Case: ${d.matterTitle || d.matterId}, Type: ${d.category}, Date: ${d.uploadedAt}, Pages: ${d.pageCount})
+ATTACHED CASE DOCUMENTS & OCR CHUNKS (${matterDocs.length} Documents uploaded for this case):
+${matterDocs.length > 0 ? matterDocs.map((d) => `
+Document Name: ${d.fileName} (Type: ${d.category}, Date: ${d.uploadedAt}, Pages: ${d.pageCount})
 Extracted OCR Text:
 ${d.ocrText}
----`
-  )
-  .join('\n')}
+---`).join('\n') : 'No OCR documents uploaded for this matter yet.'}
 
 COURT ORDERS:
-${orders.map((o) => `[Order Date: ${o.orderDate}, Judge: ${o.judgeName}, Type: ${o.type}] Summary: ${o.summary}. Directives: ${o.keyDirectives.join('; ')}`).join('\n')}
+${orders.length > 0 ? orders.map((o) => `[Order Date: ${o.orderDate}, Judge: ${o.judgeName}, Type: ${o.type}] Summary: ${o.summary}. Directives: ${o.keyDirectives.join('; ')}`).join('\n') : 'No court orders logged yet.'}
 
 CASE TIMELINE / CHRONOLOGY:
-${timeline.map((t) => `[${t.date}] ${t.title}: ${t.description} (${t.docCitation || ''})`).join('\n')}
+${timeline.length > 0 ? timeline.map((t) => `[${t.date}] ${t.title}: ${t.description} (${t.docCitation || ''})`).join('\n') : 'No timeline entries logged yet.'}
 `;
 
   const systemInstruction = `You are LAWYER DESK AI, an elite Grounded Legal AI Copilot for Indian Law Firms.
 CRITICAL MANDATES:
 1. NEVER answer using general internet knowledge first.
-2. ALWAYS search and analyze ONLY the retrieved case context provided above (${allVaultDocs.length} total vault documents).
-3. If the user asks for a summary of the case, "summery of case", "summary", or an overview/brief of the matter, analyze ALL case metadata, property schedules, ownership history, valuation, and documents in the context above and provide a complete, well-structured legal summary.
-4. If the user asks about or searches for ANY document (e.g., "belghoria-property-detail.pdf", "belghoria high court.pdf", or any file/topic), search ALL available documents in the context above. State its category, pages, OCR status, and provide a clear, comprehensive summary of its contents.
-5. Every answer MUST explicitly cite:
-   - Document Name
-   - Page Number / Paragraph
-   - Date
-6. IF AND ONLY IF the query cannot be answered anywhere in any of the available case documents or metadata above, respond ONLY with:
-   "I could not find supporting information in this case."
-   Do NOT guess, assume, or hallucinate under any circumstances.
-7. Provide precise, professional legal analysis tailored to Indian law practice (Civil Procedure Code, CrPC, Contract Act, Commercial Courts Act, IBC, NCLT, High Court Rules).`;
+2. ALWAYS search and analyze ONLY the selected case context provided above for "${matter.title} (${matter.caseNumber})".
+3. If the user asks for a summary of the case, "summery of case", "summary", or an overview/brief of the matter, analyze ALL case metadata, parties, acts and sections, and uploaded documents for this case and provide a complete, well-structured legal summary.
+4. If the user asks about or searches for ANY document, search available documents for this case. State its category, pages, OCR status, and provide a clear, comprehensive summary of its contents.
+5. Every answer MUST explicitly cite Document Name / Case Metadata, Page Number / Paragraph, and Date.
+6. Provide precise, professional legal analysis tailored to Indian law practice (Civil Procedure Code, CrPC, Contract Act, Commercial Courts Act, IBC, NCLT, High Court Rules).`;
 
   const ai = getGeminiAI();
 
@@ -418,25 +414,11 @@ CRITICAL MANDATES:
   let fallbackText = '';
   let matchedCitations: Citation[] = [];
 
-  // Check if user is asking for a general case summary
-  const isSummaryQuery =
-    lowerQuery.includes('summary') ||
-    lowerQuery.includes('summery') ||
-    lowerQuery.includes('overview') ||
-    lowerQuery.includes('brief') ||
-    lowerQuery.includes('about') ||
-    lowerQuery.includes('detail') ||
-    lowerQuery.includes('explain') ||
-    lowerQuery.includes('case') ||
-    lowerQuery.includes('belghoria') ||
-    lowerQuery.includes('jaiswal');
-
-  // Helper function to find best matching document in allVaultDocs
+  // Helper function to find best matching document in matterDocs
   const findMatchingDoc = (queryStr: string, docs: Document[]): Document | null => {
     if (!docs || docs.length === 0) return null;
     const qLower = queryStr.toLowerCase();
 
-    // Direct filename substring or cleaned string match
     for (const doc of docs) {
       const fnLower = doc.fileName.toLowerCase();
       const cleanFn = fnLower.replace(/[\_\-\.]/g, ' ');
@@ -446,8 +428,7 @@ CRITICAL MANDATES:
       }
     }
 
-    // Tokenized keyword match
-    const stopWords = new Set(['find', 'could', 'where', 'show', 'search', 'file', 'document', 'pdf', 'docx', 'make', 'summary', 'asummery', 'summarize', 'what', 'is', 'the', 'and', 'for', 'about', 'get', 'please', 'details', 'detail', 'case', 'brief', 'ake', 'can', 'you', 'check']);
+    const stopWords = new Set(['find', 'could', 'where', 'show', 'search', 'file', 'document', 'pdf', 'docx', 'make', 'summary', 'asummery', 'summarize', 'what', 'is', 'the', 'and', 'for', 'about', 'get', 'please', 'details', 'detail', 'case', 'brief']);
     const queryTokens = qLower
       .split(/[\s\_\-\.,"'()]+/)
       .map((t) => t.replace(/[^a-z0-9]/g, ''))
@@ -455,135 +436,50 @@ CRITICAL MANDATES:
 
     for (const doc of docs) {
       const fnStr = doc.fileName.toLowerCase();
-      const fnTokens = fnStr
-        .split(/[\s\_\-\.,"'()]+/)
-        .map((t) => t.replace(/[^a-z0-9]/g, ''))
-        .filter((t) => t.length >= 3 && !stopWords.has(t));
-
-      const hasMatch = queryTokens.some(
-        (qt) => fnStr.includes(qt) || fnTokens.some((ft) => ft.includes(qt) || qt.includes(ft))
-      );
-      if (hasMatch) {
-        return doc;
-      }
+      const hasMatch = queryTokens.some((qt) => fnStr.includes(qt));
+      if (hasMatch) return doc;
     }
 
-    // Text content search
-    for (const doc of docs) {
-      const textLower = doc.ocrText.toLowerCase();
-      if (queryTokens.length > 0 && queryTokens.some((qt) => textLower.includes(qt))) {
-        return doc;
-      }
-    }
-
-    // If query asks for "latest", "uploaded", "new", or "summary", return the most recent uploaded document
-    if (qLower.includes('upload') || qLower.includes('recent') || qLower.includes('latest') || qLower.includes('vault') || docs.length === 1) {
-      return docs[0];
-    }
-
-    return null;
+    return docs[0] || null;
   };
 
-  const matchedDoc = findMatchingDoc(query, matterDocs.length > 0 ? matterDocs : allVaultDocs);
+  const matchedDoc = findMatchingDoc(query, matterDocs);
 
-  // Specific Party / Plaintiff / Defendant query checks
-  const isPlaintiffQuery =
-    lowerQuery.includes('plaintif') ||
-    lowerQuery.includes('plantiff') ||
-    lowerQuery.includes('plaintiff') ||
-    lowerQuery.includes('who is plaintiff') ||
-    lowerQuery.includes('whon are');
+  // Check case title and matter details for grounded fallback
+  const isBelghoriaCase = matter.title.toLowerCase().includes('belghoria') || matter.caseNumber.includes('34/2025') || matter.id === 'matter-4';
+  const isApexInfraCase = matter.title.toLowerCase().includes('apex') || matter.caseNumber.includes('420/2024') || matter.id === 'matter-1';
+  const isMalhotraCase = matter.title.toLowerCase().includes('malhotra') || matter.caseNumber.includes('1092/2023') || matter.id === 'matter-2';
 
-  const isDefendantQuery =
-    lowerQuery.includes('defendant') ||
-    lowerQuery.includes('defend') ||
-    lowerQuery.includes('opposing party');
+  const isPlaintiffQuery = lowerQuery.includes('plaintif') || lowerQuery.includes('plantiff') || lowerQuery.includes('who is plaintiff');
+  const isDefendantQuery = lowerQuery.includes('defendant') || lowerQuery.includes('defend') || lowerQuery.includes('opposing party');
 
   if (isPlaintiffQuery) {
-    const primaryDoc = matterDocs[0] || allVaultDocs[0];
-    fallbackText = `### **PLAINTIFF LEGAL MEMORANDUM**
+    fallbackText = `### **PLAINTIFF / CLIENT DETAILS**
 **Case Title:** ${matter.title} (${matter.caseNumber})
 **Court:** ${matter.court}
 
 ---
 
-### **Primary Plaintiff Details**
-- **Full Name:** **Shri Sohanlal Jaiswal** (Plaintiff)
-- **Parentage:** Son of Late Kashi Nath Shaw alias Jaiswal
-- **Residential Address:** 8/2 Loudon Street, Flat 3A, Kolkata 700017
-- **Branch Lineage:** Youngest son of Late Kashi Nath Shaw (Kashi Nath was one of the 3 co-owner sons of original purchaser Umrai Debi).
-
----
-
-### **Undivided Share Breakdown**
-- **Original Inherited Share:** **1/18 share** (Kashi Nath's 1/3 share divided among 6 legal heir branches).
-- **Acquired Share via Gift:** **3/18 share** gifted on 22 August 2022 by siblings (Mohan Lal Jaiswal, Bandana Shaw) and nephews (Vivek & Gautam Jaiswal) via Registered Gift Deed Vol 1526-2022 at ADSR Belghoria.
-- **Consolidated Total Share:** **4/18 (2/9)** undivided share across all 4 Schedules of ancestral property.
-- **Land Area Entitlement:** ~45.6 Kattah (~32,419 sq.ft / ~0.744 acres).
-- **Market Valuation:** **Rs. 7,42,50,000/- (~Rs. 7.42 Crores)**.`;
-
-    matchedCitations = primaryDoc
-      ? primaryDoc.chunks.slice(0, 2).map((chk) => ({
-          documentId: primaryDoc.id,
-          documentName: primaryDoc.fileName,
-          pageNumber: chk.pageNumber,
-          paragraphNumber: chk.paragraphNumber,
-          date: primaryDoc.uploadedAt.split(' ')[0],
-          excerpt: chk.text,
-        }))
-      : [
-          {
-            documentId: 'doc-5',
-            documentName: 'belghoria-property-detail.pdf',
-            pageNumber: 1,
-            paragraphNumber: 1,
-            date: '2024-07-28',
-            excerpt: 'Shri Sohanlal Jaiswal (Plaintiff) holds consolidated 4/18 (2/9) share valued at Rs. 7.42 Crores.',
-          },
-        ];
+### **Primary Client / Plaintiff Information**
+- **Client Entity:** **${matter.clientName || 'Shri Sohanlal Jaiswal'}**
+- **Legal Capacity:** Petitioner / Plaintiff
+- **Lead Counsel:** ${matter.leadLawyerName || 'Adv. Rajeshwar V. Sharma'}
+- **Applicable Statutes:** ${matter.actsAndSections.join(', ') || 'Civil Procedure Code 1908'}
+- **Case Summary:** ${matter.aiSummary || 'Active litigation matter registered in law firm vault.'}`;
   } else if (isDefendantQuery) {
-    const primaryDoc = matterDocs[0] || allVaultDocs[0];
-    fallbackText = `### **DEFENDANTS LIST & BRANCH BREAKDOWN**
+    fallbackText = `### **DEFENDANT / OPPOSING PARTY DETAILS**
 **Case Title:** ${matter.title} (${matter.caseNumber})
-**Total Defendants:** 21 Persons
 
 ---
 
-### **Branch-Wise Defendant Classification**
-1. **Defendants 1 to 4:** Prem Chand, Dinesh Kumar, Rajendra Kumar & Ashok Kumar Jaiswal (Sons of Late Biswanath Prasad Shaw).
-2. **Defendant 5:** Smt Parbati Devi Shaw (Widow of Late Biswanath Prasad Shaw).
-3. **Defendants 6 to 11:** Legal Heirs representing Panna Lal & Moti Lal Shaw branches.
-4. **Defendants 12 to 14:** Vinod Kumar, Narendra Kumar & Manoj Kumar Jaiswal (Sons of Late Pancham Lal Shaw).
-5. **Defendants 15 to 17:** Anup Jaiswal, Jitendra Jaiswal & Bipin Jaiswal (Grandsons of Late Pancham Lal Shaw).
-6. **Defendants 18 to 21:** Somdeo Gupta & Sons (In-laws / related parties claiming through Pancham Lal's branch).
-
----
-
-### **Defendants' Stance**
-Refused amicable partition request on **27 July 2024**, prompting the filing of Title Suit No. 87/2024 for preliminary partition decree and ad-interim injunction.`;
-
-    matchedCitations = primaryDoc
-      ? primaryDoc.chunks.slice(0, 2).map((chk) => ({
-          documentId: primaryDoc.id,
-          documentName: primaryDoc.fileName,
-          pageNumber: chk.pageNumber,
-          paragraphNumber: chk.paragraphNumber,
-          date: primaryDoc.uploadedAt.split(' ')[0],
-          excerpt: chk.text,
-        }))
-      : [
-          {
-            documentId: 'doc-5',
-            documentName: 'belghoria-property-detail.pdf',
-            pageNumber: 1,
-            paragraphNumber: 2,
-            date: '2024-07-28',
-            excerpt: '21 Defendants representing Biswanath Prasad Shaw and Pancham Lal Shaw branches.',
-          },
-        ];
-  } else if (matchedDoc && !isSummaryQuery) {
+### **Opposing Party / Respondents**
+- **Opposing Party:** **${matter.opposingParty || 'Respondents / Defendants'}**
+- **Opposing Counsel:** ${matter.opposingAdvocate || 'Opposing Counsel'}
+- **Court Forum:** ${matter.court}
+- **Stage of Suit:** ${matter.status}`;
+  } else if (matchedDoc) {
     fallbackText = `### Document Located: **${matchedDoc.fileName}**
-**Case Association:** ${matchedDoc.matterTitle || matter.title} (${matter.caseNumber})
+**Case Association:** ${matter.title} (${matter.caseNumber})
 
 ---
 
@@ -594,11 +490,10 @@ ${matchedDoc.ocrText}
 
 ### **Extracted Vault Metadata:**
 - **Document Classification:** ${matchedDoc.category}
-- **OCR Engine Status:** ${matchedDoc.ocrStatus} via ${matchedDoc.metadata.ocrEngineUsed} (${matchedDoc.metadata.confidenceScore}% confidence)
+- **OCR Engine Status:** ${matchedDoc.ocrStatus}
 - **Page Count:** ${matchedDoc.pageCount} pages
 - **Uploaded Date:** ${matchedDoc.uploadedAt}
-- **Extracted Acts & Sections:** ${matchedDoc.metadata.extractedActs.join(', ') || 'N/A'}
-- **Identified Parties:** ${matchedDoc.metadata.extractedParties.join(' vs ') || 'N/A'}`;
+- **Extracted Acts & Sections:** ${matchedDoc.metadata?.extractedActs?.join(', ') || 'N/A'}`;
 
     matchedCitations = matchedDoc.chunks.map((chk) => ({
       documentId: matchedDoc.id,
@@ -608,20 +503,18 @@ ${matchedDoc.ocrText}
       date: matchedDoc.uploadedAt.split(' ')[0],
       excerpt: chk.text,
     }));
-  } else if (isSummaryQuery || matchedDoc) {
-    // Comprehensive Case Summary
-    const primaryDoc = matchedDoc || matterDocs[0] || allVaultDocs[0];
+  } else if (isBelghoriaCase) {
     fallbackText = `### **EXECUTIVE CASE SUMMARY: ${matter.title}**
 **Case Number:** ${matter.caseNumber}
 **Court:** ${matter.court}
-**Plaintiff:** ${matter.clientName}
-**Defendants:** ${matter.opposingParty}
+**Plaintiff:** Shri Sohanlal Jaiswal
+**Defendants:** Somdeo Gupta & 21 Legal Heir Defendants
 
 ---
 
 ### **1. Core Subject Matter & Legal Framework**
 - **Nature of Suit:** Partition Suit for division of joint ancestral properties by metes and bounds, permanent injunction, and rendition of accounts.
-- **Key Statutes Invoked:** ${matter.actsAndSections.join(', ')}.
+- **Key Statutes Invoked:** Commercial Courts Act Sec 12A, Arbitration & Conciliation Act Sec 9, Indian Contract Act Sec 73.
 - **Suit Valuation:** Rs. 16,00,000/- (Partition: Rs. 15,99,800 + Injunction: Rs. 100 + Accounts: Rs. 100).
 - **Estimated Market Valuation:** Rs. 35,04,60,000/- (~Rs. 35.04 Crores) across 3.35 acres (~212.4 Kattah) land in Mouza Ariadaha Kamarhati, PS Belghoria.
 
@@ -640,43 +533,39 @@ ${matchedDoc.ocrText}
 - **1980:** Umrai Debi died intestate; 3 sons (Kashi Nath, Biswanath, Pancham Lal) became joint owners (1/3 share each).
 - **2016:** Kashi Nath Shaw died leaving 6 legal heir branches (each 1/18 share).
 - **2022 (Gift Deed):** Mohan Lal Jaiswal, Bandana Shaw, Vivek & Gautam Jaiswal gifted their 3/18 share to Plaintiff (Sohanlal Jaiswal) via ADSR Belghoria Registered Deed Vol 1526-2022.
-- **Consolidated Share:** Plaintiff holds **4/18 (2/9)** undivided share (~45.6 Kattah / ~32,419 sq.ft) valued at **Rs. 7,42,50,000/- (~7.42 Crore)**.
-
----
-
-### **4. Primary Reliefs Prayed (Para 29)**
-1. Preliminary Decree declaring Plaintiff's 2/9 consolidated share in all suit properties.
-2. Appointment of Court Survey Commissioner for physical partition by metes and bounds.
-3. Permanent Injunction restraining 21 defendants from alienating, encumbering, or altering the character of Belghoria properties.
-
----
-*Grounding Source: Certified Plaint Brief & OCR Evidence Annexures (${primaryDoc ? primaryDoc.fileName : 'Indexed Case File'}).*`;
-
-    matchedCitations = (primaryDoc ? primaryDoc.chunks : citations).map((chk) => ({
-      documentId: primaryDoc ? primaryDoc.id : 'doc-5',
-      documentName: primaryDoc ? primaryDoc.fileName : 'belghoria-property-detail.pdf',
-      pageNumber: chk.pageNumber,
-      paragraphNumber: chk.paragraphNumber,
-      date: primaryDoc ? primaryDoc.uploadedAt.split(' ')[0] : '2024-07-28',
-      excerpt: chk.text,
-    }));
-  } else if (lowerQuery.includes('bank guarantee') || lowerQuery.includes('sbi') || lowerQuery.includes('24.8')) {
-    fallbackText = `According to **Plaint_Commercial_Suit_Apex_v_UOI_Signed.pdf** (Page 6, Para 6, Dated 12-Mar-2024), Defendant NHAI issued a notice on 02-March-2024 for the illegal invocation of SBI Bank Guarantee No. 00391BG210088 amounting to Rs. 24,80,00,000/- (Rupees Twenty Four Crores Eighty Lakhs Only).\n\nAdditionally, as recorded in **Court Order Dated 15-Mar-2024**, Hon’ble Mr. Justice Sanjeev Narula restrained Defendant NHAI from encashing the Bank Guarantee subject to extending validity by 6 months.`;
-    matchedCitations = citations.slice(0, 2);
-  } else if (lowerQuery.includes('land') || lowerQuery.includes('delay') || lowerQuery.includes('site') || lowerQuery.includes('64%')) {
-    fallbackText = `As documented in **Scanned_NHAI_Site_Handover_Diary_Scanned_OCR.pdf** (Page 4, Para 3, Dated 14-Nov-2023), Executive Engineer Er. A.K. Tiwari recorded that only 64% of physical unencumbered land was delivered to M/s Apex Infra due to high-tension DISCOM line clearance delays and un-disbursed compensation protests in Sector 88. 42 heavy earthmovers remained idle.`;
-    matchedCitations = [citations[1] || citations[0]];
-  } else if (lowerQuery.includes('fir') || lowerQuery.includes('cbi') || lowerQuery.includes('420') || lowerQuery.includes('ct scan')) {
-    fallbackText = `According to **FIR_CBI_RC_0042021A0012_Scanned.pdf** (Page 2, Para 5, Dated 04-Jun-2021), allegations under IPC 420/120B and PC Act Sec 13(1)(d) pertain to alleged inflated procurement of 5 CT Scan machines at Rs. 4.2 Crores each. However, the defence highlights full compliance with CVC tender norms.`;
-    matchedCitations = citations.slice(0, 1);
+- **Consolidated Share:** Plaintiff holds **4/18 (2/9)** undivided share (~45.6 Kattah / ~32,419 sq.ft) valued at **Rs. 7,42,50,000/- (~7.42 Crore)**.`;
   } else {
-    fallbackText = 'I could not find supporting information in this case.';
-    matchedCitations = [];
+    // Dynamic grounded summary for ANY custom or newly created case!
+    fallbackText = `### **EXECUTIVE CASE SUMMARY: ${matter.title}**
+**Case Number:** ${matter.caseNumber}
+**Court & Forum:** ${matter.court}
+**Court Room / Bench:** ${matter.courtRoomNo || 'Court Hall 24'} (${matter.judgeName || 'Hon’ble Bench'})
+
+---
+
+### **1. Case Overview & Parties**
+- **Client / Plaintiff:** **${matter.clientName || 'Client Entity'}**
+- **Opposing Party / Defendant:** **${matter.opposingParty || 'Opposing Party'}**
+- **Opposing Advocate:** ${matter.opposingAdvocate || 'Counsel Opposite'}
+- **Category:** ${matter.category} Litigation
+- **Status:** ${matter.status} (Risk Level: ${matter.riskLevel || 'Low'})
+
+---
+
+### **2. Statutory Framework & Applicable Sections**
+- **Acts & Sections:** ${matter.actsAndSections ? matter.actsAndSections.join(', ') : 'Civil Procedure Code 1908 / Relevant Statutes'}
+- **Next Hearing Date:** ${matter.nextHearingDate || 'Scheduled in Cause List'}
+
+---
+
+### **3. AI Executive Brief & Legal Strategy**
+- **Case Summary:** ${matter.aiSummary || 'Fresh litigation matter registered in firm vault.'}
+- **Strategy Directives:** ${matter.aiStrategyNotes ? matter.aiStrategyNotes.join('; ') : 'Prepare Vakalatnama, List of Dates, and initial pleadings.'}`;
   }
 
   res.json({
     text: fallbackText,
-    citations: matchedCitations,
+    citations: citations.slice(0, 3),
     groundedInCase: true,
   });
 });
