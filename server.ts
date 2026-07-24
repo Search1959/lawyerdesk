@@ -383,7 +383,7 @@ CRITICAL MANDATES:
   if (ai) {
     try {
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.6-flash',
         contents: `${contextBlock}\n\nUSER QUESTION: ${query}`,
         config: {
           systemInstruction,
@@ -414,21 +414,64 @@ CRITICAL MANDATES:
   let fallbackText = '';
   let matchedCitations: Citation[] = [];
 
-  // Helper function to find best matching document in matterDocs
+  // Helper function to find best matching document ONLY if explicitly requested
   const findMatchingDoc = (queryStr: string, docs: Document[]): Document | null => {
     if (!docs || docs.length === 0) return null;
     const qLower = queryStr.toLowerCase();
+
+    // Do NOT match document if the user is asking a general summary or party query
+    const isGeneralQuery =
+      qLower.includes('summary') ||
+      qLower.includes('summery') ||
+      qLower.includes('overview') ||
+      qLower.includes('brief') ||
+      qLower.includes('plaintif') ||
+      qLower.includes('defend') ||
+      qLower.includes('who is') ||
+      qLower.includes('what is the case') ||
+      qLower.includes('case detail');
+
+    if (isGeneralQuery) return null;
 
     for (const doc of docs) {
       const fnLower = doc.fileName.toLowerCase();
       const cleanFn = fnLower.replace(/[\_\-\.]/g, ' ');
       const cleanQ = qLower.replace(/[\_\-\.]/g, ' ');
-      if (qLower.includes(fnLower) || fnLower.includes(qLower) || cleanQ.includes(cleanFn) || cleanFn.includes(cleanQ)) {
+      if (qLower.includes(fnLower) || cleanQ.includes(cleanFn)) {
         return doc;
       }
     }
 
-    const stopWords = new Set(['find', 'could', 'where', 'show', 'search', 'file', 'document', 'pdf', 'docx', 'make', 'summary', 'asummery', 'summarize', 'what', 'is', 'the', 'and', 'for', 'about', 'get', 'please', 'details', 'detail', 'case', 'brief']);
+    const stopWords = new Set([
+      'find',
+      'could',
+      'where',
+      'show',
+      'search',
+      'file',
+      'document',
+      'pdf',
+      'docx',
+      'make',
+      'summary',
+      'asummery',
+      'summarize',
+      'what',
+      'is',
+      'the',
+      'and',
+      'for',
+      'about',
+      'get',
+      'please',
+      'details',
+      'detail',
+      'case',
+      'brief',
+      'give',
+      'me',
+      'read',
+    ]);
     const queryTokens = qLower
       .split(/[\s\_\-\.,"'()]+/)
       .map((t) => t.replace(/[^a-z0-9]/g, ''))
@@ -440,7 +483,7 @@ CRITICAL MANDATES:
       if (hasMatch) return doc;
     }
 
-    return docs[0] || null;
+    return null;
   };
 
   const matchedDoc = findMatchingDoc(query, matterDocs);
