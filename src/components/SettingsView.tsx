@@ -10,6 +10,8 @@ export const SettingsView: React.FC = () => {
     eCourtsApiKey: 'ecourt_live_gw_88493102948',
     defaultCourt: 'Delhi High Court',
     invoiceHeaderNotes: 'Professional Retainer Fees and Litigation Expenses billed subject to 18% GST.',
+    aiModel: 'Gemini 3.6 Flash (Grounded Legal RAG)',
+    strictGrounding: true,
   });
 
   const handleSave = (e: React.FormEvent) => {
@@ -106,21 +108,60 @@ export const SettingsView: React.FC = () => {
         </div>
 
         <div className="space-y-4 pt-2">
-          <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+          <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
             <Shield className="w-4 h-4 text-indigo-600" /> eCourts India API Gateway Sync
           </h3>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase mb-1">eCourts API Key Token</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">eCourts API Key Token</label>
             <input
               type="password"
               value={firmConfig.eCourtsApiKey}
               onChange={(e) => setFirmConfig({ ...firmConfig, eCourtsApiKey: e.target.value })}
-              className="w-full border border-slate-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500"
             />
             <p className="text-[11px] text-slate-500 mt-1">
               Used to fetch live Cause Lists and Certified Orders directly from District Courts and High Courts.
             </p>
+          </div>
+        </div>
+
+        {/* AI Model Architecture & Engine Provider Configuration */}
+        <div className="space-y-4 pt-2">
+          <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+            <Database className="w-4 h-4 text-indigo-600" /> Legal AI Engine & LLM Provider Switcher
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Active Reasoning Engine</label>
+              <select
+                value={firmConfig.aiModel || 'Gemini 3.6 Flash (Grounded Legal RAG)'}
+                onChange={(e) => setFirmConfig({ ...firmConfig, aiModel: e.target.value })}
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="Gemini 3.6 Flash (Grounded Legal RAG)">Gemini 3.6 Flash (Grounded RAG + Citation Engine) - [Default Recommended]</option>
+                <option value="Gemini 3.5 Pro Legal">Gemini 3.5 Pro (Deep Case Analytics)</option>
+                <option value="Claude 3.5 Sonnet Legal">Claude 3.5 Sonnet (Drafting & Submissions)</option>
+                <option value="GPT-4o Counsel">GPT-4o Counsel (Precedent Search)</option>
+                <option value="DeepSeek R1 Statutory">DeepSeek R1 (Statutory Reasoning)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Strict Hallucination Shield</label>
+              <div className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
+                <input
+                  type="checkbox"
+                  id="hallucinationShield"
+                  checked={firmConfig.strictGrounding ?? true}
+                  onChange={(e) => setFirmConfig({ ...firmConfig, strictGrounding: e.target.checked })}
+                  className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                />
+                <label htmlFor="hallucinationShield" className="text-slate-700 dark:text-slate-300 font-bold cursor-pointer">
+                  Require verified case record citations for every response
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 

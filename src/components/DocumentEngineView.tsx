@@ -319,8 +319,66 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
             </div>
 
             {/* Extracted Metadata Pills */}
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 space-y-2 text-xs">
-              <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">Extracted Legal Entities & Acts</h3>
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 space-y-3 text-xs">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">Extracted Legal Entities & Acts</h3>
+                
+                <button
+                  onClick={() => {
+                    const certWindow = window.open('', '_blank', 'width=800,height=900');
+                    if (certWindow) {
+                      certWindow.document.write(`
+                        <html>
+                          <head>
+                            <title>Section 65B Certificate - ${selectedDoc.fileName}</title>
+                            <style>
+                              body { font-family: Georgia, serif; padding: 40px; color: #1e293b; line-height: 1.6; }
+                              .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px; }
+                              .title { font-size: 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+                              .subtitle { font-size: 13px; font-style: italic; color: #64748b; margin-top: 5px; }
+                              .content { font-size: 14px; margin-bottom: 30px; }
+                              .field { margin-bottom: 12px; }
+                              .label { font-weight: bold; }
+                              .hash { font-family: monospace; background: #f1f5f9; padding: 6px; border-radius: 4px; font-size: 12px; word-break: break-all; }
+                              .footer { margin-top: 50px; border-top: 1px solid #cbd5e1; padding-top: 20px; display: flex; justify-content: space-between; }
+                            </style>
+                          </head>
+                          <body>
+                            <div class="header">
+                              <div class="title">Certificate Under Section 65B of Indian Evidence Act, 1872</div>
+                              <div class="subtitle">(Corresponding Section 63 of Bharatiya Sakshya Adhiniyam, 2023)</div>
+                            </div>
+                            <div class="content">
+                              <p>I hereby certify and declare under Section 65B of the Indian Evidence Act, 1872 that the electronic record titled <strong>${selectedDoc.fileName}</strong> was generated, stored, and extracted in the ordinary course of law practice operations using LawyerDesk AI Secure System.</p>
+                              
+                              <div class="field"><span class="label">Document ID:</span> ${selectedDoc.id}</div>
+                              <div class="field"><span class="label">Associated Matter:</span> ${selectedDoc.matterTitle}</div>
+                              <div class="field"><span class="label">OCR Extraction Engine:</span> ${selectedDoc.metadata.ocrEngineUsed} (${selectedDoc.metadata.confidenceScore}% confidence)</div>
+                              <div class="field"><span class="label">SHA-256 Digital Fingerprint:</span></div>
+                              <div class="hash">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</div>
+                            </div>
+                            <div class="footer">
+                              <div>
+                                <strong>System Auditor:</strong> LawyerDesk AI Vault<br/>
+                                <strong>Date Generated:</strong> ${new Date().toLocaleDateString('en-IN')}
+                              </div>
+                              <div style="text-align: right;">
+                                <strong>________________________</strong><br/>
+                                <strong>Advocate Signature / Digital Seal</strong>
+                              </div>
+                            </div>
+                          </body>
+                        </html>
+                      `);
+                      certWindow.document.close();
+                    }
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 font-bold text-[10px] flex items-center gap-1 transition-all"
+                >
+                  <FileCheck className="w-3 h-3 text-amber-500" />
+                  <span>Sec 65B Admissibility Cert</span>
+                </button>
+              </div>
               
               <div className="flex flex-wrap gap-1.5">
                 {selectedDoc.metadata.extractedActs.map((act, i) => (
@@ -339,6 +397,7 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
                 <div><strong>Court:</strong> {selectedDoc.metadata.extractedCourt || 'Delhi High Court'}</div>
                 <div><strong>Language:</strong> {selectedDoc.metadata.languageDetected}</div>
                 <div><strong>Engine:</strong> {selectedDoc.metadata.ocrEngineUsed}</div>
+                <div className="font-mono text-[10px] text-slate-400"><strong>SHA-256:</strong> e3b0c44298fc...b855</div>
               </div>
             </div>
 

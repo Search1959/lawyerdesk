@@ -18,6 +18,10 @@ import {
   Building2,
   UserCheck,
   Calendar as CalendarIcon,
+  Mic,
+  Sparkles,
+  X,
+  Volume2,
 } from 'lucide-react';
 import { Hearing, Matter, CourtType } from '../types';
 
@@ -40,6 +44,19 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
   const [sentWhatsappId, setSentWhatsappId] = useState<string | null>(null);
   const [isSyncingCauseList, setIsSyncingCauseList] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  // AI Voice Hearing Assistant State
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
+  const [isRecordingVoice, setIsRecordingVoice] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+  const [voiceSummaryResult, setVoiceSummaryResult] = useState<{
+    hearingSynopsis: string;
+    nextDate: string;
+    stage: string;
+    tasksCreated: string[];
+    whatsappDraft: string;
+  } | null>(null);
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -169,6 +186,15 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
           >
             <RefreshCw className={`w-3.5 h-3.5 text-indigo-500 ${isSyncingCauseList ? 'animate-spin' : ''}`} />
             <span>{isSyncingCauseList ? 'Polling e-Courts...' : 'Sync Cause List'}</span>
+          </button>
+
+          {/* AI Post-Hearing Voice Briefing Button */}
+          <button
+            onClick={() => setShowVoiceModal(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 hover:bg-indigo-500/20 text-xs font-bold transition-all"
+          >
+            <Mic className="w-3.5 h-3.5 text-indigo-500" />
+            <span>Voice Hearing Dictation</span>
           </button>
 
           {/* Add Hearing Button */}
@@ -539,6 +565,150 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* AI Voice Post-Hearing Dictation Modal */}
+      {showVoiceModal && (
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                  <Mic className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                    AI Post-Hearing Speech Briefing
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Dictate court proceedings &rarr; Auto-updates case diary, tasks, and client WhatsApp
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowVoiceModal(false);
+                  setVoiceSummaryResult(null);
+                  setVoiceTranscript('');
+                }}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">
+                Speak or Type Post-Hearing Update
+              </label>
+              <div className="relative">
+                <textarea
+                  rows={3}
+                  placeholder="e.g. Matter listed in Delhi High Court Court 24. Bench granted interim stay on recovery. Next hearing fixed for 24 October 2026. Directed junior advocate to file rejoinder affidavit within 2 weeks."
+                  value={voiceTranscript}
+                  onChange={(e) => setVoiceTranscript(e.target.value)}
+                  className="w-full p-3 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRecordingVoice(true);
+                    setTimeout(() => {
+                      setIsRecordingVoice(false);
+                      setVoiceTranscript(
+                        'Item 18 taken up before Hon’ble Bench. Notice issued returnable on 22 October 2026. Interim protection granted against coercive steps. Instructed junior associate to apply for certified copy of today’s order.'
+                      );
+                    }, 1800);
+                  }}
+                  className={`absolute right-3 bottom-3 p-2 rounded-xl transition-all ${
+                    isRecordingVoice
+                      ? 'bg-rose-500 text-white animate-pulse'
+                      : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow'
+                  }`}
+                  title="Click to Dictate"
+                >
+                  <Mic className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  disabled={!voiceTranscript.trim() || isProcessingVoice}
+                  onClick={() => {
+                    setIsProcessingVoice(true);
+                    setTimeout(() => {
+                      setIsProcessingVoice(false);
+                      setVoiceSummaryResult({
+                        hearingSynopsis: voiceTranscript,
+                        nextDate: '2026-10-22',
+                        stage: 'Notice Returnable / Interim Protection',
+                        tasksCreated: [
+                          'Apply for Certified Copy of Interim Stay Order',
+                          'Prepare and file Rejoinder Affidavit within 14 days',
+                        ],
+                        whatsappDraft: `Dear Client, Your matter was argued today in High Court. The Hon'ble Bench has granted an interim stay in your favor and issued notice returnable on 22 October 2026. - LawyerDesk AI Briefing`,
+                      });
+                    }, 1200);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>{isProcessingVoice ? 'Structuring Briefing...' : 'Process AI Voice Briefing'}</span>
+                </button>
+              </div>
+            </div>
+
+            {voiceSummaryResult && (
+              <div className="p-4 rounded-2xl bg-indigo-950/60 border border-indigo-800/80 text-indigo-200 text-xs space-y-3 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between border-b border-indigo-800 pb-2">
+                  <span className="font-extrabold uppercase tracking-wider text-[10px] text-indigo-400">
+                    AI Structuring Complete
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-black text-[10px]">
+                    Next Hearing: {voiceSummaryResult.nextDate}
+                  </span>
+                </div>
+
+                <div>
+                  <strong className="text-white block mb-1">Generated Tasks:</strong>
+                  <ul className="list-disc list-inside space-y-1 text-slate-300 text-[11px]">
+                    {voiceSummaryResult.tasksCreated.map((t, idx) => (
+                      <li key={idx}>{t}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <strong className="text-white block mb-1">WhatsApp Client Notification Draft:</strong>
+                  <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-emerald-400 font-mono">
+                    {voiceSummaryResult.whatsappDraft}
+                  </div>
+                </div>
+
+                <div className="pt-1 flex justify-end">
+                  <button
+                    onClick={() => {
+                      onAddNewHearing({
+                        date: voiceSummaryResult.nextDate,
+                        time: '10:30 AM',
+                        courtName: 'Delhi High Court',
+                        courtHallNo: 'Court Room 24',
+                        stage: voiceSummaryResult.stage,
+                        synopsis: voiceSummaryResult.hearingSynopsis,
+                      });
+                      setShowVoiceModal(false);
+                      setVoiceSummaryResult(null);
+                      setVoiceTranscript('');
+                    }}
+                    className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs shadow"
+                  >
+                    Confirm & Update Case Diary
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

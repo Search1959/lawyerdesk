@@ -13,7 +13,6 @@ import { SecurityView } from './components/SecurityView';
 import { FinancialsView } from './components/FinancialsView';
 import { NewMatterModal } from './components/NewMatterModal';
 import { LandingPage } from './components/LandingPage';
-import { Footer } from './components/Footer';
 import { LoginPage } from './components/LoginPage';
 import { HelpCenterView } from './components/HelpCenterView';
 import { AccountManagerModal } from './components/AccountManagerModal';
@@ -709,9 +708,6 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               onAddNewInvoice={handleAddNewInvoice}
             />
           )}
-
-          {/* Footer for workspace */}
-          <Footer />
         </main>
       </div>
 

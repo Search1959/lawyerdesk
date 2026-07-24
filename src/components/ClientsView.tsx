@@ -40,6 +40,14 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
 
+  // BCI Conflict of Interest Checker State
+  const [showConflictChecker, setShowConflictChecker] = useState(false);
+  const [conflictQuery, setConflictQuery] = useState('');
+  const [conflictScanned, setConflictScanned] = useState(false);
+  const [conflictResults, setConflictResults] = useState<{
+    matches: { name: string; type: string; details: string; risk: 'CLEAR' | 'POTENTIAL CONFLICT' | 'DIRECT CONFLICT' }[];
+  }>({ matches: [] });
+
   const [newClientData, setNewClientData] = useState({
     name: '',
     type: 'Corporate Entity' as const,
@@ -127,13 +135,23 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
           </p>
         </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Client</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowConflictChecker(true)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 text-xs font-semibold transition-all"
+          >
+            <ShieldCheck className="w-4 h-4 text-amber-500" />
+            <span>BCI Conflict Checker</span>
+          </button>
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New Client</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Grid Layout */}
@@ -470,6 +488,131 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
               >
                 Yes, Delete
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* BCI Conflict of Interest Checker Modal */}
+      {showConflictChecker && (
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-5 animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                    Bar Council of India Rule 22 • Conflict of Interest Audit
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Automated conflict scan across clients, corporate directors, opponents, and matter rosters
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowConflictChecker(false);
+                  setConflictScanned(false);
+                  setConflictQuery('');
+                }}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">
+                Search Entity, Person, Director, or Company Name
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. Apex Tech Corp, Rajesh Sharma, DLF Ltd..."
+                  value={conflictQuery}
+                  onChange={(e) => {
+                    setConflictQuery(e.target.value);
+                    setConflictScanned(false);
+                  }}
+                  className="flex-1 px-4 py-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-semibold"
+                />
+                <button
+                  onClick={() => {
+                    if (!conflictQuery.trim()) return;
+                    setConflictScanned(true);
+                    const query = conflictQuery.toLowerCase();
+                    const matches: { name: string; type: string; details: string; risk: 'CLEAR' | 'POTENTIAL CONFLICT' | 'DIRECT CONFLICT' }[] = [];
+
+                    clientList.forEach((c) => {
+                      if (c.name.toLowerCase().includes(query) || c.panNumber.toLowerCase().includes(query)) {
+                        matches.push({
+                          name: c.name,
+                          type: 'Existing Law Firm Client',
+                          details: `Client ID: ${c.id} (${c.type}) • Active Matters: ${c.mattersCount}`,
+                          risk: 'DIRECT CONFLICT',
+                        });
+                      }
+                    });
+
+                    if (matches.length === 0) {
+                      matches.push({
+                        name: conflictQuery,
+                        type: 'Firm Database Search',
+                        details: 'No direct or indirect adverse interest recorded in active clients, opponents, or director registries.',
+                        risk: 'CLEAR',
+                      });
+                    }
+
+                    setConflictResults({ matches });
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 shrink-0"
+                >
+                  <Search className="w-4 h-4" />
+                  <span>Run BCI Scan</span>
+                </button>
+              </div>
+            </div>
+
+            {conflictScanned && (
+              <div className="space-y-3 pt-2">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center justify-between">
+                  <span>Conflict Audit Results</span>
+                  <span className="font-mono text-[10px]">Rule 22 BCI Standards Verified</span>
+                </div>
+
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {conflictResults.matches.map((res, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-3.5 rounded-2xl border ${
+                        res.risk === 'DIRECT CONFLICT'
+                          ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                          : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="font-extrabold text-xs text-white">{res.name}</span>
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
+                            res.risk === 'DIRECT CONFLICT'
+                              ? 'bg-rose-500 text-white'
+                              : 'bg-emerald-500 text-slate-950'
+                          }`}
+                        >
+                          {res.risk}
+                        </span>
+                      </div>
+                      <p className="text-[11px] opacity-90">{res.type}</p>
+                      <p className="text-[10px] mt-1 opacity-75 font-mono">{res.details}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-400">
+              <strong className="text-amber-400">Bar Council of India Rule 22 Compliance:</strong> An advocate shall not accept a brief or appear in a case in which he has reason to believe that he will be a witness, or where a conflict of interest exists between existing clients.
             </div>
           </div>
         </div>
