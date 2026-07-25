@@ -8,6 +8,7 @@ import {
   AlertCircle,
   Download,
   Building,
+  Trash2,
 } from 'lucide-react';
 import { Invoice, Client, Matter } from '../types';
 
@@ -16,6 +17,7 @@ interface FinancialsViewProps {
   clients: Client[];
   matters: Matter[];
   onAddNewInvoice: (inv: Partial<Invoice>) => void;
+  onDeleteInvoice?: (invoiceId: string) => void;
 }
 
 export const FinancialsView: React.FC<FinancialsViewProps> = ({
@@ -23,6 +25,7 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
   clients,
   matters,
   onAddNewInvoice,
+  onDeleteInvoice,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [newInv, setNewInv] = useState({
@@ -150,8 +153,23 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
                 </div>
 
                 <div className="text-right flex flex-col md:items-end justify-between">
-                  <div className="text-base font-black text-slate-900 dark:text-white">
-                    ₹{inv.totalINR.toLocaleString('en-IN')}
+                  <div className="flex items-center gap-3">
+                    <div className="text-base font-black text-slate-900 dark:text-white">
+                      ₹{inv.totalINR.toLocaleString('en-IN')}
+                    </div>
+                    {onDeleteInvoice && (
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete invoice ${inv.invoiceNumber}?`)) {
+                            onDeleteInvoice(inv.id);
+                          }
+                        }}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all"
+                        title="Delete Invoice"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                   <div className="text-[11px] text-slate-400 font-mono">
                     Subtotal: ₹{inv.subtotalINR.toLocaleString('en-IN')} + GST: ₹{inv.gstINR.toLocaleString('en-IN')}

@@ -22,6 +22,7 @@ import {
   Sparkles,
   X,
   Volume2,
+  Trash2,
 } from 'lucide-react';
 import { Hearing, Matter, CourtType } from '../types';
 
@@ -29,12 +30,14 @@ interface HearingsViewProps {
   hearings: Hearing[];
   matters: Matter[];
   onAddNewHearing: (hearing: Partial<Hearing>) => void;
+  onDeleteHearing?: (hearingId: string) => void;
 }
 
 export const HearingsView: React.FC<HearingsViewProps> = ({
   hearings,
   matters,
   onAddNewHearing,
+  onDeleteHearing,
 }) => {
   const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
   const [currentYear, setCurrentYear] = useState<number>(2026);
@@ -408,13 +411,28 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                         <div><strong>Counsel:</strong> {hrg.assignedLawyerName}</div>
                       </div>
 
-                      <button
-                        onClick={() => handleSendWhatsapp(hrg.id)}
-                        className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all"
-                      >
-                        {isSent ? <CheckCircle2 className="w-3.5 h-3.5" /> : <MessageCircle className="w-3.5 h-3.5" />}
-                        <span>{isSent ? 'Reminders Dispatched!' : 'Send WhatsApp Alert'}</span>
-                      </button>
+                      <div className="flex items-center justify-between gap-2">
+                        <button
+                          onClick={() => handleSendWhatsapp(hrg.id)}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all"
+                        >
+                          {isSent ? <CheckCircle2 className="w-3.5 h-3.5" /> : <MessageCircle className="w-3.5 h-3.5" />}
+                          <span>{isSent ? 'Reminders Sent!' : 'WhatsApp Alert'}</span>
+                        </button>
+                        {onDeleteHearing && (
+                          <button
+                            onClick={() => {
+                              if (window.confirm('Delete this hearing entry?')) {
+                                onDeleteHearing(hrg.id);
+                              }
+                            }}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/60 transition-all"
+                            title="Delete Hearing"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -457,6 +475,20 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                       {isSent ? <CheckCircle2 className="w-3.5 h-3.5" /> : <MessageCircle className="w-3.5 h-3.5" />}
                       <span>{isSent ? 'WhatsApp Reminders Sent!' : 'Send WhatsApp Alert'}</span>
                     </button>
+
+                    {onDeleteHearing && (
+                      <button
+                        onClick={() => {
+                          if (window.confirm('Delete this hearing entry from Cause List?')) {
+                            onDeleteHearing(hrg.id);
+                          }
+                        }}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-all"
+                        title="Delete Hearing"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
 

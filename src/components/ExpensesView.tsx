@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
-import { Receipt, Search, Plus, Filter, FileText, CheckCircle, DollarSign, Calendar } from 'lucide-react';
+import { Receipt, Search, Plus, Filter, FileText, CheckCircle, DollarSign, Calendar, Trash2 } from 'lucide-react';
 import { Expense } from '../types';
 import { mockExpenses, mockMatters } from '../data/mockData';
+import { saveDocument, removeDocument } from '../lib/firebase';
 
 export const ExpensesView: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>(mockExpenses);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [showAddModal, setShowAddModal] = useState(false);
+
+  const handleDeleteExpense = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this expense record?')) {
+      try {
+        await removeDocument('expenses', id);
+      } catch (err) {
+        console.warn('Error deleting expense:', err);
+      }
+      setExpenses((prev) => prev.filter((e) => e.id !== id));
+    }
+  };
 
   const [newExp, setNewExp] = useState({
     matterId: mockMatters[0]?.id || '',
@@ -142,6 +154,7 @@ export const ExpensesView: React.FC = () => {
                 <th className="p-3">Date</th>
                 <th className="p-3">Amount</th>
                 <th className="p-3">Billing Status</th>
+                <th className="p-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
@@ -165,6 +178,15 @@ export const ExpensesView: React.FC = () => {
                     >
                       {e.status}
                     </span>
+                  </td>
+                  <td className="p-3 text-right">
+                    <button
+                      onClick={() => handleDeleteExpense(e.id)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all"
+                      title="Delete Expense"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </td>
                 </tr>
               ))}

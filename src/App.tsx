@@ -31,7 +31,7 @@ import { ManageTeamView } from './components/ManageTeamView';
 import { RemindersView } from './components/RemindersView';
 import { SettingsView } from './components/SettingsView';
 import { Lock, AlertCircle, Database, RefreshCw, X, Sparkles, Plus } from 'lucide-react';
-import { subscribeCollection, saveDocument } from './lib/firebase';
+import { subscribeCollection, saveDocument, removeDocument } from './lib/firebase';
 
 import {
   mockMatters,
@@ -119,15 +119,17 @@ export default function App() {
   const documents = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allDocuments.filter((d) => d.id.startsWith('doc-custom-')) : allDocuments)
     : allDocuments.filter((d) => {
+        if (d.id.startsWith('doc-custom-')) return true;
         const m = allMatters.find((item) => item.id === d.matterId);
-        return m ? m.firmId === currentUser.firmId : d.id.startsWith('doc-custom-');
+        return m ? m.firmId === currentUser.firmId : false;
       });
 
   const hearings = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allHearings.filter((h) => h.id.startsWith('hrg-custom-')) : allHearings)
     : allHearings.filter((h) => {
+        if (h.id.startsWith('hrg-custom-')) return true;
         const m = allMatters.find((item) => item.id === h.matterId);
-        return m ? m.firmId === currentUser.firmId : h.id.startsWith('hrg-custom-');
+        return m ? m.firmId === currentUser.firmId : false;
       });
 
   const clients = isDemoOrSystemAdmin
@@ -137,8 +139,9 @@ export default function App() {
   const invoices = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allInvoices.filter((i) => i.id.startsWith('inv-custom-')) : allInvoices)
     : allInvoices.filter((i) => {
+        if (i.id.startsWith('inv-custom-')) return true;
         const c = allClients.find((item) => item.id === i.clientId);
-        return c ? c.firmId === currentUser.firmId : i.id.startsWith('inv-custom-');
+        return c ? c.firmId === currentUser.firmId : false;
       });
 
   const appointments = isDemoOrSystemAdmin
@@ -148,8 +151,9 @@ export default function App() {
   const tasks = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allTasks.filter((t) => t.id.startsWith('task-custom-')) : allTasks)
     : allTasks.filter((t) => {
+        if (t.id.startsWith('task-custom-')) return true;
         const m = allMatters.find((item) => item.id === t.matterId);
-        return m ? m.firmId === currentUser.firmId : t.id.startsWith('task-custom-');
+        return m ? m.firmId === currentUser.firmId : false;
       });
 
   // Read-Only check helper
@@ -212,8 +216,6 @@ export default function App() {
     folderId?: string,
     folderName?: string
   ) => {
-    if (checkReadOnlyDemo('Upload Legal Document')) return;
-
     const targetM = matters.find((m) => m.id === matterId) || selectedMatter;
     const fileName = file ? file.name : `Scanned_Brief_${category.replace(/\s+/g, '_')}.pdf`;
     const prefix = 'doc-custom-';
@@ -231,7 +233,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
 
     const newDoc: Document = {
       id: `${prefix}${Date.now()}`,
-      matterId: targetM?.id || 'matter-1',
+      matterId: targetM?.id || matters[0]?.id || 'matter-1',
       matterTitle: targetM?.title || 'Legal Matter',
       fileName,
       fileSize: file ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : '3.8 MB',
@@ -239,7 +241,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       ocrStatus: 'Completed',
       pageCount: 14,
       category: category as any,
-      uploadedBy: currentUser.name,
+      uploadedBy: currentUser.name || 'Advocate',
       uploadedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
       folderId,
       folderName,
@@ -267,17 +269,53 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       ],
     };
 
-    await saveDocument('documents', newDoc);
+    try {
+      await saveDocument('documents', newDoc);
+    } catch (err) {
+      console.warn('Document firestore save error:', err);
+    }
+
     setAllDocuments((prev) => [newDoc, ...prev]);
 
     // Update document count in matter
     if (targetM) {
-      const updatedM = { ...targetM, documentsCount: targetM.documentsCount + 1 };
-      await saveDocument('matters', updatedM);
+      const updatedM = { ...targetM, documentsCount: (targetM.documentsCount || 0) + 1 };
+      try {
+        await saveDocument('matters', updatedM);
+      } catch (err) {
+        console.warn('Matter firestore save error:', err);
+      }
       setAllMatters((prev) =>
         prev.map((m) => (m.id === targetM.id ? updatedM : m))
       );
     }
+  };
+
+  const handleDeleteDocument = async (docId: string) => {
+    try {
+      await removeDocument('documents', docId);
+    } catch (err) {
+      console.warn('Error removing document:', err);
+    }
+    setAllDocuments((prev) => prev.filter((d) => d.id !== docId));
+  };
+
+  const handleDeleteInvoice = async (invId: string) => {
+    try {
+      await removeDocument('invoices', invId);
+    } catch (err) {
+      console.warn('Error removing invoice:', err);
+    }
+    setAllInvoices((prev) => prev.filter((i) => i.id !== invId));
+  };
+
+  const handleDeleteHearing = async (hrgId: string) => {
+    try {
+      await removeDocument('hearings', hrgId);
+    } catch (err) {
+      console.warn('Error removing hearing:', err);
+    }
+    setAllHearings((prev) => prev.filter((h) => h.id !== hrgId));
   };
 
   const handleAddNewHearing = async (hrg: Partial<Hearing>) => {
@@ -632,6 +670,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               selectedMatter={matters.find((m) => m.id === selectedMatter?.id) || selectedMatter || matters[0] || null}
               onSelectMatter={setSelectedMatter}
               onUploadDocument={handleUploadDocument}
+              onDeleteDocument={handleDeleteDocument}
             />
           )}
 
@@ -657,7 +696,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           )}
 
           {activeTab === 'hearings' && (
-            <HearingsView hearings={hearings} matters={matters} onAddNewHearing={handleAddNewHearing} />
+            <HearingsView hearings={hearings} matters={matters} onAddNewHearing={handleAddNewHearing} onDeleteHearing={handleDeleteHearing} />
           )}
 
           {activeTab === 'help' && <HelpCenterView />}
@@ -717,6 +756,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               clients={clients}
               matters={matters}
               onAddNewInvoice={handleAddNewInvoice}
+              onDeleteInvoice={handleDeleteInvoice}
             />
           )}
         </main>

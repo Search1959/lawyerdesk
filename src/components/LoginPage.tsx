@@ -241,47 +241,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               </span>
             </div>
 
-            {/* Mode Switcher Tabs */}
-            <div className="flex bg-slate-950 p-1 rounded-2xl border border-slate-800 text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode('signin');
-                  setErrorMsg('');
-                  setSuccessMsg('');
-                }}
-                className={`flex-1 py-2 rounded-xl transition-all ${
-                  authMode === 'signin'
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode('signup');
-                  setErrorMsg('');
-                  setSuccessMsg('');
-                }}
-                className={`flex-1 py-2 rounded-xl transition-all ${
-                  authMode === 'signup'
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Create New Account
-              </button>
+            {/* Sign In Header */}
+            <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-2xl border border-slate-800 text-xs font-bold text-slate-300">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Authorized User Authentication</span>
+              </div>
+              <span className="text-[10px] text-slate-500 font-semibold">Admin Provisioned Accounts</span>
             </div>
 
             <h1 className="text-2xl font-black text-white pt-1">
-              {authMode === 'signin' ? 'Sign in to Legal OS' : 'Create Your LawyerDesk AI Account'}
+              Sign in to Legal OS
             </h1>
             <p className="text-xs text-slate-400">
-              {authMode === 'signin'
-                ? 'Access grounded AI case search, daily cause lists, e-filing OCR, and GST billing.'
-                : 'Register your advocate account or law firm workspace with encrypted password security.'}
+              Access grounded AI case search, daily cause lists, e-filing OCR, and GST billing. Account creation is managed by the System Administrator for Law Firms & Advocates.
             </p>
           </div>
 
@@ -300,22 +273,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           )}
 
           <form onSubmit={handleFormSubmit} className="space-y-4">
-            {authMode === 'signup' && (
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-indigo-400" /> Full Name / Advocate Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Adv. Rajesh Sharma"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
-                />
-              </div>
-            )}
-
             <div>
               <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-indigo-400" /> Email Address *
@@ -330,78 +287,31 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <Key className="w-3.5 h-3.5 text-indigo-400" /> Password *
-                  </span>
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono transition-colors pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {authMode === 'signup' ? (
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <Lock className="w-3.5 h-3.5 text-indigo-400" /> Confirm Password *
-                    </span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      required
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="••••••••••••"
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono transition-colors pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200"
-                    >
-                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-end text-[10px] text-slate-500 p-2 font-mono">
-                  AES-256 Cloud Session Encrypted
-                </div>
-              )}
-            </div>
-
-            {authMode === 'signup' && (
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <BadgeCheck className="w-3.5 h-3.5 text-indigo-400" /> Bar Council Registration Number (Optional)
-                </label>
+            <div>
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Key className="w-3.5 h-3.5 text-indigo-400" /> Password *
+                </span>
+                <span className="text-[10px] text-slate-500 font-mono">AES-256 Cloud Session Encrypted</span>
+              </label>
+              <div className="relative">
                 <input
-                  type="text"
-                  value={barRegNo}
-                  onChange={(e) => setBarRegNo(e.target.value)}
-                  placeholder="e.g. D/1984/2021"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono transition-colors"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono transition-colors pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
-            )}
+            </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
@@ -429,19 +339,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               {isLoggingIn ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>
-                    {authMode === 'signup'
-                      ? 'Creating New Account & Vault...'
-                      : 'Authenticating System Session...'}
-                  </span>
+                  <span>Authenticating System Session...</span>
                 </>
               ) : (
                 <>
-                  <span>
-                    {authMode === 'signup'
-                      ? `Create Account & Launch Workspace (${selectedRole})`
-                      : `Sign In as ${selectedRole}`}
-                  </span>
+                  <span>Sign In as {selectedRole}</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

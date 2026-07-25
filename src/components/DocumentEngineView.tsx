@@ -23,6 +23,7 @@ import {
   Plus,
   Tag,
   Grid,
+  Trash2,
 } from 'lucide-react';
 import { Document, Matter } from '../types';
 
@@ -47,6 +48,7 @@ interface DocumentEngineViewProps {
     folderId?: string,
     folderName?: string
   ) => void;
+  onDeleteDocument?: (docId: string) => void;
 }
 
 export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
@@ -55,6 +57,7 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
   selectedMatter,
   onSelectMatter,
   onUploadDocument,
+  onDeleteDocument,
 }) => {
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(documents[0] || null);
   const [selectedMatterId, setSelectedMatterId] = useState<string>(
@@ -68,6 +71,7 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [cameraActive, setCameraActive] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
+  const [uploadSuccessBanner, setUploadSuccessBanner] = useState<string | null>(null);
 
   // Folder System State
   const [folders, setFolders] = useState<CustomFolder[]>([
@@ -226,6 +230,13 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
         setIsProcessing(false);
         setUploadBatch(null);
         setProcessingFileName('');
+        // Reset filters so newly uploaded files are immediately visible in Processed Vault
+        setSelectedFolderId('all');
+        setMatterFilterMode('all');
+        setSearchFilter('');
+        setUploadSuccessBanner(
+          `✅ Successfully uploaded and OCR-indexed ${total} file(s) into the Processed Vault!`
+        );
         return;
       }
 
@@ -668,7 +679,25 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
                           <span>{doc.folderName || 'General Vault'}</span>
                         </span>
                       </div>
-                      <span>{doc.fileSize}</span>
+                      <div className="flex items-center gap-2">
+                        <span>{doc.fileSize}</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (window.confirm(`Delete document "${doc.fileName}"?`)) {
+                              if (onDeleteDocument) onDeleteDocument(doc.id);
+                              if (selectedDoc?.id === doc.id) {
+                                setSelectedDoc(filteredDocs.find((d) => d.id !== doc.id) || null);
+                              }
+                            }
+                          }}
+                          className="p-1 rounded hover:bg-rose-100 dark:hover:bg-rose-950 text-slate-400 hover:text-rose-600 transition-colors"
+                          title="Delete Document"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -723,6 +752,20 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? 'Copied' : 'Copy Text'}</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    if (window.confirm(`Delete document "${selectedDoc.fileName}"?`)) {
+                      if (onDeleteDocument) onDeleteDocument(selectedDoc.id);
+                      setSelectedDoc(filteredDocs.find((d) => d.id !== selectedDoc.id) || null);
+                    }
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-semibold hover:bg-rose-100"
+                  title="Delete document"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete</span>
                 </button>
               </div>
             </div>

@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
-import { Bell, Clock, AlertTriangle, Search, Plus, CheckCircle, ShieldAlert } from 'lucide-react';
+import { Bell, Clock, AlertTriangle, Search, Plus, CheckCircle, ShieldAlert, Trash2 } from 'lucide-react';
 import { Reminder } from '../types';
 import { mockReminders, mockMatters } from '../data/mockData';
+import { saveDocument, removeDocument } from '../lib/firebase';
 
 export const RemindersView: React.FC = () => {
   const [reminders, setReminders] = useState<Reminder[]>(mockReminders);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+
+  const handleDeleteReminder = async (id: string) => {
+    if (window.confirm('Delete this deadline reminder?')) {
+      try {
+        await removeDocument('reminders', id);
+      } catch (err) {
+        console.warn('Error removing reminder:', err);
+      }
+      setReminders((prev) => prev.filter((r) => r.id !== id));
+    }
+  };
 
   const [newRem, setNewRem] = useState({
     matterId: mockMatters[0]?.id || '',
@@ -136,6 +148,14 @@ export const RemindersView: React.FC = () => {
                 }`}
               >
                 {r.status === 'Completed' ? 'Mark Pending' : 'Mark Done'}
+              </button>
+
+              <button
+                onClick={() => handleDeleteReminder(r.id)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-all"
+                title="Delete Deadline Reminder"
+              >
+                <Trash2 className="w-4 h-4" />
               </button>
             </div>
           </div>
