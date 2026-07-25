@@ -1,14 +1,26 @@
 export type UserRole =
+  | 'System Owner'
+  | 'System Administrator'
   | 'Super Admin'
+  | 'Demo User'
+  | 'Law Firm'
   | 'Firm Admin'
+  | 'Senior Advocate'
   | 'Senior Lawyer'
+  | 'Associate Advocate'
   | 'Associate'
+  | 'Junior Advocate'
   | 'Junior'
+  | 'Accounts Staff'
+  | 'Accounts'
+  | 'Office Staff'
   | 'Staff'
   | 'Reception'
-  | 'Accounts'
+  | 'Client Portal User'
   | 'Client'
   | 'External Counsel';
+
+export type UserStatus = 'Active' | 'Inactive' | 'Deleted' | 'Suspended' | 'Locked';
 
 export interface LawFirm {
   id: string;
@@ -21,6 +33,12 @@ export interface LawFirm {
   branches: Branch[];
   departments: Department[];
   createdAt: string;
+  updatedAt?: string;
+  status?: 'Active' | 'Suspended' | 'Terminated';
+  is_active?: boolean;
+  is_deleted?: boolean;
+  deleted_at?: string;
+  deleted_by?: string;
 }
 
 export interface Branch {
@@ -51,6 +69,75 @@ export interface User {
   barCouncilRegNo?: string;
   permissions: string[];
   isDemoUser?: boolean;
+  status?: UserStatus;
+  is_active?: boolean;
+  is_deleted?: boolean;
+  deleted_at?: string;
+  deleted_by?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  lastLoginAt?: string;
+  lastLoginIp?: string;
+  failedLoginAttempts?: number;
+  lockoutUntil?: string;
+  passwordExpired?: boolean;
+  twoFactorEnabled?: boolean;
+  clientId?: string; // For Client Portal Users
+}
+
+export interface UserSession {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userRole: UserRole;
+  firmId: string;
+  loginTime: string;
+  logoutTime?: string;
+  ipAddress: string;
+  browser: string;
+  os: string;
+  device: string;
+  location?: string;
+  status: 'Active' | 'Terminated' | 'Expired';
+  tokenHash?: string;
+}
+
+export type AuditEventType =
+  | 'LOGIN_SUCCESS'
+  | 'LOGIN_FAILED'
+  | 'LOGOUT'
+  | 'USER_CREATED'
+  | 'USER_UPDATED'
+  | 'USER_DEACTIVATED'
+  | 'USER_DELETED'
+  | 'PASSWORD_RESET'
+  | 'ROLE_CHANGED'
+  | 'PERMISSION_CHANGED'
+  | 'FIRM_CREATED'
+  | 'FIRM_SUSPENDED'
+  | 'DOCUMENT_UPLOADED'
+  | 'SESSION_TERMINATED';
+
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  eventType?: AuditEventType;
+  performedBy?: string;
+  performedByName?: string;
+  userId?: string;
+  userName?: string;
+  userRole?: UserRole;
+  action?: string;
+  resource?: string;
+  firmId?: string;
+  targetUserId?: string;
+  targetUserName?: string;
+  ipAddress?: string;
+  details: string;
+  status?: 'SUCCESS' | 'WARNING' | 'FAILED';
 }
 
 export interface ClientFamilyMember {
@@ -240,18 +327,6 @@ export interface Task {
   dueDate: string;
   assignedTo: string;
   completed: boolean;
-}
-
-export interface AuditLog {
-  id: string;
-  timestamp: string;
-  userId: string;
-  userName: string;
-  userRole: UserRole;
-  action: string;
-  resource: string;
-  ipAddress: string;
-  details: string;
 }
 
 export interface Citation {

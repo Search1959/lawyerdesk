@@ -261,6 +261,7 @@ STATEMENT OF FACTS & EVIDENCE ANNEXURE:
   auditLogsStore.unshift({
     id: `log-${Date.now()}`,
     timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+    eventType: 'DOCUMENT_UPLOADED',
     userId: 'usr-1',
     userName: 'Adv. Rajeshwar V. Sharma',
     userRole: 'Senior Lawyer',
@@ -268,6 +269,7 @@ STATEMENT OF FACTS & EVIDENCE ANNEXURE:
     resource: fileName,
     ipAddress: '103.22.180.42',
     details: `Processed via PaddleOCR Engine. Extracted ${newDoc.pageCount} pages into ${matter.caseNumber}.`,
+    status: 'SUCCESS',
   });
 
   res.json(newDoc);

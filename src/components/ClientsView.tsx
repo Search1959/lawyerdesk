@@ -15,10 +15,15 @@ import {
   Edit3,
   Trash2,
   Eye,
+  EyeOff,
+  Key,
+  Lock,
+  RefreshCw,
   X,
 } from 'lucide-react';
-import { Client } from '../types';
+import { Client, User } from '../types';
 import { saveDocument, removeDocument } from '../lib/firebase';
+import { mockUsers } from '../data/mockData';
 
 interface ClientsViewProps {
   clients: Client[];
@@ -48,6 +53,10 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
     matches: { name: string; type: string; details: string; risk: 'CLEAR' | 'POTENTIAL CONFLICT' | 'DIRECT CONFLICT' }[];
   }>({ matches: [] });
 
+  const [provisionAccount, setProvisionAccount] = useState(true);
+  const [clientPassword, setClientPassword] = useState('Client@123');
+  const [showPassword, setShowPassword] = useState(false);
+
   const [newClientData, setNewClientData] = useState({
     name: '',
     type: 'Corporate Entity' as const,
@@ -65,18 +74,18 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
       c.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     const created: Client = {
       id: `client-${Date.now()}`,
       firmId: 'firm-1',
       name: newClientData.name,
       type: newClientData.type,
-      email: newClientData.email,
-      phone: newClientData.phone,
+      email: newClientData.email || `${newClientData.name.toLowerCase().replace(/[^a-z0-9]/g, '')}@client.com`,
+      phone: newClientData.phone || '+91 98000 00000',
       panNumber: newClientData.panNumber,
       gstin: newClientData.gstin,
-      address: newClientData.address,
+      address: newClientData.address || 'Connaught Place, New Delhi',
       kycVerified: true,
       mattersCount: 0,
       totalBilledINR: 0,
@@ -84,9 +93,30 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
       createdAt: new Date().toISOString().split('T')[0],
       familyMembers: [],
     };
+
+    if (provisionAccount) {
+      const clientUserEmail = created.email;
+      const portalUser: User = {
+        id: `usr-client-${Date.now()}`,
+        name: created.name,
+        email: clientUserEmail,
+        role: 'Client',
+        firmId: 'firm-1',
+        branchId: 'branch-1',
+        phone: created.phone,
+        permissions: ['view_own_matters', 'view_invoices', 'make_payments'],
+        status: 'Active',
+        is_active: true,
+        is_deleted: false,
+        createdAt: new Date().toISOString(),
+      };
+      await saveDocument('users', portalUser);
+      mockUsers.unshift(portalUser);
+    }
+
     setClientList([created, ...clientList]);
     setSelectedClient(created);
-    onAddNewClient(newClientData);
+    onAddNewClient(created);
     setShowModal(false);
     setNewClientData({
       name: '',
@@ -287,78 +317,202 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
 
       {/* New Client Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Onboard New Client</h2>
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Users className="w-5 h-5 text-indigo-500" />
+                Onboard New Client
+              </h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
             <form onSubmit={handleCreate} className="space-y-3 text-xs">
               <div>
-                <label className="block font-bold mb-1">Client Name / Entity Name</label>
+                <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">
+                  Client Name / Corporate Entity Name *
+                </label>
                 <input
                   type="text"
                   required
                   value={newClientData.name}
                   onChange={(e) => setNewClientData({ ...newClientData, name: e.target.value })}
-                  className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border text-slate-900 dark:text-white"
+                  placeholder="e.g. Acme Legal Solutions Pvt Ltd or Adv. Rajeshwar"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
-              <div>
-                <label className="block font-bold mb-1">Type</label>
-                <select
-                  value={newClientData.type}
-                  onChange={(e) => setNewClientData({ ...newClientData, type: e.target.value as any })}
-                  className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border text-slate-900 dark:text-white"
-                >
-                  <option value="Corporate Entity">Corporate Entity</option>
-                  <option value="Individual">Individual</option>
-                  <option value="Partnership Firm">Partnership Firm</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold mb-1">PAN Number</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Entity Type *</label>
+                  <select
+                    value={newClientData.type}
+                    onChange={(e) => setNewClientData({ ...newClientData, type: e.target.value as any })}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="Corporate Entity">Corporate Entity (Pvt Ltd / Ltd / MNC)</option>
+                    <option value="Individual">Individual Client / Sole Litigant</option>
+                    <option value="Law Firm / Practice Chamber">Law Firm / Practice Chamber</option>
+                    <option value="Advocate / Counsel">Advocate / Independent Counsel</option>
+                    <option value="Partnership Firm">Partnership Firm / LLP</option>
+                    <option value="Government / PSU">Government Body / PSU Authority</option>
+                    <option value="Trust / NGO">Trust / Society / NGO</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">PAN Number *</label>
                   <input
                     type="text"
                     required
                     value={newClientData.panNumber}
-                    onChange={(e) => setNewClientData({ ...newClientData, panNumber: e.target.value })}
-                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold mb-1">GSTIN</label>
-                  <input
-                    type="text"
-                    value={newClientData.gstin}
-                    onChange={(e) => setNewClientData({ ...newClientData, gstin: e.target.value })}
-                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border font-mono"
+                    onChange={(e) => setNewClientData({ ...newClientData, panNumber: e.target.value.toUpperCase() })}
+                    placeholder="ABCDE1234F"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    value={newClientData.email}
+                    onChange={(e) => setNewClientData({ ...newClientData, email: e.target.value })}
+                    placeholder="client@company.com"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Contact Phone</label>
+                  <input
+                    type="text"
+                    value={newClientData.phone}
+                    onChange={(e) => setNewClientData({ ...newClientData, phone: e.target.value })}
+                    placeholder="+91 98000 00000"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">GSTIN / CIN</label>
+                  <input
+                    type="text"
+                    value={newClientData.gstin}
+                    onChange={(e) => setNewClientData({ ...newClientData, gstin: e.target.value.toUpperCase() })}
+                    placeholder="07AAAAA0000A1Z5"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Office / Reg. Address</label>
+                  <input
+                    type="text"
+                    value={newClientData.address}
+                    onChange={(e) => setNewClientData({ ...newClientData, address: e.target.value })}
+                    placeholder="Barakhamba Road, New Delhi"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              {/* Client Portal Provision Option */}
+              <div className="p-3.5 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 space-y-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={provisionAccount}
+                    onChange={(e) => setProvisionAccount(e.target.checked)}
+                    className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                  />
+                  <span className="font-bold text-indigo-900 dark:text-indigo-200 text-xs flex items-center gap-1.5">
+                    <Lock className="w-3.5 h-3.5 text-indigo-500" />
+                    Provision Client Portal Login Account
+                  </span>
+                </label>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-tight">
+                  Creates an isolated Client User account with permissions to log in, view court matters, hearing dates, and invoices.
+                </p>
+
+                {provisionAccount && (
+                  <div className="pt-2 border-t border-indigo-200/60 dark:border-indigo-800/40 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="block font-bold text-slate-800 dark:text-indigo-200 text-xs">
+                        Portal Login Password *
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const randPass = 'Client#' + Math.floor(1000 + Math.random() * 9000) + '!';
+                          setClientPassword(randPass);
+                        }}
+                        className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-medium"
+                      >
+                        <RefreshCw className="w-3 h-3" /> Auto-Generate
+                      </button>
+                    </div>
+
+                    <div className="relative">
+                      <Key className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        required={provisionAccount}
+                        value={clientPassword}
+                        onChange={(e) => setClientPassword(e.target.value)}
+                        placeholder="e.g. Client@123"
+                        className="w-full pl-9 pr-10 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      Share these credentials (<span className="font-mono text-indigo-600 dark:text-indigo-300">{newClientData.email || 'client email'}</span> / <span className="font-mono text-indigo-600 dark:text-indigo-300">{clientPassword}</span>) with the client for portal login.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold"
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                 >
                   Cancel
                 </button>
-                <button type="submit" className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-bold">
-                  Save Client
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-colors shadow-md"
+                >
+                  Save & Onboard Client
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
       {/* Edit Client Modal */}
       {editingClient && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-              <h3 className="text-lg font-bold">Edit Client Profile</h3>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Edit Client Profile</h3>
               <button
                 onClick={() => setEditingClient(null)}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
@@ -369,23 +523,23 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
 
             <form onSubmit={handleUpdateClient} className="space-y-3 text-xs">
               <div>
-                <label className="block font-bold mb-1">Client / Entity Name</label>
+                <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Client / Entity Name *</label>
                 <input
                   type="text"
                   required
                   value={editingClient.name}
                   onChange={(e) => setEditingClient({ ...editingClient, name: e.target.value })}
-                  className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border text-slate-900 dark:text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold mb-1">Type</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Type</label>
                   <select
                     value={editingClient.type}
                     onChange={(e) => setEditingClient({ ...editingClient, type: e.target.value as any })}
-                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border text-slate-900 dark:text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="Corporate Entity">Corporate Entity</option>
                     <option value="Individual">Individual</option>
@@ -393,67 +547,67 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                   </select>
                 </div>
                 <div>
-                  <label className="block font-bold mb-1">PAN Number</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">PAN Number *</label>
                   <input
                     type="text"
                     required
                     value={editingClient.panNumber}
-                    onChange={(e) => setEditingClient({ ...editingClient, panNumber: e.target.value })}
-                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border font-mono"
+                    onChange={(e) => setEditingClient({ ...editingClient, panNumber: e.target.value.toUpperCase() })}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold mb-1">Email</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Email</label>
                   <input
                     type="email"
                     value={editingClient.email}
                     onChange={(e) => setEditingClient({ ...editingClient, email: e.target.value })}
-                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold mb-1">Phone</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Phone</label>
                   <input
                     type="text"
                     value={editingClient.phone}
                     onChange={(e) => setEditingClient({ ...editingClient, phone: e.target.value })}
-                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-bold mb-1">GSTIN / CIN</label>
+                <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">GSTIN / CIN</label>
                 <input
                   type="text"
                   value={editingClient.gstin || ''}
-                  onChange={(e) => setEditingClient({ ...editingClient, gstin: e.target.value })}
-                  className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border font-mono"
+                  onChange={(e) => setEditingClient({ ...editingClient, gstin: e.target.value.toUpperCase() })}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block font-bold mb-1">Address</label>
+                <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Address</label>
                 <input
                   type="text"
                   value={editingClient.address || ''}
                   onChange={(e) => setEditingClient({ ...editingClient, address: e.target.value })}
-                  className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setEditingClient(null)}
-                  className="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold"
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                 >
                   Cancel
                 </button>
-                <button type="submit" className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-bold">
+                <button type="submit" className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-colors shadow-md">
                   Save Changes
                 </button>
               </div>

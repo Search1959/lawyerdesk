@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   UserCheck,
   Building2,
-  Users,
   Briefcase,
   ArrowRight,
   Sparkles,
@@ -15,85 +14,102 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
-  User,
-  BadgeCheck,
+  User as UserIcon,
+  UserX,
+  X,
+  RefreshCw,
 } from 'lucide-react';
-import { UserRole } from '../types';
+import { User, UserRole } from '../types';
+import { mockUsers } from '../data/mockData';
+import { validateAccountStatus, validatePasswordPolicy } from '../lib/authEngine';
 
 interface LoginPageProps {
+  users?: User[];
   onLoginSuccess: (email: string, role: UserRole, name: string, isDemoUser?: boolean) => void;
   onBackToHome: () => void;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({
+  users = [],
   onLoginSuccess,
   onBackToHome,
 }) => {
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('apex7tech@gmail.com');
   const [password, setPassword] = useState('Search@1959');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [barRegNo, setBarRegNo] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('Super Admin');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('System Administrator');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // Quick Demo Preset Accounts requested by user
+  // Forgot Password Modal state
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetMsg, setResetMsg] = useState('');
+  const [resetError, setResetError] = useState('');
+
+  // Quick Preset Role Personas for easy evaluation
   const demoAccounts = [
     {
-      role: 'Super Admin' as UserRole,
-      title: 'Demo Evaluator (Read-Only)',
+      role: 'System Administrator' as UserRole,
+      title: 'System Admin (Full Owner)',
+      name: 'Apex Tech System Administrator',
+      email: 'apex7tech@gmail.com',
+      password: 'Search@1959',
+      desc: 'Full System Control, Create Law Firms & Advocate Accounts, Manage RBAC & Audit Logs',
+      badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+      icon: ShieldCheck,
+    },
+    {
+      role: 'Demo User' as UserRole,
+      title: 'Demo Evaluator (Sandbox)',
       name: 'Guest Evaluator (Read-Only)',
       email: 'demo.evaluator@lawyerdesk.in',
       password: 'Demo@2026',
-      desc: 'Read-Only evaluation mode with pre-populated demo cases & benchmark data',
+      desc: 'Isolated Demo Data Sandbox with pre-populated benchmark cases & hearings',
       badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
       icon: Eye,
       isDemoUser: true,
     },
     {
-      role: 'Super Admin' as UserRole,
-      title: 'System Admin',
-      name: 'Apex Tech System Administrator',
-      email: 'apex7tech@gmail.com',
-      password: 'Search@1959',
-      desc: 'Full System Control, Create Law Firms & Individual Lawyers, SQL Schema & RBAC',
-      badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
-      icon: ShieldCheck,
-    },
-    {
-      role: 'Firm Admin' as UserRole,
-      title: 'Law Firm Account',
+      role: 'Law Firm' as UserRole,
+      title: 'Law Firm Account (Clean)',
       name: 'Rajesh Sharma (Managing Partner)',
       email: 'firmadmin@apexlaw.in',
       password: 'Firm@123',
-      desc: 'Clean Firm Workspace (Zero Demo Data), Create Firm Lawyers & Staff',
+      desc: 'Clean Firm Workspace (Zero Demo Data), Create Firm Advocates & Staff',
       badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
       icon: Building2,
     },
     {
-      role: 'Senior Lawyer' as UserRole,
-      title: 'Individual Lawyer / Solo Practice',
+      role: 'Senior Advocate' as UserRole,
+      title: 'Senior Advocate / Solo Practice',
       name: 'Adv. Rajeshwar V. Sharma',
-      email: 'rajeshwar.sharma@lawyerdesk.in',
+      email: 'rvsharma@shardul-legal.in',
       password: 'Lawyer@123',
-      desc: 'Clean Solo Practice Workspace (Zero Demo Data), Create Practice Associates',
+      desc: 'Clean Solo Practice Workspace (Zero Demo Data), Assign Associate Lawyers',
       badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
       icon: Briefcase,
     },
     {
-      role: 'Client' as UserRole,
+      role: 'Client Portal User' as UserRole,
       title: 'Client Portal',
       name: 'Shri Sohanlal Jaiswal (Plaintiff)',
-      email: 'sohanlal.jaiswal@gmail.com',
+      email: 'siddharth.varma@apexinfra.com',
       password: 'Client@123',
-      desc: 'View Case Status, Hearing Dates, and Payment Receipts',
+      desc: 'Isolated Client View: Own Court Matters, Hearing Dates, and Receipts',
       badgeColor: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
-      icon: User,
+      icon: UserIcon,
+    },
+    {
+      role: 'Senior Advocate' as UserRole,
+      title: 'Deactivated User Test',
+      name: 'Adv. Suspended Ex-Partner',
+      email: 'deactivated.advocate@lawyerdesk.in',
+      password: 'Lawyer@123',
+      desc: 'Triggers Deactivation Security Lock: "Your account has been deactivated."',
+      badgeColor: 'bg-rose-950 text-rose-400 border-rose-800',
+      icon: UserX,
     },
   ];
 
@@ -102,6 +118,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     setPassword(acc.password);
     setSelectedRole(acc.role);
     setErrorMsg('');
+    setSuccessMsg('');
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -114,39 +131,62 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       return;
     }
 
-    if (authMode === 'signup') {
-      if (!fullName.trim()) {
-        setErrorMsg('Please enter your full name or advocate firm name.');
-        return;
-      }
-      if (password.length < 6) {
-        setErrorMsg('Password must be at least 6 characters long.');
-        return;
-      }
-      if (password !== confirmPassword) {
-        setErrorMsg('Passwords do not match. Please check your password fields.');
-        return;
-      }
-    }
-
     setIsLoggingIn(true);
 
     setTimeout(() => {
       setIsLoggingIn(false);
 
-      if (authMode === 'signup') {
-        const userName = fullName.trim();
-        onLoginSuccess(email, selectedRole, userName, false);
-      } else {
-        // Find matching preset name or default
-        const matched = demoAccounts.find((a) => a.email.toLowerCase() === email.toLowerCase());
-        const userName = matched ? matched.name : email.split('@')[0];
-        const role = matched ? matched.role : selectedRole;
-        const isDemoUser = matched?.isDemoUser || email.toLowerCase().includes('demo');
+      // Combine synced database users with mock users
+      const allUsers = [...users, ...mockUsers];
+      const matchedUser = allUsers.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
 
-        onLoginSuccess(email, role, userName, isDemoUser);
+      if (matchedUser) {
+        const statusValidation = validateAccountStatus(matchedUser);
+        if (!statusValidation.allowed) {
+          setErrorMsg(statusValidation.reason);
+          return;
+        }
+
+        const isDemoUser = matchedUser.isDemoUser || matchedUser.role === 'Demo User';
+        onLoginSuccess(matchedUser.email, matchedUser.role, matchedUser.name, isDemoUser);
+        return;
       }
-    }, 600);
+
+      // Check against preset list
+      const matchedPreset = demoAccounts.find((a) => a.email.toLowerCase() === email.trim().toLowerCase());
+
+      if (matchedPreset) {
+        if (matchedPreset.email === 'deactivated.advocate@lawyerdesk.in') {
+          setErrorMsg('Your account has been deactivated. Please contact the System Administrator.');
+          return;
+        }
+        const isDemoUser = matchedPreset.isDemoUser || matchedPreset.role === 'Demo User';
+        onLoginSuccess(matchedPreset.email, matchedPreset.role, matchedPreset.name, isDemoUser);
+        return;
+      }
+
+      // If user is not found in system admin provisioned accounts, block login!
+      setErrorMsg('Invalid email or password. Public self-registration is disabled. Account must be provisioned by System Administrator.');
+    }, 500);
+  };
+
+  const handleRequestPasswordReset = (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetMsg('');
+    setResetError('');
+
+    if (!resetEmail.trim()) {
+      setResetError('Please enter your registered email address.');
+      return;
+    }
+
+    const matched = mockUsers.find((u) => u.email.toLowerCase() === resetEmail.trim().toLowerCase());
+    if (matched && (matched.is_deleted || !matched.is_active)) {
+      setResetError('Your account has been deactivated. Please contact the System Administrator.');
+      return;
+    }
+
+    setResetMsg(`A secure password reset link has been dispatched to ${resetEmail}. Follow the instructions sent by System Admin.`);
   };
 
   return (
@@ -171,11 +211,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         <div className="lg:col-span-5 space-y-4 flex flex-col justify-between bg-slate-900/90 border border-slate-800 p-6 rounded-3xl shadow-2xl">
           <div>
             <div className="flex items-center gap-2 text-indigo-400 font-extrabold text-xs uppercase tracking-widest mb-1">
-              <Sparkles className="w-4 h-4" /> Quick Demo Role Switcher
+              <Sparkles className="w-4 h-4" /> Role & Account Switcher
             </div>
-            <h2 className="text-xl font-black text-white">Select User Persona</h2>
+            <h2 className="text-xl font-black text-white">Select Access Persona</h2>
             <p className="text-xs text-slate-400 mt-1">
-              Click any demo account below to auto-fill login credentials:
+              Click any account below to auto-fill credentials:
             </p>
           </div>
 
@@ -220,7 +260,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-400 flex items-center gap-2">
             <Lock className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>Pre-loaded System Admin: <strong>apex7tech@gmail.com</strong></span>
+            <span>System Administrator: <strong>apex7tech@gmail.com</strong></span>
           </div>
         </div>
 
@@ -237,7 +277,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 </span>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">
-                PORTAL AUTH
+                ENTERPRISE RBAC
               </span>
             </div>
 
@@ -245,23 +285,28 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-2xl border border-slate-800 text-xs font-bold text-slate-300">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Authorized User Authentication</span>
+                <span>Enterprise Authentication Portal</span>
               </div>
-              <span className="text-[10px] text-slate-500 font-semibold">Admin Provisioned Accounts</span>
+              <span className="text-[10px] text-amber-400 font-semibold bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/80">
+                Self-Registration Disabled
+              </span>
             </div>
 
             <h1 className="text-2xl font-black text-white pt-1">
-              Sign in to Legal OS
+              Sign in to LawyerDesk OS
             </h1>
             <p className="text-xs text-slate-400">
-              Access grounded AI case search, daily cause lists, e-filing OCR, and GST billing. Account creation is managed by the System Administrator for Law Firms & Advocates.
+              Access grounded AI case search, daily cause lists, e-filing OCR, and GST billing. Account creation is strictly provisioned by the System Administrator.
             </p>
           </div>
 
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{errorMsg}</span>
+            <div className="p-3.5 rounded-xl bg-rose-950/90 border border-rose-800 text-rose-200 text-xs flex items-start gap-2.5 shadow-lg">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <div className="min-w-0 flex-1">
+                <div className="font-bold text-rose-300 mb-0.5">Authentication Failure</div>
+                <div>{errorMsg}</div>
+              </div>
             </div>
           )}
 
@@ -292,7 +337,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 <span className="flex items-center gap-1.5">
                   <Key className="w-3.5 h-3.5 text-indigo-400" /> Password *
                 </span>
-                <span className="text-[10px] text-slate-500 font-mono">AES-256 Cloud Session Encrypted</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setResetEmail(email);
+                    setShowResetModal(true);
+                  }}
+                  className="text-[11px] text-indigo-400 hover:text-indigo-300 underline font-semibold"
+                >
+                  Forgot Password?
+                </button>
               </label>
               <div className="relative">
                 <input
@@ -315,19 +369,23 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
             <div>
               <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-indigo-400" /> Target Access Role
+                <UserCheck className="w-3.5 h-3.5 text-indigo-400" /> Assigned User Role
               </label>
               <select
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value as UserRole)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors"
               >
-                <option value="Senior Lawyer">Senior Lawyer / Lead Counsel</option>
-                <option value="Firm Admin">Firm Admin / Managing Partner</option>
-                <option value="Associate">Associate Lawyer</option>
-                <option value="Super Admin">System Admin (Super Admin)</option>
-                <option value="Staff">Staff / Paralegal</option>
-                <option value="Client">Client Portal Access</option>
+                <option value="System Administrator">System Administrator (System Owner)</option>
+                <option value="Demo User">Demo User (Sandbox Benchmark Mode)</option>
+                <option value="Law Firm">Law Firm (Managing Partner)</option>
+                <option value="Senior Advocate">Senior Advocate / Solo Practice</option>
+                <option value="Associate Advocate">Associate Advocate</option>
+                <option value="Junior Advocate">Junior Advocate</option>
+                <option value="Accounts Staff">Accounts Staff</option>
+                <option value="Office Staff">Office Staff / Paralegal</option>
+                <option value="Reception">Reception</option>
+                <option value="Client Portal User">Client Portal User</option>
               </select>
             </div>
 
@@ -355,6 +413,73 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 relative">
+            <button
+              onClick={() => setShowResetModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+              <RefreshCw className="w-4 h-4" /> Reset Account Password
+            </div>
+
+            <p className="text-xs text-slate-300">
+              Enter your registered advocate email address to request a secure password reset token from the System Administrator.
+            </p>
+
+            {resetError && (
+              <div className="p-3 rounded-xl bg-rose-950 border border-rose-800 text-rose-200 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{resetError}</span>
+              </div>
+            )}
+
+            {resetMsg && (
+              <div className="p-3 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                <span>{resetMsg}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleRequestPasswordReset} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  placeholder="advocate@lawyerdesk.in"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowResetModal(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700"
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500"
+                >
+                  Send Reset Link
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

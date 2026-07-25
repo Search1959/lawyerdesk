@@ -453,21 +453,44 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
   };
 
   const handleLoginSuccess = async (email: string, role: UserRole, name: string, isDemoUser?: boolean) => {
-    let targetFirm = firms[0];
     const existingUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
 
     if (existingUser) {
+      const isRootAdmin =
+        existingUser.role === 'System Administrator' ||
+        existingUser.role === 'System Owner' ||
+        existingUser.role === 'Super Admin' ||
+        existingUser.id === 'usr-sys-admin' ||
+        existingUser.email.toLowerCase() === 'apex7tech@gmail.com' ||
+        email.toLowerCase() === 'apex7tech@gmail.com';
+
+      if (isRootAdmin) {
+        existingUser.is_active = true;
+        existingUser.is_deleted = false;
+        existingUser.status = 'Active';
+      } else if (
+        existingUser.is_deleted ||
+        existingUser.status === 'Deleted' ||
+        !existingUser.is_active ||
+        existingUser.status === 'Inactive'
+      ) {
+        alert('Your account has been deactivated. Please contact the System Administrator.');
+        return;
+      }
+    }
+
+    let targetFirm = firms[0];
+    if (existingUser) {
       targetFirm = firms.find((f) => f.id === existingUser.firmId) || firms[0];
-    } else if (isDemoUser || email.toLowerCase().includes('demo') || role === 'Super Admin') {
+    } else if (isDemoUser || email.toLowerCase().includes('demo') || role === 'System Administrator') {
       targetFirm = firms[0];
     } else {
-      // Create isolated Law Firm account for new client logins (e.g. Deshna Global)
-      const isDeshna = email.toLowerCase().includes('deshna');
-      const firmName = isDeshna ? 'Deshna Global Law Firm' : `${name || 'New'} Law Chambers`;
+      // Create isolated Law Firm account for new provisioned client/lawyer logins
+      const firmName = `${name || 'New'} Law Chambers`;
       const newFirm: LawFirm = {
         id: `firm-${Date.now()}`,
         name: firmName,
-        code: isDeshna ? 'DGL' : 'NLC',
+        code: 'NLC',
         plan: 'Partner Suite',
         storageQuotaGB: 500,
         storageUsedGB: 0,
@@ -492,16 +515,19 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       targetFirm = newFirm;
     }
 
-    const newUser: User = {
-      id: existingUser?.id || `usr-${Date.now()}`,
+    const newUser: User = existingUser || {
+      id: `usr-${Date.now()}`,
       email,
       role,
-      name: name || existingUser?.name || 'Managing Advocate',
+      name: name || 'Managing Advocate',
       firmId: targetFirm.id,
       branchId: 'branch-1',
       phone: '+91 98000 00000',
       permissions: ['all_access'],
       isDemoUser: !!isDemoUser,
+      status: 'Active',
+      is_active: true,
+      is_deleted: false,
     };
 
     await saveDocument('users', newUser);
@@ -532,6 +558,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
   if (viewMode === 'login') {
     return (
       <LoginPage
+        users={users}
         onLoginSuccess={handleLoginSuccess}
         onBackToHome={() => setViewMode('landing')}
       />
@@ -703,7 +730,38 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
 
           {activeTab === 'database' && <DatabaseSchemaView />}
 
-          {activeTab === 'security' && <SecurityView auditLogs={auditLogs} />}
+          {activeTab === 'security' && (
+            <SecurityView
+              auditLogs={auditLogs}
+              currentUser={currentUser}
+              users={users}
+              firms={firms}
+              onUserUpdate={async (updatedUser) => {
+                await saveDocument('users', updatedUser);
+                setUsers((prev) => {
+                  const idx = prev.findIndex((u) => u.id === updatedUser.id || u.email.toLowerCase() === updatedUser.email.toLowerCase());
+                  if (idx >= 0) {
+                    const next = [...prev];
+                    next[idx] = updatedUser;
+                    return next;
+                  }
+                  return [updatedUser, ...prev];
+                });
+              }}
+              onFirmUpdate={async (updatedFirm) => {
+                await saveDocument('firms', updatedFirm);
+                setFirms((prev) => {
+                  const idx = prev.findIndex((f) => f.id === updatedFirm.id);
+                  if (idx >= 0) {
+                    const next = [...prev];
+                    next[idx] = updatedFirm;
+                    return next;
+                  }
+                  return [updatedFirm, ...prev];
+                });
+              }}
+            />
+          )}
 
           {activeTab === 'enquiries' && <EnquiriesView />}
           {activeTab === 'tasks' && <TasksView tasks={tasks} matters={matters} users={users} />}
