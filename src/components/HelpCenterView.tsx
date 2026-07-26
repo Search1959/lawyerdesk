@@ -29,6 +29,7 @@ import {
   Mail,
   AlertCircle,
   Lightbulb,
+  Printer,
 } from 'lucide-react';
 
 import {
@@ -53,6 +54,7 @@ import { WalkthroughTour } from './help/WalkthroughTour';
 import { SupportTicketModule } from './help/SupportTicketModule';
 import { HelpAdminPanel } from './help/HelpAdminPanel';
 import { HelpAnalyticsView } from './help/HelpAnalyticsView';
+import { ClientPrintableGuide } from './help/ClientPrintableGuide';
 
 export const HelpCenterView: React.FC = () => {
   // Navigation tabs state
@@ -78,6 +80,7 @@ export const HelpCenterView: React.FC = () => {
   const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(null);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
   const [isWalkthroughOpen, setIsWalkthroughOpen] = useState(false);
+  const [isPrintableGuideOpen, setIsPrintableGuideOpen] = useState(false);
   const [isVoiceListening, setIsVoiceListening] = useState(false);
 
   // Voice Search Handler
@@ -216,6 +219,14 @@ export const HelpCenterView: React.FC = () => {
             >
               <Sparkles className="w-4 h-4 animate-pulse" />
               <span>Interactive Tour</span>
+            </button>
+
+            <button
+              onClick={() => setIsPrintableGuideOpen(true)}
+              className="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-2 shadow-lg transition-all"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Print / Export Client Guide</span>
             </button>
           </div>
         </div>
@@ -545,6 +556,12 @@ export const HelpCenterView: React.FC = () => {
         onClose={() => setIsWalkthroughOpen(false)}
         currentLang={currentLang}
         onCompleteTour={() => alert('Congratulations! You completed the LawyerDesk AI Onboarding Tour.')}
+      />
+
+      {/* MODAL: Printable Client & Firm Practice Guide */}
+      <ClientPrintableGuide
+        isOpen={isPrintableGuideOpen}
+        onClose={() => setIsPrintableGuideOpen(false)}
       />
     </div>
   );
