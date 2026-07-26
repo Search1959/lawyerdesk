@@ -385,7 +385,7 @@ CRITICAL MANDATES:
   if (ai) {
     try {
       const response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
+        model: 'gemini-2.5-flash',
         contents: `${contextBlock}\n\nUSER QUESTION: ${query}`,
         config: {
           systemInstruction,
@@ -395,11 +395,7 @@ CRITICAL MANDATES:
 
       const aiText = response.text || '';
 
-      if (
-        aiText &&
-        !aiText.toLowerCase().includes('i could not find supporting information in this case') &&
-        !aiText.toLowerCase().includes('i could not find')
-      ) {
+      if (aiText && aiText.trim().length > 0) {
         return res.json({
           text: aiText,
           citations: citations.slice(0, 3),
@@ -645,7 +641,7 @@ ${contextText.substring(0, 4000)}`;
   if (ai) {
     try {
       const response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
+        model: 'gemini-2.5-flash',
         contents: prompt,
         config: { systemInstruction },
       });

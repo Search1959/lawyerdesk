@@ -25,6 +25,7 @@ import {
 import { UserRole, AuditLog, User, LawFirm, UserSession } from '../types';
 import { mockUsers, mockFirms } from '../data/mockData';
 import { mockSessionsStore, mockAuditLogsStore, validatePasswordPolicy } from '../lib/authEngine';
+import { saveDocument } from '../lib/firebase';
 
 interface SecurityViewProps {
   auditLogs?: AuditLog[];
@@ -305,12 +306,53 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
       return;
     }
 
+    const cleanNewEmail = newUserEmail.trim().toLowerCase();
+    const isDemoAccount = newUserRole === 'Demo User' || cleanNewEmail.includes('demo');
+    const isSysAdmin = newUserRole === 'System Administrator' || newUserRole === 'System Owner' || cleanNewEmail === 'apex7tech@gmail.com';
+
+    let userFirmId = newUserFirmId;
+    if ((userFirmId === 'firm-1' || !userFirmId) && !isDemoAccount && !isSysAdmin) {
+      userFirmId = `firm-${cleanNewEmail.split('@')[0].replace(/[^a-z0-9]/g, '') || Date.now()}`;
+      const existingF = firmsList.find((f) => f.id === userFirmId);
+      if (!existingF) {
+        const newF: LawFirm = {
+          id: userFirmId,
+          name: `${newUserName.trim() || 'Practice'} Law Chambers`,
+          code: 'PLC',
+          plan: 'Partner Suite',
+          storageQuotaGB: 500,
+          storageUsedGB: 0,
+          branches: [
+            {
+              id: `branch-${Date.now()}`,
+              firmId: userFirmId,
+              name: 'Main High Court Office',
+              city: 'New Delhi',
+              address: 'High Court Chamber Block, New Delhi',
+              isHeadquarters: true,
+            },
+          ],
+          departments: [
+            { id: 'dept-1', name: 'Commercial Litigation', code: 'COMM' },
+          ],
+          createdAt: new Date().toISOString().split('T')[0],
+          status: 'Active',
+          is_active: true,
+          is_deleted: false,
+        };
+        setFirmsList((prev) => [newF, ...prev]);
+        mockFirms.unshift(newF);
+        if (onFirmUpdate) onFirmUpdate(newF);
+        saveDocument('firms', newF).catch(() => {});
+      }
+    }
+
     const newUsr: User = {
       id: `usr-${Date.now()}`,
       name: newUserName.trim(),
-      email: newUserEmail.trim().toLowerCase(),
+      email: cleanNewEmail,
       role: newUserRole,
-      firmId: newUserFirmId,
+      firmId: userFirmId,
       branchId: `branch-${Date.now()}`,
       phone: newUserPhone,
       barCouncilRegNo: newUserBarReg,
@@ -327,6 +369,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
     if (onUserUpdate) {
       onUserUpdate(newUsr);
     }
+    saveDocument('users', newUsr).catch(() => {});
 
     const newAudit: AuditLog = {
       id: `audit-${Date.now()}`,
@@ -336,9 +379,9 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
       performedByName: currentUser?.name || 'System Administrator',
       targetUserId: newUsr.id,
       targetUserName: newUsr.name,
-      firmId: newUserFirmId,
+      firmId: userFirmId,
       ipAddress: '103.211.54.12',
-      details: `Provisioned account for ${newUsr.name} (${newUsr.role}) in firm ${newUserFirmId}`,
+      details: `Provisioned account for ${newUsr.name} (${newUsr.role}) with clean workspace firm ${userFirmId}`,
       status: 'SUCCESS',
     };
     setLogsList((prev) => [newAudit, ...prev]);

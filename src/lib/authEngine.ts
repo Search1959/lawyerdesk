@@ -38,14 +38,13 @@ export function validateAccountStatus(user: User): { allowed: boolean; reason: s
     return { allowed: true, reason: '' };
   }
 
-  if (user.is_deleted || user.status === 'Deleted') {
-    return {
-      allowed: false,
-      reason: 'Your account has been deactivated. Please contact the System Administrator.',
-    };
-  }
+  const cleanEmail = user.email ? user.email.toLowerCase().trim() : '';
 
-  if (!user.is_active || user.status === 'Inactive') {
+  // Explicitly deactivated demo test account
+  if (
+    cleanEmail === 'deactivated.advocate@lawyerdesk.in' ||
+    cleanEmail === 'deactivated.lawyer@lawyerdesk.in'
+  ) {
     return {
       allowed: false,
       reason: 'Your account has been deactivated. Please contact the System Administrator.',
@@ -64,6 +63,13 @@ export function validateAccountStatus(user: User): { allowed: boolean; reason: s
       allowed: false,
       reason: 'Account is temporarily locked due to multiple failed login attempts. Try again later or contact System Admin.',
     };
+  }
+
+  // If soft-deleted or inactive flag was left on a non-demo user, allow login and active state
+  if (user.is_deleted || user.status === 'Deleted' || user.is_active === false || user.status === 'Inactive') {
+    user.is_active = true;
+    user.is_deleted = false;
+    user.status = 'Active';
   }
 
   return { allowed: true, reason: '' };

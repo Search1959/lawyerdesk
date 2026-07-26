@@ -205,9 +205,9 @@ export const mockUsers: User[] = [
     createdAt: '2023-01-01',
   },
   {
-    id: 'usr-deshna-deleted',
-    name: 'Adv. Deshna (Deactivated)',
-    email: 'deshna@gmail.com',
+    id: 'usr-deactivated-demo',
+    name: 'Adv. Test Deactivated',
+    email: 'deactivated.lawyer@lawyerdesk.in',
     role: 'Senior Advocate',
     firmId: 'firm-deshna',
     branchId: 'branch-1',

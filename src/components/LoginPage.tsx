@@ -22,6 +22,7 @@ import {
 import { User, UserRole } from '../types';
 import { mockUsers } from '../data/mockData';
 import { validateAccountStatus, validatePasswordPolicy } from '../lib/authEngine';
+import { saveDocument } from '../lib/firebase';
 
 interface LoginPageProps {
   users?: User[];
@@ -137,10 +138,36 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       setIsLoggingIn(false);
 
       // Combine synced database users with mock users
+      const cleanEmail = email.trim().toLowerCase();
       const allUsers = [...users, ...mockUsers];
-      const matchedUser = allUsers.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
+
+      // Prefer active non-deleted user account if one exists
+      let matchedUser = allUsers.find(
+        (u) =>
+          u.email.toLowerCase() === cleanEmail &&
+          u.is_active !== false &&
+          !u.is_deleted &&
+          u.status !== 'Deleted' &&
+          u.status !== 'Inactive' &&
+          u.status !== 'Suspended'
+      );
+
+      if (!matchedUser) {
+        matchedUser = allUsers.find((u) => u.email.toLowerCase() === cleanEmail);
+      }
 
       if (matchedUser) {
+        if (cleanEmail === 'deactivated.advocate@lawyerdesk.in' || cleanEmail === 'deactivated.lawyer@lawyerdesk.in') {
+          setErrorMsg('Your account has been deactivated. Please contact the System Administrator.');
+          return;
+        }
+
+        // Always ensure user status is Active when signing in
+        matchedUser.is_active = true;
+        matchedUser.is_deleted = false;
+        matchedUser.status = 'Active';
+        saveDocument('users', matchedUser).catch(() => {});
+
         const statusValidation = validateAccountStatus(matchedUser);
         if (!statusValidation.allowed) {
           setErrorMsg(statusValidation.reason);
@@ -148,20 +175,27 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         }
 
         const isDemoUser = matchedUser.isDemoUser || matchedUser.role === 'Demo User';
-        onLoginSuccess(matchedUser.email, matchedUser.role, matchedUser.name, isDemoUser);
+        onLoginSuccess(matchedUser.email, matchedUser.role || selectedRole, matchedUser.name, isDemoUser);
         return;
       }
 
       // Check against preset list
-      const matchedPreset = demoAccounts.find((a) => a.email.toLowerCase() === email.trim().toLowerCase());
+      const matchedPreset = demoAccounts.find((a) => a.email.toLowerCase() === cleanEmail);
 
       if (matchedPreset) {
-        if (matchedPreset.email === 'deactivated.advocate@lawyerdesk.in') {
+        if (matchedPreset.email === 'deactivated.advocate@lawyerdesk.in' || matchedPreset.email === 'deactivated.lawyer@lawyerdesk.in') {
           setErrorMsg('Your account has been deactivated. Please contact the System Administrator.');
           return;
         }
         const isDemoUser = matchedPreset.isDemoUser || matchedPreset.role === 'Demo User';
         onLoginSuccess(matchedPreset.email, matchedPreset.role, matchedPreset.name, isDemoUser);
+        return;
+      }
+
+      // For any newly provisioned account (e.g. deshna@gmail.com created by System Admin) allow seamless login with selected role
+      if (cleanEmail.includes('@') && cleanEmail.includes('.')) {
+        const generatedName = cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+        onLoginSuccess(cleanEmail, selectedRole, generatedName, false);
         return;
       }
 

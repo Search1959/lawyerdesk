@@ -47,9 +47,10 @@ import {
   mockAppointments,
   mockFirms,
   mockUsers,
+  mockMessages,
 } from './data/mockData';
 
-import { Matter, Document, Hearing, Client, Invoice, AuditLog, LawFirm, User, UserRole, NavTab, Appointment, Task } from './types';
+import { Matter, Document, Hearing, Client, Invoice, AuditLog, LawFirm, User, UserRole, NavTab, Appointment, Task, Message } from './types';
 
 export default function App() {
   const [viewMode, setViewMode] = useState<'app' | 'landing' | 'login'>('landing');
@@ -78,6 +79,7 @@ export default function App() {
   const [allInvoices, setAllInvoices] = useState<Invoice[]>(mockInvoices);
   const [allAppointments, setAllAppointments] = useState<Appointment[]>(mockAppointments);
   const [allTasks, setAllTasks] = useState<Task[]>(mockTasks);
+  const [allMessages, setAllMessages] = useState<Message[]>(mockMessages);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(mockAuditLogs);
 
   const [selectedMatter, setSelectedMatter] = useState<Matter>(mockMatters[0]);
@@ -91,6 +93,7 @@ export default function App() {
     const unsubInvoices = subscribeCollection<Invoice>('invoices', setAllInvoices, mockInvoices);
     const unsubApts = subscribeCollection<Appointment>('appointments', setAllAppointments, mockAppointments);
     const unsubTasks = subscribeCollection<Task>('tasks', setAllTasks, mockTasks);
+    const unsubMessages = subscribeCollection<Message>('messages', setAllMessages, mockMessages);
     const unsubFirms = subscribeCollection<LawFirm>('firms', setFirms, mockFirms);
     const unsubUsers = subscribeCollection<User>('users', setUsers, mockUsers);
 
@@ -102,58 +105,67 @@ export default function App() {
       unsubInvoices();
       unsubApts();
       unsubTasks();
+      unsubMessages();
       unsubFirms();
       unsubUsers();
     };
   }, []);
 
   // Check if current user has permission to access demo benchmark data
-  const isDemoOrSystemAdmin = (currentUser as any)?.isDemoUser || currentUser.role === 'Super Admin';
+  const DEMO_FIRM_ID = 'firm-1';
 
-  // Active dataset: ONLY Demo User and System Admin in Benchmark mode see demo benchmark data.
-  // Any other law firm account or user gets clean workspace filtered strictly by their firmId.
+  const isDemoOrSystemAdmin =
+    Boolean((currentUser as any)?.isDemoUser) ||
+    currentUser.role === 'Demo User' ||
+    ((currentUser.role === 'System Administrator' || currentUser.role === 'System Owner' || currentUser.email === 'apex7tech@gmail.com') && currentUser.firmId === DEMO_FIRM_ID);
+
+  // Active dataset: ONLY Demo User preset accounts OR System Admin in Benchmark mode see demo benchmark data.
+  // Any other law firm account or user gets clean workspace filtered strictly by their dedicated firmId.
   const matters = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allMatters.filter((m) => m.id.startsWith('matter-custom-')) : allMatters)
-    : allMatters.filter((m) => m.firmId === currentUser.firmId || m.id.startsWith('matter-custom-'));
+    : allMatters.filter((m) => m.firmId === currentUser.firmId && m.firmId !== DEMO_FIRM_ID);
 
   const documents = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allDocuments.filter((d) => d.id.startsWith('doc-custom-')) : allDocuments)
     : allDocuments.filter((d) => {
-        if (d.id.startsWith('doc-custom-')) return true;
         const m = allMatters.find((item) => item.id === d.matterId);
-        return m ? m.firmId === currentUser.firmId : false;
+        return m ? m.firmId === currentUser.firmId && m.firmId !== DEMO_FIRM_ID : (d as any).firmId === currentUser.firmId;
       });
 
   const hearings = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allHearings.filter((h) => h.id.startsWith('hrg-custom-')) : allHearings)
     : allHearings.filter((h) => {
-        if (h.id.startsWith('hrg-custom-')) return true;
         const m = allMatters.find((item) => item.id === h.matterId);
-        return m ? m.firmId === currentUser.firmId : false;
+        return m ? m.firmId === currentUser.firmId && m.firmId !== DEMO_FIRM_ID : (h as any).firmId === currentUser.firmId;
       });
 
   const clients = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allClients.filter((c) => c.id.startsWith('client-custom-')) : allClients)
-    : allClients.filter((c) => c.firmId === currentUser.firmId || c.id.startsWith('client-custom-'));
+    : allClients.filter((c) => c.firmId === currentUser.firmId && c.firmId !== DEMO_FIRM_ID);
 
   const invoices = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allInvoices.filter((i) => i.id.startsWith('inv-custom-')) : allInvoices)
     : allInvoices.filter((i) => {
-        if (i.id.startsWith('inv-custom-')) return true;
         const c = allClients.find((item) => item.id === i.clientId);
-        return c ? c.firmId === currentUser.firmId : false;
+        return c ? c.firmId === currentUser.firmId && c.firmId !== DEMO_FIRM_ID : (i as any).firmId === currentUser.firmId;
       });
 
   const appointments = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allAppointments.filter((a) => a.id.startsWith('apt-custom-')) : allAppointments)
-    : allAppointments.filter((a) => a.firmId === currentUser.firmId || a.id.startsWith('apt-custom-'));
+    : allAppointments.filter((a) => a.firmId === currentUser.firmId && a.firmId !== DEMO_FIRM_ID);
 
   const tasks = isDemoOrSystemAdmin
     ? (isZeroDemoDataMode ? allTasks.filter((t) => t.id.startsWith('task-custom-')) : allTasks)
     : allTasks.filter((t) => {
-        if (t.id.startsWith('task-custom-')) return true;
         const m = allMatters.find((item) => item.id === t.matterId);
-        return m ? m.firmId === currentUser.firmId : false;
+        return m ? m.firmId === currentUser.firmId && m.firmId !== DEMO_FIRM_ID : (t as any).firmId === currentUser.firmId;
+      });
+
+  const messages = isDemoOrSystemAdmin
+    ? (isZeroDemoDataMode ? allMessages.filter((msg) => msg.id.startsWith('msg-custom-')) : allMessages)
+    : allMessages.filter((msg) => {
+        const m = matters.find((item) => item.id === msg.matterId);
+        return m ? m.firmId === currentUser.firmId && m.firmId !== DEMO_FIRM_ID : (msg as any).firmId === currentUser.firmId;
       });
 
   // Read-Only check helper
@@ -427,17 +439,84 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
     setUsers((prev) => [...prev, newAdmin]);
   };
 
+  const handleSendMessage = async (msgData: Message) => {
+    if (checkReadOnlyDemo('Send Message')) return;
+    const newMsg: Message = {
+      ...msgData,
+      firmId: currentUser.firmId,
+    } as any;
+    await saveDocument('messages', newMsg);
+    setAllMessages((prev) => [...prev, newMsg]);
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    if (checkReadOnlyDemo('Delete Message')) return;
+    await removeDocument('messages', messageId);
+    setAllMessages((prev) => prev.filter((m) => m.id !== messageId));
+  };
+
+  const handleDeleteThread = async (matterId: string) => {
+    if (checkReadOnlyDemo('Delete Message Thread')) return;
+    const msgsToDelete = allMessages.filter((m) => m.matterId === matterId);
+    for (const m of msgsToDelete) {
+      await removeDocument('messages', m.id);
+    }
+    setAllMessages((prev) => prev.filter((m) => m.matterId !== matterId));
+  };
+
   const handleAddUser = async (userData: Partial<User>) => {
+    const userEmail = (userData.email || '').toLowerCase().trim();
+    const isDemoAccount = userData.role === 'Demo User' || userEmail.includes('demo');
+    const isSysAdmin = userData.role === 'System Administrator' || userData.role === 'System Owner' || userEmail === 'apex7tech@gmail.com';
+
+    let userFirmId = userData.firmId || currentUser.firmId || 'firm-1';
+    if (userFirmId === 'firm-1' && !isDemoAccount && !isSysAdmin) {
+      userFirmId = `firm-${userEmail.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '') || Date.now()}`;
+      const existingFirm = firms.find((f) => f.id === userFirmId);
+      if (!existingFirm) {
+        const newFirm: LawFirm = {
+          id: userFirmId,
+          name: `${userData.name || 'Practice'} Law Chambers`,
+          code: 'PLC',
+          plan: 'Partner Suite',
+          storageQuotaGB: 500,
+          storageUsedGB: 0,
+          branches: [
+            {
+              id: `branch-${Date.now()}`,
+              firmId: userFirmId,
+              name: 'Main Chamber',
+              city: 'New Delhi',
+              address: 'Law Chambers Complex',
+              isHeadquarters: true,
+            },
+          ],
+          departments: [
+            { id: 'dept-1', name: 'Litigation & Advisory', code: 'LIT' },
+          ],
+          createdAt: new Date().toISOString().split('T')[0],
+          status: 'Active',
+          is_active: true,
+          is_deleted: false,
+        };
+        await saveDocument('firms', newFirm);
+        setFirms((prev) => [...prev, newFirm]);
+      }
+    }
+
     const newU: User = {
       id: `usr-${Date.now()}`,
       name: userData.name || 'New Lawyer',
-      email: userData.email || 'lawyer@firm.in',
-      role: userData.role || 'Senior Lawyer',
-      firmId: userData.firmId || currentUser.firmId || 'firm-1',
+      email: userEmail,
+      role: userData.role || 'Senior Advocate',
+      firmId: userFirmId,
       branchId: 'branch-1',
       phone: userData.phone || '+91 98000 00000',
       barCouncilRegNo: userData.barCouncilRegNo || 'D/2026/001',
       permissions: ['matter_read', 'matter_write', 'ai_copilot'],
+      status: 'Active',
+      is_active: true,
+      is_deleted: false,
     };
 
     await saveDocument('users', newU);
@@ -453,42 +532,90 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
   };
 
   const handleLoginSuccess = async (email: string, role: UserRole, name: string, isDemoUser?: boolean) => {
-    const existingUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+    const cleanEmail = email.toLowerCase().trim();
+
+    // Prefer active non-deleted user account if one exists
+    let existingUser = users.find(
+      (u) =>
+        u.email.toLowerCase() === cleanEmail &&
+        u.is_active !== false &&
+        !u.is_deleted &&
+        u.status !== 'Deleted' &&
+        u.status !== 'Inactive' &&
+        u.status !== 'Suspended'
+    );
+
+    if (!existingUser) {
+      existingUser = users.find((u) => u.email.toLowerCase() === cleanEmail);
+    }
 
     if (existingUser) {
-      const isRootAdmin =
-        existingUser.role === 'System Administrator' ||
-        existingUser.role === 'System Owner' ||
-        existingUser.role === 'Super Admin' ||
-        existingUser.id === 'usr-sys-admin' ||
-        existingUser.email.toLowerCase() === 'apex7tech@gmail.com' ||
-        email.toLowerCase() === 'apex7tech@gmail.com';
-
-      if (isRootAdmin) {
-        existingUser.is_active = true;
-        existingUser.is_deleted = false;
-        existingUser.status = 'Active';
-      } else if (
-        existingUser.is_deleted ||
-        existingUser.status === 'Deleted' ||
-        !existingUser.is_active ||
-        existingUser.status === 'Inactive'
-      ) {
+      if (cleanEmail === 'deactivated.advocate@lawyerdesk.in' || cleanEmail === 'deactivated.lawyer@lawyerdesk.in') {
         alert('Your account has been deactivated. Please contact the System Administrator.');
         return;
       }
+      // Activate and ensure account is online
+      existingUser.is_active = true;
+      existingUser.is_deleted = false;
+      existingUser.status = 'Active';
+      if (role) {
+        existingUser.role = role;
+      }
     }
 
+    const isDemoAccount = isDemoUser || role === 'Demo User' || cleanEmail.includes('demo');
+    const isSysAdmin = role === 'System Administrator' || role === 'System Owner' || cleanEmail === 'apex7tech@gmail.com';
+
     let targetFirm = firms[0];
+
     if (existingUser) {
-      targetFirm = firms.find((f) => f.id === existingUser.firmId) || firms[0];
-    } else if (isDemoUser || email.toLowerCase().includes('demo') || role === 'System Administrator') {
+      // If user was previously assigned to benchmark firm-1 but is a real user account, migrate to isolated firm space
+      if (existingUser.firmId === 'firm-1' && !isDemoAccount && !isSysAdmin) {
+        const dedicatedFirmId = `firm-${cleanEmail.split('@')[0].replace(/[^a-z0-9]/g, '') || Date.now()}`;
+        let dedicatedFirm = firms.find((f) => f.id === dedicatedFirmId);
+        if (!dedicatedFirm) {
+          dedicatedFirm = {
+            id: dedicatedFirmId,
+            name: `${existingUser.name || name || 'Practice'} Law Chambers`,
+            code: 'PLC',
+            plan: 'Partner Suite',
+            storageQuotaGB: 500,
+            storageUsedGB: 0,
+            branches: [
+              {
+                id: `branch-${Date.now()}`,
+                firmId: dedicatedFirmId,
+                name: 'Head Office',
+                city: 'New Delhi',
+                address: 'Law Chambers, High Court Complex',
+                isHeadquarters: true,
+              },
+            ],
+            departments: [
+              { id: 'dept-1', name: 'Civil & Commercial Litigation', code: 'CIV' },
+            ],
+            createdAt: new Date().toISOString().split('T')[0],
+            status: 'Active',
+            is_active: true,
+            is_deleted: false,
+          };
+          await saveDocument('firms', dedicatedFirm);
+          setFirms((prev) => [...prev, dedicatedFirm!]);
+        }
+        existingUser.firmId = dedicatedFirmId;
+        await saveDocument('users', existingUser);
+        targetFirm = dedicatedFirm;
+      } else {
+        targetFirm = firms.find((f) => f.id === existingUser.firmId) || firms[0];
+      }
+    } else if (isDemoAccount || isSysAdmin) {
       targetFirm = firms[0];
     } else {
-      // Create isolated Law Firm account for new provisioned client/lawyer logins
+      // Create isolated Law Firm account with 0 demo data for new provisioned logins
+      const dedicatedFirmId = `firm-${cleanEmail.split('@')[0].replace(/[^a-z0-9]/g, '') || Date.now()}`;
       const firmName = `${name || 'New'} Law Chambers`;
       const newFirm: LawFirm = {
-        id: `firm-${Date.now()}`,
+        id: dedicatedFirmId,
         name: firmName,
         code: 'NLC',
         plan: 'Partner Suite',
@@ -497,7 +624,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         branches: [
           {
             id: 'branch-1',
-            firmId: `firm-${Date.now()}`,
+            firmId: dedicatedFirmId,
             name: 'Head Office',
             city: 'New Delhi',
             address: 'Law Chambers, High Court Complex',
@@ -509,6 +636,9 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           { id: 'dept-2', name: 'Corporate & M&A', code: 'CORP' },
         ],
         createdAt: new Date().toISOString().split('T')[0],
+        status: 'Active',
+        is_active: true,
+        is_deleted: false,
       };
       await saveDocument('firms', newFirm);
       setFirms((prev) => [...prev, newFirm]);
@@ -801,7 +931,17 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           )}
           {activeTab === 'outstanding' && <OutstandingBillingView invoices={invoices} />}
           {activeTab === 'expenses' && <ExpensesView />}
-          {activeTab === 'messages' && <MessagesView />}
+          {activeTab === 'messages' && (
+            <MessagesView
+              matters={matters}
+              currentUser={currentUser}
+              messages={messages}
+              onSendMessage={handleSendMessage}
+              onDeleteMessage={handleDeleteMessage}
+              onDeleteThread={handleDeleteThread}
+              onNavigateToCases={() => setActiveTab('matters')}
+            />
+          )}
           {activeTab === 'ecourt_tracker' && <ECourtTrackerView />}
           {activeTab === 'reports' && <ReportsView />}
           {activeTab === 'manage_team' && <ManageTeamView currentUser={currentUser} currentFirm={currentFirm} />}
