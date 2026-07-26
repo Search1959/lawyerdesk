@@ -868,6 +868,31 @@ app.get('/api/audit-logs', (req, res) => {
   res.json(auditLogsStore);
 });
 
+// Help Center API Endpoints
+app.get('/api/help/articles', (req, res) => {
+  const { category, query } = req.query;
+  res.json({
+    status: 'ok',
+    message: 'LawyerDesk Help Articles API active',
+    query: query || null,
+    category: category || null,
+  });
+});
+
+app.get('/api/help/tickets', (req, res) => {
+  res.json({
+    status: 'ok',
+    ticketsCount: 2,
+    activeSupportQueue: 'Normal',
+  });
+});
+
+app.post('/api/help/search-log', (req, res) => {
+  const { query, resultsCount } = req.body;
+  console.log(`[Help Analytics] User searched: "${query}" (Results: ${resultsCount})`);
+  res.json({ success: true, loggedAt: new Date().toISOString() });
+});
+
 // SEO Crawler Endpoints
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
