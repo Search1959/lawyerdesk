@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, Send, Search, Paperclip, Trash2, Scale, CheckCheck, Plus, AlertCircle } from 'lucide-react';
+import { MessageSquare, Send, Search, Paperclip, Trash2, Scale, CheckCheck, Plus, AlertCircle, MessageCircle } from 'lucide-react';
 import { Message, Matter, User } from '../types';
+import { WhatsAppReminderModal } from './WhatsAppReminderModal';
+import { WhatsAppReminderData } from '../lib/whatsapp';
 
 interface MessagesViewProps {
   matters: Matter[];
@@ -25,6 +27,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
   const [inputText, setInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [confirmDeleteThreadId, setConfirmDeleteThreadId] = useState<string | null>(null);
+  const [whatsappModalData, setWhatsappModalData] = useState<WhatsAppReminderData | null>(null);
 
   // Automatically select first available matter if current active matter is invalid
   useEffect(() => {
@@ -199,6 +202,25 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 <p className="text-xs text-slate-500 dark:text-slate-400">Client: {activeMatter.clientName}</p>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() =>
+                    setWhatsappModalData({
+                      recipientName: activeMatter.clientName,
+                      recipientPhone: '+91 98765 43210',
+                      reminderType: 'HEARING_ALERT',
+                      caseTitle: activeMatter.title,
+                      caseNumber: activeMatter.caseNumber,
+                      courtName: activeMatter.court,
+                      hearingDate: activeMatter.nextHearingDate,
+                      lawyerName: currentUser.name || 'Adv. Rajeshwar V. Sharma',
+                    })
+                  }
+                  className="flex items-center gap-1.5 px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm transition-all"
+                  title="Send WhatsApp Reminder to Client"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>Send WhatsApp Alert</span>
+                </button>
                 <span className="text-xs bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold px-2.5 py-0.5 rounded-full">
                   Encrypted Thread
                 </span>
@@ -321,6 +343,15 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* WhatsApp Reminder Modal */}
+      {whatsappModalData && (
+        <WhatsAppReminderModal
+          isOpen={!!whatsappModalData}
+          onClose={() => setWhatsappModalData(null)}
+          initialData={whatsappModalData}
+        />
+      )}
     </div>
   );
 };

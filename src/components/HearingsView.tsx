@@ -25,6 +25,8 @@ import {
   Trash2,
 } from 'lucide-react';
 import { Hearing, Matter, CourtType } from '../types';
+import { WhatsAppReminderModal } from './WhatsAppReminderModal';
+import { WhatsAppReminderData } from '../lib/whatsapp';
 
 interface HearingsViewProps {
   hearings: Hearing[];
@@ -47,6 +49,9 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
   const [sentWhatsappId, setSentWhatsappId] = useState<string | null>(null);
   const [isSyncingCauseList, setIsSyncingCauseList] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  // WhatsApp Modal State
+  const [whatsappModalData, setWhatsappModalData] = useState<WhatsAppReminderData | null>(null);
 
   // AI Voice Hearing Assistant State
   const [showVoiceModal, setShowVoiceModal] = useState(false);
@@ -95,10 +100,24 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
     }
   };
 
-  const handleSendWhatsapp = (id: string) => {
-    setSentWhatsappId(id);
-    setTimeout(() => setSentWhatsappId(null), 3000);
+  const handleSendWhatsapp = (hrg: Hearing) => {
+    const matter = matters.find((m) => m.id === hrg.matterId);
+    setWhatsappModalData({
+      recipientName: matter?.clientName || 'Shri Sohanlal Jaiswal',
+      recipientPhone: (matter as any)?.clientPhone || '+91 98765 43210',
+      reminderType: 'HEARING_ALERT',
+      caseTitle: matter?.title || 'Court Case',
+      caseNumber: matter?.caseNumber || 'WP(C) 4120/2024',
+      courtName: hrg.courtName,
+      courtHall: hrg.courtHallNo,
+      hearingDate: hrg.date,
+      hearingTime: hrg.time,
+      hearingStage: hrg.stage,
+      judgeName: hrg.judgeName,
+      lawyerName: hrg.assignedLawyerName || 'Adv. Rajeshwar V. Sharma',
+    });
   };
+
 
   const handleSyncCauseList = () => {
     setIsSyncingCauseList(true);
@@ -413,8 +432,8 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
 
                       <div className="flex items-center justify-between gap-2">
                         <button
-                          onClick={() => handleSendWhatsapp(hrg.id)}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all"
+                          onClick={() => handleSendWhatsapp(hrg)}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm"
                         >
                           {isSent ? <CheckCircle2 className="w-3.5 h-3.5" /> : <MessageCircle className="w-3.5 h-3.5" />}
                           <span>{isSent ? 'Reminders Sent!' : 'WhatsApp Alert'}</span>
@@ -469,7 +488,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                     </div>
 
                     <button
-                      onClick={() => handleSendWhatsapp(hrg.id)}
+                      onClick={() => handleSendWhatsapp(hrg)}
                       className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm"
                     >
                       {isSent ? <CheckCircle2 className="w-3.5 h-3.5" /> : <MessageCircle className="w-3.5 h-3.5" />}
@@ -743,6 +762,15 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
             )}
           </div>
         </div>
+      )}
+
+      {/* WhatsApp Reminder Modal */}
+      {whatsappModalData && (
+        <WhatsAppReminderModal
+          isOpen={!!whatsappModalData}
+          onClose={() => setWhatsappModalData(null)}
+          initialData={whatsappModalData}
+        />
       )}
     </div>
   );

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, Search, Send, FileText, CheckCircle, Clock, DollarSign, ArrowUpRight, Eye, Edit3, Trash2, X } from 'lucide-react';
+import { AlertCircle, Search, Send, FileText, CheckCircle, Clock, DollarSign, ArrowUpRight, Eye, Edit3, Trash2, X, MessageCircle } from 'lucide-react';
 import { Invoice } from '../types';
+import { WhatsAppReminderModal } from './WhatsAppReminderModal';
+import { WhatsAppReminderData } from '../lib/whatsapp';
 
 interface OutstandingBillingViewProps {
   invoices: Invoice[];
@@ -18,6 +20,7 @@ export const OutstandingBillingView: React.FC<OutstandingBillingViewProps> = ({
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
   const [deletingInvoiceId, setDeletingInvoiceId] = useState<string | null>(null);
+  const [whatsappModalData, setWhatsappModalData] = useState<WhatsAppReminderData | null>(null);
 
   useEffect(() => {
     setInvoices(initialInvoices);
@@ -32,8 +35,17 @@ export const OutstandingBillingView: React.FC<OutstandingBillingViewProps> = ({
   );
   const totalOutstandingINR = pendingInvoices.reduce((acc, i) => acc + i.totalINR, 0);
 
-  const handleSendReminder = (invoiceId: string) => {
-    setReminderSent({ ...reminderSent, [invoiceId]: true });
+  const handleSendReminder = (inv: Invoice) => {
+    setReminderSent({ ...reminderSent, [inv.id]: true });
+    setWhatsappModalData({
+      recipientName: inv.clientName,
+      recipientPhone: '+91 98765 43210',
+      reminderType: 'INVOICE_REMINDER',
+      invoiceNumber: inv.invoiceNumber,
+      amountDue: inv.totalINR,
+      dueDate: inv.dueDate,
+      caseTitle: `${inv.feeType} - Invoice #${inv.invoiceNumber}`,
+    });
   };
 
   const handleUpdateInvoice = (e: React.FormEvent) => {
@@ -145,8 +157,8 @@ export const OutstandingBillingView: React.FC<OutstandingBillingViewProps> = ({
                       </span>
                     ) : (
                       <button
-                        onClick={() => handleSendReminder(inv.id)}
-                        className="inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white px-3 py-1 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm"
+                        onClick={() => handleSendReminder(inv)}
+                        className="inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm"
                       >
                         <Send className="w-3.5 h-3.5" /> Send Fee Alert
                       </button>
@@ -355,6 +367,15 @@ export const OutstandingBillingView: React.FC<OutstandingBillingViewProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* WhatsApp Reminder Modal */}
+      {whatsappModalData && (
+        <WhatsAppReminderModal
+          isOpen={!!whatsappModalData}
+          onClose={() => setWhatsappModalData(null)}
+          initialData={whatsappModalData}
+        />
       )}
     </div>
   );

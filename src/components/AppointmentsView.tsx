@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Search, Plus, Filter, Clock, MapPin, User as UserIcon, Video, PhoneCall, CheckCircle2, Eye, Edit3, Trash2, X } from 'lucide-react';
+import { Calendar, Search, Plus, Filter, Clock, MapPin, User as UserIcon, Video, PhoneCall, CheckCircle2, Eye, Edit3, Trash2, X, MessageCircle } from 'lucide-react';
 import { Appointment, Matter, User } from '../types';
+import { WhatsAppReminderModal } from './WhatsAppReminderModal';
+import { WhatsAppReminderData } from '../lib/whatsapp';
 
 interface AppointmentsViewProps {
   appointments: Appointment[];
@@ -20,6 +22,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
   const [viewingApt, setViewingApt] = useState<Appointment | null>(null);
   const [editingApt, setEditingApt] = useState<Appointment | null>(null);
   const [deletingAptId, setDeletingAptId] = useState<string | null>(null);
+  const [whatsappModalData, setWhatsappModalData] = useState<WhatsAppReminderData | null>(null);
 
   useEffect(() => {
     setAppointments(initialAppointments);
@@ -188,6 +191,26 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
 
             <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
               <div className="flex items-center gap-1">
+                <button
+                  onClick={() =>
+                    setWhatsappModalData({
+                      recipientName: apt.clientName,
+                      recipientPhone: '+91 98765 43210',
+                      reminderType: 'APPOINTMENT_REMINDER',
+                      appointmentDate: apt.date,
+                      appointmentTime: apt.time,
+                      appointmentMode: apt.mode,
+                      purpose: apt.purpose,
+                      lawyerName: apt.lawyerName,
+                      caseTitle: apt.matterTitle,
+                    })
+                  }
+                  className="p-1.5 rounded-lg text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors flex items-center gap-1 font-bold text-xs"
+                  title="Send WhatsApp Reminder"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">WhatsApp</span>
+                </button>
                 <button
                   onClick={() => setViewingApt(apt)}
                   className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -573,6 +596,15 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
             </form>
           </div>
         </div>
+      )}
+
+      {/* WhatsApp Reminder Modal */}
+      {whatsappModalData && (
+        <WhatsAppReminderModal
+          isOpen={!!whatsappModalData}
+          onClose={() => setWhatsappModalData(null)}
+          initialData={whatsappModalData}
+        />
       )}
     </div>
   );

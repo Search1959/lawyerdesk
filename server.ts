@@ -723,6 +723,87 @@ app.post('/api/ai/analyze-case', async (req, res) => {
   });
 });
 
+// WhatsApp Integration & Automated Reminder Dispatcher Endpoint
+app.post('/api/whatsapp/send-reminder', async (req, res) => {
+  const { recipientPhone, recipientName, reminderType, message } = req.body;
+
+  if (!recipientPhone) {
+    return res.status(400).json({ error: 'recipientPhone is required' });
+  }
+
+  // Sanitize phone number
+  let cleanPhone = String(recipientPhone).replace(/[^\d]/g, '');
+  if (
+    cleanPhone.length === 10 &&
+    (cleanPhone.startsWith('6') ||
+      cleanPhone.startsWith('7') ||
+      cleanPhone.startsWith('8') ||
+      cleanPhone.startsWith('9'))
+  ) {
+    cleanPhone = '91' + cleanPhone;
+  }
+
+  const encodedText = encodeURIComponent(message || '');
+  const whatsappWebUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedText}`;
+
+  const apiKey = process.env.WHATSAPP_API_KEY;
+  const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+  let dispatchedViaCloud = false;
+  let cloudStatus = 'DIRECT_LINK_GENERATED';
+
+  if (apiKey && phoneId) {
+    try {
+      const graphUrl = `https://graph.facebook.com/v18.0/${phoneId}/messages`;
+      const cloudRes = await fetch(graphUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: cleanPhone,
+          type: 'text',
+          text: { body: message },
+        }),
+      });
+
+      if (cloudRes.ok) {
+        dispatchedViaCloud = true;
+        cloudStatus = 'SENT_VIA_WHATSAPP_CLOUD_API';
+      }
+    } catch (e) {
+      console.warn('WhatsApp Cloud API error:', e);
+    }
+  }
+
+  // Audit log
+  auditLogsStore.unshift({
+    id: `log-${Date.now()}`,
+    timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+    userId: 'usr-1',
+    userName: 'Adv. Rajeshwar V. Sharma',
+    userRole: 'Senior Advocate',
+    action: 'DISPATCH_WHATSAPP_REMINDER',
+    resource: `${reminderType || 'REMINDER'} -> ${recipientName || cleanPhone}`,
+    details: `Dispatched ${reminderType} via ${dispatchedViaCloud ? 'WhatsApp Cloud API' : 'Direct Link'} to ${cleanPhone}`,
+    ipAddress: '103.211.14.88 (New Delhi)',
+  });
+
+  return res.json({
+    success: true,
+    method: dispatchedViaCloud ? 'CLOUD_API' : 'DIRECT_WHATSAPP_LINK',
+    status: cloudStatus,
+    cleanPhone,
+    recipientName,
+    whatsappUrl: whatsappWebUrl,
+    message: dispatchedViaCloud
+      ? 'WhatsApp message sent via Cloud API.'
+      : 'Direct WhatsApp link generated for 1-click web dispatch.',
+  });
+});
+
 // Database Schema & Prisma Inspection API
 app.get('/api/db-schema', (req, res) => {
   const tables = [
