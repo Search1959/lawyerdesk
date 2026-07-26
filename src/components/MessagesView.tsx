@@ -195,13 +195,13 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
         {activeMatter ? (
           <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between overflow-hidden">
             {/* Chat Header */}
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between">
-              <div>
+            <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+              <div className="min-w-0 flex-1 pr-2">
                 <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">{activeMatter.caseNumber}</span>
-                <h3 className="font-black text-slate-900 dark:text-white text-sm">{activeMatter.title}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Client: {activeMatter.clientName}</p>
+                <h3 className="font-black text-slate-900 dark:text-white text-sm truncate">{activeMatter.title}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Client: {activeMatter.clientName}</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() =>
                     setWhatsappModalData({
@@ -215,22 +215,22 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                       lawyerName: currentUser.name || 'Adv. Rajeshwar V. Sharma',
                     })
                   }
-                  className="flex items-center gap-1.5 px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm transition-all whitespace-nowrap"
                   title="Send WhatsApp Reminder to Client"
                 >
-                  <MessageCircle className="w-3.5 h-3.5" />
+                  <MessageCircle className="w-3.5 h-3.5 shrink-0" />
                   <span>Send WhatsApp Alert</span>
                 </button>
-                <span className="text-xs bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold px-2.5 py-0.5 rounded-full">
+                <span className="text-xs bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold px-2.5 py-1 rounded-full whitespace-nowrap hidden md:inline-block">
                   Encrypted Thread
                 </span>
                 {threadMessages.length > 0 && (
                   <button
                     onClick={() => setConfirmDeleteThreadId(activeMatter.id)}
-                    className="flex items-center gap-1 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 px-2.5 py-1 rounded-lg border border-rose-200 dark:border-rose-800/60 transition-all font-medium"
+                    className="flex items-center gap-1 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 px-2.5 py-1.5 rounded-lg border border-rose-200 dark:border-rose-800/60 transition-all font-medium whitespace-nowrap"
                     title="Clear all messages in this thread"
                   >
-                    <Trash2 className="w-3.5 h-3.5" /> Clear Thread
+                    <Trash2 className="w-3.5 h-3.5 shrink-0" /> <span className="hidden sm:inline">Clear Thread</span>
                   </button>
                 )}
               </div>

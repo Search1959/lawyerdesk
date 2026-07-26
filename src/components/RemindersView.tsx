@@ -1,13 +1,56 @@
 import React, { useState } from 'react';
-import { Bell, Clock, AlertTriangle, Search, Plus, CheckCircle, ShieldAlert, Trash2 } from 'lucide-react';
+import { Bell, Clock, AlertTriangle, Search, Plus, CheckCircle, ShieldAlert, Trash2, MessageCircle, Send, Zap, CheckCircle2, RefreshCw } from 'lucide-react';
 import { Reminder } from '../types';
 import { mockReminders, mockMatters } from '../data/mockData';
 import { saveDocument, removeDocument } from '../lib/firebase';
+import { WhatsAppReminderModal } from './WhatsAppReminderModal';
+import { WhatsAppReminderData } from '../lib/whatsapp';
 
 export const RemindersView: React.FC = () => {
   const [reminders, setReminders] = useState<Reminder[]>(mockReminders);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [whatsappModalData, setWhatsappModalData] = useState<WhatsAppReminderData | null>(null);
+
+  // Cron schedule engine state
+  const [cronSchedule, setCronSchedule] = useState('0 8 * * *');
+  const [scheduleName, setScheduleName] = useState('Daily Morning 08:00 AM IST (Cause List & Statutory Deadline Sync)');
+  const [cronActive, setCronActive] = useState(true);
+  const [isExecutingCron, setIsExecutingCron] = useState(false);
+  const [lastCronResult, setLastCronResult] = useState<{
+    success: boolean;
+    lastExecuted: string;
+    nextRun: string;
+    dispatchedCount: number;
+    logs: string[];
+  } | null>(null);
+
+  const handleRunCronNow = async () => {
+    setIsExecutingCron(true);
+    try {
+      const res = await fetch('/api/whatsapp/cron-dispatch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cronExpression: cronSchedule,
+          scheduleRule: scheduleName,
+          itemsToNotify: reminders.filter((r) => r.status === 'Pending'),
+        }),
+      });
+      const data = await res.json();
+      setLastCronResult({
+        success: data.success,
+        lastExecuted: data.lastExecuted,
+        nextRun: data.nextScheduledRun,
+        dispatchedCount: data.dispatchedCount,
+        logs: data.logs || [],
+      });
+    } catch (err) {
+      console.error('Error running cron dispatch:', err);
+    } finally {
+      setIsExecutingCron(false);
+    }
+  };
 
   const handleDeleteReminder = async (id: string) => {
     if (window.confirm('Delete this deadline reminder?')) {
@@ -84,6 +127,112 @@ export const RemindersView: React.FC = () => {
         </button>
       </div>
 
+      {/* Cron Schedule Engine Configuration Bar */}
+      <div className="bg-emerald-950/40 border border-emerald-800/60 p-5 rounded-2xl shadow-sm space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-emerald-600/20 text-emerald-400">
+              <Zap className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-black text-white text-sm">Automated WhatsApp Cron Dispatch Engine</h3>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+                  {cronActive ? 'CRON ACTIVE' : 'PAUSED'}
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 mt-0.5">
+                Automated background WhatsApp dispatch trigger for limitation deadlines & court hearing alerts.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={handleRunCronNow}
+              disabled={isExecutingCron}
+              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition-all disabled:opacity-50"
+            >
+              {isExecutingCron ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+              <span>{isExecutingCron ? 'Running Cron...' : 'Run Cron Dispatch Job Now'}</span>
+            </button>
+            <button
+              onClick={() => setCronActive(!cronActive)}
+              className={`px-3 py-2 rounded-xl font-bold text-xs transition-all ${
+                cronActive
+                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                  : 'bg-emerald-600 text-white'
+              }`}
+            >
+              {cronActive ? 'Pause Cron' : 'Enable Cron'}
+            </button>
+          </div>
+        </div>
+
+        {/* Cron Schedule Selector */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-emerald-900/60 text-xs">
+          <div>
+            <label className="block text-[11px] font-bold text-emerald-300 uppercase mb-1">
+              Select Dispatch Cron Rule
+            </label>
+            <select
+              value={cronSchedule}
+              onChange={(e) => {
+                setCronSchedule(e.target.value);
+                if (e.target.value === '0 8 * * *') setScheduleName('Daily Morning 08:00 AM IST (Cause List & Deadline Sync)');
+                else if (e.target.value === '0 9 * * *') setScheduleName('3 Days Before Statutory Deadline at 09:00 AM IST');
+                else if (e.target.value === '0 18 * * *') setScheduleName('1 Day Before Statutory Deadline Evening Alert (06:00 PM IST)');
+                else if (e.target.value === '30 7 * * *') setScheduleName('Morning of Court Hearing Date (07:30 AM IST)');
+              }}
+              className="w-full bg-slate-900/90 border border-emerald-800 text-white rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500"
+            >
+              <option value="0 8 * * *">0 8 * * * - Daily Morning 08:00 AM IST</option>
+              <option value="0 9 * * *">0 9 * * * - 3 Days Before Deadline at 09:00 AM IST</option>
+              <option value="0 18 * * *">0 18 * * * - 1 Day Before Evening Alert (06:00 PM IST)</option>
+              <option value="30 7 * * *">30 7 * * * - Morning of Court Hearing Date (07:30 AM IST)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-emerald-300 uppercase mb-1">Cron Expression</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={cronSchedule}
+                onChange={(e) => setCronSchedule(e.target.value)}
+                className="w-full bg-slate-900/90 border border-emerald-800 text-white font-mono rounded-lg p-2 text-xs"
+              />
+              <span className="text-[10px] text-emerald-400 font-mono whitespace-nowrap">IST</span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-emerald-300 uppercase mb-1">Active Rule Description</label>
+            <div className="bg-slate-900/90 border border-emerald-800/80 p-2 rounded-lg text-slate-300 text-xs truncate">
+              {scheduleName}
+            </div>
+          </div>
+        </div>
+
+        {/* Last Cron Run Result Log */}
+        {lastCronResult && (
+          <div className="p-3 bg-slate-900/90 border border-emerald-700/60 rounded-xl text-xs space-y-1 animate-in fade-in">
+            <div className="flex items-center justify-between text-emerald-400 font-bold">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Cron Job Executed at {lastCronResult.lastExecuted} IST
+              </span>
+              <span>Next Scheduled Run: {lastCronResult.nextRun}</span>
+            </div>
+            <div className="text-slate-300 font-mono text-[11px] space-y-0.5">
+              {lastCronResult.logs.map((log, idx) => (
+                <div key={idx}>{log}</div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Controls */}
       <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="relative w-full md:w-96">
@@ -133,18 +282,38 @@ export const RemindersView: React.FC = () => {
               <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">{r.matterTitle}</p>
             </div>
 
-            <div className="flex items-center gap-4 shrink-0">
+            <div className="flex items-center gap-3 shrink-0">
               <div className="text-right">
                 <div className="text-xs font-mono font-bold text-slate-800 dark:text-slate-200">Due: {r.dueDate}</div>
                 <div className="text-xs text-rose-600 dark:text-rose-400 font-extrabold">{r.daysRemaining} Days Remaining</div>
               </div>
 
               <button
+                onClick={() =>
+                  setWhatsappModalData({
+                    recipientName: r.matterTitle.split('-')[1]?.trim() || 'Client Entity',
+                    recipientPhone: '+91 98765 43210',
+                    reminderType: 'STATUTORY_LIMITATION',
+                    caseTitle: r.title,
+                    caseNumber: r.matterTitle.split('-')[0]?.trim() || 'CS/420/2024',
+                    dueDate: r.dueDate,
+                    statutoryType: r.type,
+                    daysRemaining: r.daysRemaining,
+                  })
+                }
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+                title="Send WhatsApp Statutory Deadline Reminder"
+              >
+                <MessageCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>WhatsApp Alert</span>
+              </button>
+
+              <button
                 onClick={() => toggleStatus(r.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   r.status === 'Completed'
                     ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-                    : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm'
                 }`}
               >
                 {r.status === 'Completed' ? 'Mark Pending' : 'Mark Done'}
@@ -261,6 +430,15 @@ export const RemindersView: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* WhatsApp Reminder Modal */}
+      {whatsappModalData && (
+        <WhatsAppReminderModal
+          isOpen={!!whatsappModalData}
+          onClose={() => setWhatsappModalData(null)}
+          initialData={whatsappModalData}
+        />
       )}
     </div>
   );

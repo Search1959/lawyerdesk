@@ -9,8 +9,11 @@ import {
   Download,
   Building,
   Trash2,
+  MessageCircle,
 } from 'lucide-react';
 import { Invoice, Client, Matter } from '../types';
+import { WhatsAppReminderModal } from './WhatsAppReminderModal';
+import { WhatsAppReminderData } from '../lib/whatsapp';
 
 interface FinancialsViewProps {
   invoices: Invoice[];
@@ -28,6 +31,7 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
   onDeleteInvoice,
 }) => {
   const [showModal, setShowModal] = useState(false);
+  const [whatsappModalData, setWhatsappModalData] = useState<WhatsAppReminderData | null>(null);
   const [newInv, setNewInv] = useState({
     invoiceNumber: `INV-2026-0${invoices.length + 1}`,
     clientId: clients[0]?.id || '',
@@ -152,8 +156,26 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
                   <div className="text-slate-500 text-[11px] mt-0.5">{matter ? matter.title : ''}</div>
                 </div>
 
-                <div className="text-right flex flex-col md:items-end justify-between">
-                  <div className="flex items-center gap-3">
+                <div className="text-right flex flex-col md:items-end justify-between gap-1">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        setWhatsappModalData({
+                          recipientName: client ? client.name : 'Client Entity',
+                          recipientPhone: client?.phone || '+91 98765 43210',
+                          reminderType: 'INVOICE_REMINDER',
+                          invoiceNumber: inv.invoiceNumber,
+                          amountDue: inv.totalINR,
+                          dueDate: inv.dueDate,
+                          caseTitle: matter ? matter.title : `${inv.feeType} Invoice #${inv.invoiceNumber}`,
+                        })
+                      }
+                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
+                      title="Send WhatsApp Invoice Reminder"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span>WhatsApp Alert</span>
+                    </button>
                     <div className="text-base font-black text-slate-900 dark:text-white">
                       ₹{inv.totalINR.toLocaleString('en-IN')}
                     </div>
@@ -273,6 +295,14 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
             </form>
           </div>
         </div>
+      )}
+      {/* WhatsApp Reminder Modal */}
+      {whatsappModalData && (
+        <WhatsAppReminderModal
+          isOpen={!!whatsappModalData}
+          onClose={() => setWhatsappModalData(null)}
+          initialData={whatsappModalData}
+        />
       )}
     </div>
   );

@@ -70,14 +70,26 @@ export const OutstandingBillingView: React.FC<OutstandingBillingViewProps> = ({
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Outstanding Fees & Collections</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            Track unpaid legal fee invoices, GST tax disbursements, and automated client payment reminders.
+            Track unpaid legal fee invoices, GST tax disbursements, and automated WhatsApp client payment reminders.
           </p>
         </div>
 
-        <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 p-4 rounded-xl text-right">
-          <div className="text-xs font-bold uppercase text-rose-600 dark:text-rose-400">Total Outstanding Fees</div>
-          <div className="text-2xl font-black text-rose-900 dark:text-rose-300">
-            ₹{totalOutstandingINR.toLocaleString()}
+        <div className="flex items-center gap-3">
+          {pendingInvoices.length > 0 && (
+            <button
+              onClick={() => handleSendReminder(pendingInvoices[0])}
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md hover:shadow-emerald-500/20"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>WhatsApp Fee Reminders</span>
+            </button>
+          )}
+
+          <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 p-4 rounded-xl text-right">
+            <div className="text-xs font-bold uppercase text-rose-600 dark:text-rose-400">Total Outstanding Fees</div>
+            <div className="text-2xl font-black text-rose-900 dark:text-rose-300">
+              ₹{totalOutstandingINR.toLocaleString()}
+            </div>
           </div>
         </div>
       </div>
@@ -153,14 +165,14 @@ export const OutstandingBillingView: React.FC<OutstandingBillingViewProps> = ({
                   <td className="p-3">
                     {reminderSent[inv.id] ? (
                       <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                        <CheckCircle className="w-3.5 h-3.5" /> Reminder Sent
+                        <CheckCircle className="w-3.5 h-3.5" /> WhatsApp Sent
                       </span>
                     ) : (
                       <button
                         onClick={() => handleSendReminder(inv)}
-                        className="inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm"
+                        className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm"
                       >
-                        <Send className="w-3.5 h-3.5" /> Send Fee Alert
+                        <MessageCircle className="w-3.5 h-3.5 shrink-0" /> WhatsApp Fee Alert
                       </button>
                     )}
                   </td>

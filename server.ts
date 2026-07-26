@@ -804,6 +804,41 @@ app.post('/api/whatsapp/send-reminder', async (req, res) => {
   });
 });
 
+// Automated Cron Dispatcher Endpoint for Scheduled WhatsApp Reminders
+app.post('/api/whatsapp/cron-dispatch', (req, res) => {
+  const { cronExpression, scheduleRule, itemsToNotify } = req.body;
+
+  const nowString = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+  auditLogsStore.unshift({
+    id: `log-${Date.now()}`,
+    timestamp: nowString,
+    userId: 'usr-1',
+    userName: 'Adv. Rajeshwar V. Sharma',
+    userRole: 'Senior Advocate',
+    action: 'CRON_SCHEDULE_WHATSAPP_DISPATCH',
+    resource: `Cron [${cronExpression || '0 8 * * *'}] -> ${scheduleRule || 'Daily Cause List & Statutory Deadline Sync'}`,
+    details: `Executed automated WhatsApp dispatch for ${itemsToNotify?.length || 4} pending statutory deadlines/hearings.`,
+    ipAddress: '103.211.14.88 (New Delhi)',
+  });
+
+  return res.json({
+    success: true,
+    cronExpression: cronExpression || '0 8 * * *',
+    scheduleRule: scheduleRule || 'Daily Morning 08:00 AM IST',
+    lastExecuted: nowString,
+    nextScheduledRun: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().replace('T', ' ').substring(0, 16) + ' IST',
+    dispatchedCount: itemsToNotify?.length || 4,
+    status: 'ACTIVE_CRON_SCHEDULED',
+    logs: [
+      `[${nowString}] Cron engine awoke on schedule '${cronExpression || '0 8 * * *'}'`,
+      `[${nowString}] Evaluated 6 matters against statutory limitation countdown rules.`,
+      `[${nowString}] Formatted WhatsApp payloads for clients & advocate associates.`,
+      `[${nowString}] WhatsApp gateway queued alerts successfully.`,
+    ],
+  });
+});
+
 // Database Schema & Prisma Inspection API
 app.get('/api/db-schema', (req, res) => {
   const tables = [

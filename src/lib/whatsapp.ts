@@ -2,7 +2,7 @@ export interface WhatsAppReminderData {
   id?: string;
   recipientName: string;
   recipientPhone: string;
-  reminderType: 'HEARING_ALERT' | 'APPOINTMENT_REMINDER' | 'INVOICE_REMINDER' | 'CUSTOM';
+  reminderType: 'HEARING_ALERT' | 'APPOINTMENT_REMINDER' | 'INVOICE_REMINDER' | 'STATUTORY_LIMITATION' | 'CUSTOM';
   caseTitle?: string;
   caseNumber?: string;
   courtName?: string;
@@ -18,6 +18,8 @@ export interface WhatsAppReminderData {
   invoiceNumber?: string;
   amountDue?: number | string;
   dueDate?: string;
+  statutoryType?: string;
+  daysRemaining?: number | string;
   lawyerName?: string;
   firmName?: string;
   customMessage?: string;
@@ -99,6 +101,24 @@ This is a gentle reminder regarding pending legal invoice *#${data.invoiceNumber
 Kindly process the payment at your earliest convenience to maintain uninterrupted representation.
 
 Regards,
+${firmName}`;
+
+    case 'STATUTORY_LIMITATION':
+      return `⚠️ *STATUTORY LIMITATION DEADLINE ALERT - LAWYERDESK AI*
+
+Dear ${data.recipientName || 'Counsel / Client'},
+
+This is an urgent automated reminder regarding a statutory court limitation deadline:
+
+📌 *Matter:* ${data.caseTitle || 'Statutory Deadline'} (${data.caseNumber || 'N/A'})
+⚖️ *Compliance Type:* ${data.statutoryType || 'Order Compliance / Limitation'}
+📅 *Statutory Due Date:* ${data.dueDate || 'Immediate'}
+⏳ *Days Remaining:* ${data.daysRemaining ?? 'Critical'} Days
+
+Kindly ensure necessary court filings, affidavits, or stamp deposits are executed prior to deadline expiration.
+
+Regards,
+*${lawyerName}*
 ${firmName}`;
 
     case 'CUSTOM':

@@ -16,7 +16,7 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
   onReminderSent,
 }) => {
   const [data, setData] = useState<WhatsAppReminderData>(initialData);
-  const [activeTab, setActiveTab] = useState<'HEARING_ALERT' | 'APPOINTMENT_REMINDER' | 'INVOICE_REMINDER' | 'CUSTOM'>(
+  const [activeTab, setActiveTab] = useState<'HEARING_ALERT' | 'APPOINTMENT_REMINDER' | 'INVOICE_REMINDER' | 'STATUTORY_LIMITATION' | 'CUSTOM'>(
     initialData.reminderType || 'HEARING_ALERT'
   );
   const [customMsgText, setCustomMsgText] = useState(
@@ -38,7 +38,7 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
   const previewMessage = activeTab === 'CUSTOM' ? customMsgText : generateWhatsAppMessage(currentData);
   const cleanPhone = sanitizePhoneNumber(data.recipientPhone);
 
-  const handleTabChange = (type: 'HEARING_ALERT' | 'APPOINTMENT_REMINDER' | 'INVOICE_REMINDER' | 'CUSTOM') => {
+  const handleTabChange = (type: 'HEARING_ALERT' | 'APPOINTMENT_REMINDER' | 'INVOICE_REMINDER' | 'STATUTORY_LIMITATION' | 'CUSTOM') => {
     setActiveTab(type);
     const updatedData = { ...data, reminderType: type };
     const generated = generateWhatsAppMessage(updatedData);
@@ -164,6 +164,19 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
               >
                 <span>💳 Legal Fee Due</span>
                 <span className="text-[10px] font-normal opacity-80">Invoice Payment</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleTabChange('STATUTORY_LIMITATION')}
+                className={`px-3 py-2.5 rounded-xl text-xs font-bold transition-all text-left flex flex-col gap-1 border ${
+                  activeTab === 'STATUTORY_LIMITATION'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-800 dark:text-emerald-200 shadow-sm'
+                    : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300'
+                }`}
+              >
+                <span>⚠️ Court Deadline</span>
+                <span className="text-[10px] font-normal opacity-80">Statutory Limitation</span>
               </button>
 
               <button
