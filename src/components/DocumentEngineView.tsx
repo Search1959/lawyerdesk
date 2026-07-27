@@ -26,6 +26,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { Document, Matter } from '../types';
+import { PaginationControls } from './PaginationControls';
 
 export interface CustomFolder {
   id: string;
@@ -207,6 +208,17 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
 
     return matchesSearch && matchesMatter && matchesFolder;
   });
+
+  const [docPage, setDocPage] = useState(1);
+  const [docPageSize, setDocPageSize] = useState(5);
+
+  useEffect(() => {
+    setDocPage(1);
+  }, [searchFilter, matterFilterMode, selectedMatterId, selectedFolderId]);
+
+  const totalDocPages = Math.ceil(filteredDocs.length / docPageSize) || 1;
+  const activeDocPage = Math.min(docPage, totalDocPages);
+  const paginatedDocs = filteredDocs.slice((activeDocPage - 1) * docPageSize, activeDocPage * docPageSize);
 
   const [uploadBatch, setUploadBatch] = useState<{
     current: number;
@@ -639,14 +651,14 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
             </div>
           </div>
 
-          <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1">
+          <div className="space-y-3">
             {filteredDocs.length === 0 ? (
               <div className="p-8 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl space-y-1">
                 <p className="font-bold text-slate-500">No documents found for this filter</p>
                 <p className="text-[11px]">Upload a legal file above or switch filter to "All Case Files"</p>
               </div>
             ) : (
-              filteredDocs.map((doc) => {
+              paginatedDocs.map((doc) => {
                 const isSel = selectedDoc?.id === doc.id;
                 return (
                   <div
@@ -703,6 +715,17 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
                 );
               })
             )}
+
+            <PaginationControls
+              currentPage={activeDocPage}
+              totalPages={totalDocPages}
+              totalItems={filteredDocs.length}
+              pageSize={docPageSize}
+              onPageChange={(p) => setDocPage(p)}
+              onPageSizeChange={(s) => setDocPageSize(s)}
+              pageSizeOptions={[5, 10, 20]}
+              itemName="documents"
+            />
           </div>
         </div>
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CheckSquare, Search, Plus, Filter, Calendar, User as UserIcon, CheckCircle2, Clock, AlertTriangle, Edit3, Trash2, Eye } from 'lucide-react';
 import { Task, Matter, User } from '../types';
 import { saveDocument, removeDocument } from '../lib/firebase';
+import { PaginationControls } from './PaginationControls';
 
 interface TasksViewProps {
   tasks: Task[];
@@ -34,6 +35,13 @@ export const TasksView: React.FC<TasksViewProps> = ({
     assignedTo: users[0]?.name || 'Adv. Rajeshwar V. Sharma',
   });
 
+  const [taskPage, setTaskPage] = useState(1);
+  const [taskPageSize, setTaskPageSize] = useState(5);
+
+  useEffect(() => {
+    setTaskPage(1);
+  }, [searchQuery, selectedPriority, selectedStatus]);
+
   const filteredTasks = tasks.filter((t) => {
     const matchesSearch =
       t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -48,6 +56,10 @@ export const TasksView: React.FC<TasksViewProps> = ({
         : !t.completed;
     return matchesSearch && matchesPriority && matchesStatus;
   });
+
+  const totalTaskPages = Math.ceil(filteredTasks.length / taskPageSize) || 1;
+  const activeTaskPage = Math.min(taskPage, totalTaskPages);
+  const paginatedTasks = filteredTasks.slice((activeTaskPage - 1) * taskPageSize, activeTaskPage * taskPageSize);
 
   const toggleTaskCompleted = async (id: string) => {
     const updated = tasks.map((t) => {
@@ -204,7 +216,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                   </td>
                 </tr>
               ) : (
-                filteredTasks.map((task) => (
+                paginatedTasks.map((task) => (
                   <tr
                     key={task.id}
                     className={`hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors ${
@@ -273,6 +285,19 @@ export const TasksView: React.FC<TasksViewProps> = ({
               )}
             </tbody>
           </table>
+        </div>
+
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800">
+          <PaginationControls
+            currentPage={activeTaskPage}
+            totalPages={totalTaskPages}
+            totalItems={filteredTasks.length}
+            pageSize={taskPageSize}
+            onPageChange={(p) => setTaskPage(p)}
+            onPageSizeChange={(s) => setTaskPageSize(s)}
+            pageSizeOptions={[5, 10, 20]}
+            itemName="tasks"
+          />
         </div>
       </div>
 

@@ -26,6 +26,7 @@ import { OutstandingBillingView } from './components/OutstandingBillingView';
 import { ExpensesView } from './components/ExpensesView';
 import { MessagesView } from './components/MessagesView';
 import { ECourtTrackerView } from './components/ECourtTrackerView';
+import { CourtIntelligenceView } from './components/CourtIntelligenceView';
 import { ReportsView } from './components/ReportsView';
 import { ManageTeamView } from './components/ManageTeamView';
 import { RemindersView } from './components/RemindersView';
@@ -791,6 +792,10 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               onNavigateTab={setActiveTab}
               onOpenNewMatter={() => setShowNewMatterModal(true)}
             />
+          )}
+
+          {activeTab === 'court_intelligence' && (
+            <CourtIntelligenceView />
           )}
 
           {activeTab === 'matters' && (

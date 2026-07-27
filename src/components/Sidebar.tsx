@@ -79,6 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       title: 'CORE',
       items: [
+        { id: 'court_intelligence', label: 'Litigation Command Center', icon: Scale, isAi: true, badge: 'V3.6' },
         { id: 'clients', label: 'Clients', icon: Users },
         { id: 'matters', label: 'Cases', icon: Folder },
         { id: 'kanban', label: 'Kanban Board', icon: FolderKanban },

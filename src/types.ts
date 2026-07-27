@@ -381,6 +381,7 @@ export interface Invoice {
 
 export type NavTab =
   | 'dashboard'
+  | 'court_intelligence'
   | 'enquiries'
   | 'tasks'
   | 'clients'
@@ -407,6 +408,116 @@ export type NavTab =
   | 'database'
   | 'security'
   | 'help';
+
+export interface CourtDirectoryProfile {
+  id: string;
+  name: string;
+  category: 'Supreme Court' | 'High Court' | 'District Court' | 'Family Court' | 'Commercial Court' | 'Consumer Commission' | 'Labour Court' | 'MACT' | 'CBI Court' | 'Fast Track' | 'Juvenile' | 'Tribunal (NCLT/DRT/CAT/NGT/RERA/ITAT/GST)';
+  state: string;
+  city: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  jurisdiction: string;
+  contactPhones: string[];
+  email: string;
+  website: string;
+  timings: string;
+  workingDays: string;
+  holidayCalendarUrl: string;
+  totalJudges: number;
+  courtRoomsCount: number;
+  activeBenches: string[];
+  causeListUrl: string;
+  filingProcedureSummary: string;
+  availableForms: { name: string; url: string; category: string }[];
+  importantNotifications: { title: string; date: string; isUrgent?: boolean }[];
+}
+
+export interface JudgeDirectoryProfile {
+  id: string;
+  name: string;
+  designation: string;
+  courtName: string;
+  benchType: 'Single Bench' | 'Division Bench' | 'Full Bench' | 'Constitution Bench';
+  courtRoomNo: string;
+  currentAssignment: string;
+  appointedDate: string;
+  retirementDate: string;
+  notableJudgments: { citation: string; title: string; date: string; subject: string }[];
+  upcomingCauseListCount: number;
+  transferHistory: { previousCourt: string; tenure: string }[];
+}
+
+export interface CauseListItem {
+  id: string;
+  date: string;
+  courtName: string;
+  judgeName: string;
+  courtRoomNo: string;
+  itemNo: number;
+  caseNumber: string;
+  cnrNumber: string;
+  matterTitle: string;
+  parties: string;
+  petitionerAdvocate: string;
+  respondentAdvocate: string;
+  stage: string;
+  priority: 'Urgent' | 'High' | 'Regular';
+  estimatedTime: string;
+  prepStatus: 'Ready' | 'Draft Pending' | 'Senior Briefed' | 'Witness Pending';
+  clientName: string;
+  assignedLawyer: string;
+}
+
+export interface AIHearingBrief {
+  matterId: string;
+  caseNumber: string;
+  caseSummary: string;
+  lastHearingSummary: string;
+  lastOrderSummary: string;
+  pendingDocuments: string[];
+  pendingEvidence: string[];
+  missingDocuments: string[];
+  questionsToAsk: string[];
+  likelyObjections: string[];
+  suggestedStrategy: string;
+  recentJudgments: { citation: string; ratio: string }[];
+  relevantSections: string[];
+  keyDates: { label: string; date: string }[];
+  riskIndicators: { level: 'Low' | 'Medium' | 'High' | 'Critical'; note: string }[];
+}
+
+export interface CaseHealthScoreData {
+  matterId: string;
+  caseNumber: string;
+  score: number; // e.g. 92%
+  clientDetailsComplete: boolean;
+  evidenceComplete: boolean;
+  witnessReady: boolean;
+  crossExamReady: boolean;
+  documentsUploaded: boolean;
+  feesPaid: boolean;
+  timelineUpdated: boolean;
+  limitationSafe: boolean;
+  missingTasksCount: number;
+  missingEvidenceCount: number;
+  missingDocumentsCount: number;
+  aiRecommendations: string[];
+}
+
+export interface KnowledgeGraphNode {
+  id: string;
+  label: string;
+  type: 'Client' | 'Matter' | 'Court' | 'Judge' | 'Document' | 'Order' | 'Evidence' | 'Witness' | 'Hearing' | 'Timeline' | 'Act' | 'Section' | 'LawyerNotes' | 'AIMemory';
+  details?: string;
+}
+
+export interface KnowledgeGraphLink {
+  source: string;
+  target: string;
+  label: string;
+}
 
 export interface Enquiry {
   id: string;

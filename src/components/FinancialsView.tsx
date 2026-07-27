@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Receipt,
   Plus,
@@ -10,10 +10,12 @@ import {
   Building,
   Trash2,
   MessageCircle,
+  Search,
 } from 'lucide-react';
 import { Invoice, Client, Matter } from '../types';
 import { WhatsAppReminderModal } from './WhatsAppReminderModal';
 import { WhatsAppReminderData } from '../lib/whatsapp';
+import { PaginationControls } from './PaginationControls';
 
 interface FinancialsViewProps {
   invoices: Invoice[];
@@ -32,6 +34,10 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [whatsappModalData, setWhatsappModalData] = useState<WhatsAppReminderData | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [invoicePage, setInvoicePage] = useState(1);
+  const [invoicePageSize, setInvoicePageSize] = useState(5);
+
   const [newInv, setNewInv] = useState({
     invoiceNumber: `INV-2026-0${invoices.length + 1}`,
     clientId: clients[0]?.id || '',
@@ -43,6 +49,29 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
       { description: 'High Court Senior Counsel Appearance Fee', amountINR: 150000 },
     ],
   });
+
+  useEffect(() => {
+    setInvoicePage(1);
+  }, [searchQuery]);
+
+  const filteredInvoices = invoices.filter((inv) => {
+    const client = clients.find((c) => c.id === inv.clientId);
+    const matter = matters.find((m) => m.id === inv.matterId);
+    const query = searchQuery.toLowerCase();
+    return (
+      inv.invoiceNumber.toLowerCase().includes(query) ||
+      inv.feeType.toLowerCase().includes(query) ||
+      (client && client.name.toLowerCase().includes(query)) ||
+      (matter && matter.title.toLowerCase().includes(query))
+    );
+  });
+
+  const totalInvoicePages = Math.ceil(filteredInvoices.length / invoicePageSize) || 1;
+  const activeInvoicePage = Math.min(invoicePage, totalInvoicePages);
+  const paginatedInvoices = filteredInvoices.slice(
+    (activeInvoicePage - 1) * invoicePageSize,
+    activeInvoicePage * invoicePageSize
+  );
 
   const totalBilled = invoices.reduce((acc, inv) => acc + inv.totalINR, 0);
   const totalPaid = invoices.filter((i) => i.status === 'Paid').reduce((acc, inv) => acc + inv.totalINR, 0);
@@ -123,85 +152,115 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
 
       {/* Invoice List */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <h2 className="font-bold text-slate-900 dark:text-white text-sm">Active Invoices ({invoices.length})</h2>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="font-bold text-slate-900 dark:text-white text-sm">Active Invoices ({filteredInvoices.length})</h2>
+          
+          <div className="relative w-full sm:w-72">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search invoice #, client, matter..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+            />
+          </div>
+        </div>
 
         <div className="space-y-3">
-          {invoices.map((inv) => {
-            const client = clients.find((c) => c.id === inv.clientId);
-            const matter = matters.find((m) => m.id === inv.matterId);
+          {paginatedInvoices.length === 0 ? (
+            <div className="p-8 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+              No invoices found matching "{searchQuery}"
+            </div>
+          ) : (
+            paginatedInvoices.map((inv) => {
+              const client = clients.find((c) => c.id === inv.clientId);
+              const matter = matters.find((m) => m.id === inv.matterId);
 
-            return (
-              <div
-                key={inv.id}
-                className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-xs flex flex-col md:flex-row md:items-center justify-between gap-3"
-              >
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{inv.invoiceNumber}</span>
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        inv.status === 'Paid'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}
-                    >
-                      {inv.status}
-                    </span>
-                    <span className="text-slate-400">• {inv.feeType}</span>
-                  </div>
-
-                  <div className="font-bold text-slate-900 dark:text-white text-sm">
-                    {client ? client.name : 'Client Entity'}
-                  </div>
-                  <div className="text-slate-500 text-[11px] mt-0.5">{matter ? matter.title : ''}</div>
-                </div>
-
-                <div className="text-right flex flex-col md:items-end justify-between gap-1">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() =>
-                        setWhatsappModalData({
-                          recipientName: client ? client.name : 'Client Entity',
-                          recipientPhone: client?.phone || '+91 98765 43210',
-                          reminderType: 'INVOICE_REMINDER',
-                          invoiceNumber: inv.invoiceNumber,
-                          amountDue: inv.totalINR,
-                          dueDate: inv.dueDate,
-                          caseTitle: matter ? matter.title : `${inv.feeType} Invoice #${inv.invoiceNumber}`,
-                        })
-                      }
-                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
-                      title="Send WhatsApp Invoice Reminder"
-                    >
-                      <MessageCircle className="w-3.5 h-3.5" />
-                      <span>WhatsApp Alert</span>
-                    </button>
-                    <div className="text-base font-black text-slate-900 dark:text-white">
-                      ₹{inv.totalINR.toLocaleString('en-IN')}
-                    </div>
-                    {onDeleteInvoice && (
-                      <button
-                        onClick={() => {
-                          if (window.confirm(`Delete invoice ${inv.invoiceNumber}?`)) {
-                            onDeleteInvoice(inv.id);
-                          }
-                        }}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all"
-                        title="Delete Invoice"
+              return (
+                <div
+                  key={inv.id}
+                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-xs flex flex-col md:flex-row md:items-center justify-between gap-3"
+                >
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{inv.invoiceNumber}</span>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          inv.status === 'Paid'
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                            : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                        }`}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        {inv.status}
+                      </span>
+                      <span className="text-slate-400">• {inv.feeType}</span>
+                    </div>
+
+                    <div className="font-bold text-slate-900 dark:text-white text-sm">
+                      {client ? client.name : 'Client Entity'}
+                    </div>
+                    <div className="text-slate-500 text-[11px] mt-0.5">{matter ? matter.title : ''}</div>
+                  </div>
+
+                  <div className="text-right flex flex-col md:items-end justify-between gap-1">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          setWhatsappModalData({
+                            recipientName: client ? client.name : 'Client Entity',
+                            recipientPhone: client?.phone || '+91 98765 43210',
+                            reminderType: 'INVOICE_REMINDER',
+                            invoiceNumber: inv.invoiceNumber,
+                            amountDue: inv.totalINR,
+                            dueDate: inv.dueDate,
+                            caseTitle: matter ? matter.title : `${inv.feeType} Invoice #${inv.invoiceNumber}`,
+                          })
+                        }
+                        className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
+                        title="Send WhatsApp Invoice Reminder"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>WhatsApp Alert</span>
                       </button>
-                    )}
+                      <div className="text-base font-black text-slate-900 dark:text-white">
+                        ₹{inv.totalINR.toLocaleString('en-IN')}
+                      </div>
+                      {onDeleteInvoice && (
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`Delete invoice ${inv.invoiceNumber}?`)) {
+                              onDeleteInvoice(inv.id);
+                            }
+                          }}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all"
+                          title="Delete Invoice"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="text-[11px] text-slate-400 font-mono">
+                      Subtotal: ₹{inv.subtotalINR.toLocaleString('en-IN')} + GST: ₹{inv.gstINR.toLocaleString('en-IN')}
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-1">Due Date: {inv.dueDate}</div>
                   </div>
-                  <div className="text-[11px] text-slate-400 font-mono">
-                    Subtotal: ₹{inv.subtotalINR.toLocaleString('en-IN')} + GST: ₹{inv.gstINR.toLocaleString('en-IN')}
-                  </div>
-                  <div className="text-[10px] text-slate-400 mt-1">Due Date: {inv.dueDate}</div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
+
+        <PaginationControls
+          currentPage={activeInvoicePage}
+          totalPages={totalInvoicePages}
+          totalItems={filteredInvoices.length}
+          pageSize={invoicePageSize}
+          onPageChange={(p) => setInvoicePage(p)}
+          onPageSizeChange={(s) => setInvoicePageSize(s)}
+          pageSizeOptions={[5, 10, 20]}
+          itemName="invoices"
+        />
       </div>
 
       {/* New Invoice Modal */}

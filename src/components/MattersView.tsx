@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Scale,
   Plus,
@@ -28,6 +28,7 @@ import {
   FileCode2,
 } from 'lucide-react';
 import { Matter, Document, Hearing, CourtOrder, TimelineEvent, Witness, Task, CourtType } from '../types';
+import { PaginationControls } from './PaginationControls';
 
 interface MattersViewProps {
   matters: Matter[];
@@ -93,6 +94,14 @@ export const MattersView: React.FC<MattersViewProps> = ({
   const [editCourt, setEditCourt] = useState('');
   const [editJudge, setEditJudge] = useState('');
 
+  // Pagination State for Matters List
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, categoryFilter]);
+
   const filteredMatters = mattersList.filter((m) => {
     const matchesSearch =
       m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -101,6 +110,10 @@ export const MattersView: React.FC<MattersViewProps> = ({
     const matchesCategory = categoryFilter === 'All' || m.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
+
+  const totalPages = Math.ceil(filteredMatters.length / pageSize) || 1;
+  const activePage = Math.min(currentPage, totalPages);
+  const paginatedMatters = filteredMatters.slice((activePage - 1) * pageSize, activePage * pageSize);
 
   const matterDocs = selectedMatter ? localDocs.filter((d) => d.matterId === selectedMatter.id) : [];
   const matterHearings = selectedMatter ? localHearings.filter((h) => h.matterId === selectedMatter.id) : [];
@@ -263,7 +276,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Side: Matter List (4 cols on lg) */}
         <div className="lg:col-span-4 space-y-3">
-          {filteredMatters.map((m) => {
+          {paginatedMatters.map((m) => {
             const isSelected = selectedMatter?.id === m.id;
             return (
               <div
@@ -309,6 +322,17 @@ export const MattersView: React.FC<MattersViewProps> = ({
               </div>
             );
           })}
+
+          <PaginationControls
+            currentPage={activePage}
+            totalPages={totalPages}
+            totalItems={filteredMatters.length}
+            pageSize={pageSize}
+            onPageChange={(p) => setCurrentPage(p)}
+            onPageSizeChange={(s) => setPageSize(s)}
+            pageSizeOptions={[5, 10, 20]}
+            itemName="cases"
+          />
         </div>
 
         {/* Right Side: Selected Matter Workspace with SUB-MENU & STEPPER */}

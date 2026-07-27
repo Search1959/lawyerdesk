@@ -24,6 +24,7 @@ import {
 import { Client, User } from '../types';
 import { saveDocument, removeDocument } from '../lib/firebase';
 import { mockUsers } from '../data/mockData';
+import { PaginationControls } from './PaginationControls';
 
 interface ClientsViewProps {
   clients: Client[];
@@ -67,12 +68,23 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
     address: '',
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   const filteredClients = clientList.filter(
     (c) =>
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.panNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const totalPages = Math.ceil(filteredClients.length / pageSize) || 1;
+  const activePage = Math.min(currentPage, totalPages);
+  const paginatedClients = filteredClients.slice((activePage - 1) * pageSize, activePage * pageSize);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -200,7 +212,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
           </div>
 
           <div className="space-y-2.5">
-            {filteredClients.map((c) => {
+            {paginatedClients.map((c) => {
               const isSelected = selectedClient?.id === c.id;
               return (
                 <div
@@ -226,6 +238,17 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                 </div>
               );
             })}
+
+            <PaginationControls
+              currentPage={activePage}
+              totalPages={totalPages}
+              totalItems={filteredClients.length}
+              pageSize={pageSize}
+              onPageChange={(p) => setCurrentPage(p)}
+              onPageSizeChange={(s) => setPageSize(s)}
+              pageSizeOptions={[5, 10, 20]}
+              itemName="clients"
+            />
           </div>
         </div>
 
