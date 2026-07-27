@@ -16,6 +16,7 @@ export const NewMatterModal: React.FC<NewMatterModalProps> = ({
   const [formData, setFormData] = useState({
     title: '',
     caseNumber: '',
+    cnrNumber: '',
     category: 'Civil' as const,
     court: 'Delhi High Court',
     judgeName: 'Hon’ble Justice Rajiv Shakdher',
@@ -30,9 +31,14 @@ export const NewMatterModal: React.FC<NewMatterModalProps> = ({
     e.preventDefault();
     const client = clients.find((c) => c.id === formData.clientId);
 
+    const cleanCnr = formData.cnrNumber ? formData.cnrNumber.replace(/[\s\-\/]/g, '').toUpperCase() : undefined;
+
     onSave({
       title: formData.title,
       caseNumber: formData.caseNumber,
+      cnrNumber: cleanCnr,
+      cnr: cleanCnr,
+      courtSyncStatus: cleanCnr && /^[A-Z]{4}\d{10}$/.test(cleanCnr) ? 'Synced' : 'Pending',
       category: formData.category,
       court: (formData.court as CourtType) || 'District Court',
       judgeName: formData.judgeName,
@@ -85,7 +91,7 @@ export const NewMatterModal: React.FC<NewMatterModalProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Case Number / CNR</label>
+              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Case Number</label>
               <input
                 type="text"
                 required
@@ -97,19 +103,30 @@ export const NewMatterModal: React.FC<NewMatterModalProps> = ({
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Case Category</label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium"
-              >
-                <option value="Civil">Civil / Commercial Suit</option>
-                <option value="Criminal">Criminal Trial / Appeal</option>
-                <option value="Company & Insolvency">Company & NCLT Insolvency</option>
-                <option value="GST & Indirect Tax">GST & Indirect Tax</option>
-                <option value="Constitutional">Constitutional / Writ Petition</option>
-              </select>
+              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">CNR Number (eCourts)</label>
+              <input
+                type="text"
+                placeholder="e.g. WBCA010001232024"
+                value={formData.cnrNumber}
+                onChange={(e) => setFormData({ ...formData, cnrNumber: e.target.value })}
+                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase"
+              />
             </div>
+          </div>
+
+          <div>
+            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Case Category</label>
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
+              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium"
+            >
+              <option value="Civil">Civil / Commercial Suit</option>
+              <option value="Criminal">Criminal Trial / Appeal</option>
+              <option value="Company & Insolvency">Company & NCLT Insolvency</option>
+              <option value="GST & Indirect Tax">GST & Indirect Tax</option>
+              <option value="Constitutional">Constitutional / Writ Petition</option>
+            </select>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

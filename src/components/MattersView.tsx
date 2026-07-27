@@ -61,9 +61,55 @@ export const MattersView: React.FC<MattersViewProps> = ({
 }) => {
   const [mattersList, setMattersList] = useState<Matter[]>(initialMatters);
   const [selectedMatter, setSelectedMatter] = useState<Matter | null>(initialMatters[0] || null);
-  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'timeline' | 'docs' | 'witnesses' | 'orders' | 'strategy'>('overview');
+  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'timeline' | 'docs' | 'witnesses' | 'orders' | 'strategy' | 'sync_log'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
+
+  // eCourt Sync Log State
+  const [caseSyncLogs, setCaseSyncLogs] = useState<any[]>([]);
+  const [isSyncingCurrentCase, setIsSyncingCurrentCase] = useState(false);
+  const [syncStatusMsg, setSyncStatusMsg] = useState<string | null>(null);
+
+  const fetchSyncLogsForSelected = async (matterId: string) => {
+    try {
+      const res = await fetch(`/api/ecourt/sync-log/${matterId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setCaseSyncLogs(data);
+      }
+    } catch (err) {
+      console.warn('Error fetching sync logs:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedMatter && activeSubTab === 'sync_log') {
+      fetchSyncLogsForSelected(selectedMatter.id);
+    }
+  }, [selectedMatter, activeSubTab]);
+
+  const handleSyncCurrentCase = async () => {
+    if (!selectedMatter) return;
+    setIsSyncingCurrentCase(true);
+    setSyncStatusMsg(null);
+    try {
+      const res = await fetch(`/api/ecourt/sync/${selectedMatter.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setSyncStatusMsg(data.message || 'Synced successfully with eCourts!');
+        fetchSyncLogsForSelected(selectedMatter.id);
+      } else {
+        setSyncStatusMsg(`⚠️ ${data.message || 'Sync failed.'}`);
+      }
+    } catch (err) {
+      setSyncStatusMsg('❌ Error connecting to eCourts server.');
+    } finally {
+      setIsSyncingCurrentCase(false);
+    }
+  };
 
   // Local state for interactive case details
   const [localHearings, setLocalHearings] = useState<Hearing[]>(initialHearings);
@@ -240,6 +286,28 @@ export const MattersView: React.FC<MattersViewProps> = ({
           <span>New Matter Intake</span>
         </button>
       </div>
+
+      {/* Warning Banner for Cases Missing CNR */}
+      {mattersList.filter((m) => !m.cnrNumber && !m.cnr).length > 0 && (
+        <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-amber-900 dark:text-amber-200 font-medium">
+            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+            <span>
+              <strong>{mattersList.filter((m) => !m.cnrNumber && !m.cnr).length} case(s) missing CNR Number.</strong> eCourt auto-sync & WhatsApp date change alerts require CNR number.
+            </span>
+          </div>
+          <button
+            onClick={() => {
+              if (selectedMatter) {
+                setShowEditModal(true);
+              }
+            }}
+            className="px-3 py-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shrink-0 shadow-sm"
+          >
+            Add CNR Numbers
+          </button>
+        </div>
+      )}
 
       {/* Filters & Search */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -595,6 +663,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                   { id: 'witnesses', label: `Witnesses (${matterWit.length})` },
                   { id: 'orders', label: `Court Orders (${matterOrders.length})` },
                   { id: 'strategy', label: 'AI Strategy & Contradictions' },
+                  { id: 'sync_log', label: 'eCourts Sync Log' },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -780,6 +849,72 @@ export const MattersView: React.FC<MattersViewProps> = ({
                         <li key={idx}>{note}</li>
                       ))}
                     </ul>
+                  </div>
+                </div>
+              )}
+
+              {activeSubTab === 'sync_log' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                        CNR Number: <span className="font-mono text-indigo-600 dark:text-indigo-400">{selectedMatter.cnrNumber || selectedMatter.cnr || 'Not Added'}</span>
+                      </h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Last synced at: {selectedMatter.courtSyncAt || 'Never'} • Status: {selectedMatter.courtSyncStatus || 'Pending'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleSyncCurrentCase}
+                      disabled={isSyncingCurrentCase}
+                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center gap-2 shadow-sm disabled:opacity-50"
+                    >
+                      <Clock className={`w-3.5 h-3.5 ${isSyncingCurrentCase ? 'animate-spin' : ''}`} />
+                      <span>{isSyncingCurrentCase ? 'Syncing...' : 'Sync with eCourts'}</span>
+                    </button>
+                  </div>
+
+                  {syncStatusMsg && (
+                    <div className="p-3 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-semibold border border-indigo-200 dark:border-indigo-800">
+                      {syncStatusMsg}
+                    </div>
+                  )}
+
+                  <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase text-[10px]">
+                        <tr>
+                          <th className="p-3">Date & Time</th>
+                          <th className="p-3">Status</th>
+                          <th className="p-3">Hearing Date Found</th>
+                          <th className="p-3">Court / Bench</th>
+                          <th className="p-3">Item No</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                        {caseSyncLogs.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="p-6 text-center text-slate-400">
+                              No eCourts sync history recorded yet for this case. Click "Sync with eCourts" to perform live check.
+                            </td>
+                          </tr>
+                        ) : (
+                          caseSyncLogs.map((log) => (
+                            <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                              <td className="p-3 font-mono text-[11px] text-slate-600 dark:text-slate-400">{log.syncedAt}</td>
+                              <td className="p-3">
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${log.status === 'success' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'}`}>
+                                  {log.status === 'success' ? '✅ Synced' : log.status}
+                                </span>
+                              </td>
+                              <td className="p-3 font-bold text-slate-900 dark:text-white">{log.nextHearing || 'N/A'}</td>
+                              <td className="p-3 text-slate-600 dark:text-slate-300">{log.caseStage || log.courtName || '-'}</td>
+                              <td className="p-3 font-bold text-indigo-600 dark:text-indigo-400">{log.itemNumber || '-'}</td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}

@@ -3,11 +3,19 @@ import { FolderKanban, Scale, AlertCircle, Sparkles, Filter, GripVertical, Move,
 import { Matter } from '../types';
 
 const KANBAN_STAGES = [
-  { id: 'Notice Stage', label: 'Notice & Summons Stage', color: 'bg-amber-500' },
-  { id: 'Active Litigation', label: 'Pleadings & Written Statement', color: 'bg-blue-500' },
-  { id: 'Evidence Stage', label: 'Evidence & Cross-Exam', color: 'bg-purple-500' },
-  { id: 'Pending Order', label: 'Final Arguments & Reserved', color: 'bg-indigo-500' },
-  { id: 'Decreed', label: 'Judgment & Decreed', color: 'bg-emerald-500' },
+  { id: 'Intake', label: '1. Intake', color: 'bg-slate-500', desc: 'New Matter Intake & Conflict Check' },
+  { id: 'Consultation', label: '2. Consultation', color: 'bg-cyan-500', desc: 'Initial Client Legal Briefing' },
+  { id: 'Retainer Signed', label: '3. Retainer Signed', color: 'bg-teal-500', desc: 'Vakalatnama & Engagement' },
+  { id: 'Research', label: '4. Research', color: 'bg-sky-500', desc: 'Precedents & Statutory Analysis' },
+  { id: 'Drafting', label: '5. Drafting', color: 'bg-indigo-500', desc: 'Pleadings & Annexures Drafted' },
+  { id: 'Filed', label: '6. Filed', color: 'bg-blue-600', desc: 'Registry Verification & CNR' },
+  { id: 'Notice Stage', label: '7. Notice Issued', color: 'bg-amber-500', desc: 'Summons & Notice Returnable' },
+  { id: 'Active Litigation', label: '8. Hearing', color: 'bg-violet-500', desc: 'Interim Injunctions & Pleadings' },
+  { id: 'Evidence Stage', label: '9. Evidence', color: 'bg-purple-600', desc: 'Chief & Cross-Examination' },
+  { id: 'Arguments', label: '10. Arguments', color: 'bg-fuchsia-600', desc: 'Final Arguments Submitted' },
+  { id: 'Pending Order', label: '11. Reserved', color: 'bg-rose-500', desc: 'Judgment Reserved by Court' },
+  { id: 'Decreed', label: '12. Disposed', color: 'bg-emerald-600', desc: 'Decreed / Final Judgment' },
+  { id: 'Appeal', label: '13. Appeal', color: 'bg-orange-600', desc: 'High Court / SLP Appeal' },
 ];
 
 interface KanbanBoardViewProps {
@@ -70,20 +78,8 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
     setMatters(prev => prev.map(m => {
       if (m.id !== matterId) return m;
 
-      let updatedStatus = m.status;
+      let updatedStatus = targetStageId as any;
       let updatedCategory = m.category;
-
-      if (targetStageId === 'Notice Stage') updatedStatus = 'Notice Stage';
-      else if (targetStageId === 'Active Litigation') updatedStatus = 'Active Litigation';
-      else if (targetStageId === 'Evidence Stage') {
-        updatedStatus = 'Pending Order';
-        updatedCategory = 'Criminal';
-      }
-      else if (targetStageId === 'Pending Order') {
-        updatedStatus = 'Pending Order';
-        if (updatedCategory === 'Criminal') updatedCategory = 'Civil';
-      }
-      else if (targetStageId === 'Decreed') updatedStatus = 'Decreed';
 
       return { ...m, status: updatedStatus, category: updatedCategory };
     }));

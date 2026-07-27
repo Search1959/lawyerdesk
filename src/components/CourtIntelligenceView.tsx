@@ -737,15 +737,16 @@ export const CourtIntelligenceView: React.FC = () => {
               <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-800">
                 <span className="text-[10px] font-mono font-bold text-slate-400 mr-1">Quick Select:</span>
                 {[
+                  { name: 'Calcutta High Court', id: 'court-chc' },
+                  { name: 'City Civil Court Kolkata', id: 'court-citycivil-kolkata' },
+                  { name: 'Alipore District Court', id: 'court-alipore-24pgs' },
+                  { name: 'Barasat District Court', id: 'court-barasat-24pgs' },
+                  { name: 'NCLT Kolkata Bench', id: 'court-nclt-kolkata' },
+                  { name: 'DRT Kolkata', id: 'court-drt-kolkata' },
                   { name: 'Delhi High Court', id: 'court-dhc' },
                   { name: 'Bombay High Court', id: 'court-bhc' },
-                  { name: 'Calcutta High Court', id: 'court-chc' },
-                  { name: 'Madras High Court', id: 'court-mhc' },
-                  { name: 'Karnataka High Court', id: 'court-khc' },
-                  { name: 'Allahabad High Court', id: 'court-ahc' },
-                  { name: 'Tis Hazari District Court', id: 'court-tis-hazari' },
                   { name: 'Saket District Court', id: 'court-saket' },
-                  { name: 'NCLT Principal Bench', id: 'court-nclt-delhi' },
+                  { name: 'Tis Hazari District Court', id: 'court-tis-hazari' },
                 ].map((item) => (
                   <button
                     key={item.id}

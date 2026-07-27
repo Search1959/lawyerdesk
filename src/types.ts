@@ -161,6 +161,7 @@ export interface Client {
   companyRegistrationNumber?: string;
   gstin?: string;
   kycVerified: boolean;
+  verifiedAt?: string;
   address: string;
   familyMembers?: ClientFamilyMember[];
   mattersCount: number;
@@ -266,6 +267,31 @@ export interface Matter {
   hearingsCount: number;
   documentsCount: number;
   createdAt: string;
+  cnrNumber?: string;
+  cnr?: string;
+  courtSyncAt?: string;
+  courtSyncStatus?: 'Synced' | 'CNR not found' | 'Error' | 'Pending';
+  itemNumber?: string;
+  caseStageEcourt?: string;
+  petitionerName?: string;
+  respondentName?: string;
+}
+
+export interface ECourtSyncLog {
+  id: string;
+  adminId: string;
+  caseId: string;
+  cnrNumber: string;
+  syncedAt: string;
+  status: 'success' | 'not_found' | 'error';
+  nextHearing?: string;
+  courtName?: string;
+  caseStage?: string;
+  petitioner?: string;
+  respondent?: string;
+  judgeName?: string;
+  itemNumber?: string;
+  errorMessage?: string;
 }
 
 export interface OCRMetadata {

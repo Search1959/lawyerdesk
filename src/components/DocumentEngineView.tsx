@@ -185,6 +185,8 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
     }
   };
 
+  const [ocrStatusFilter, setOcrStatusFilter] = useState<'all' | 'ready' | 'pending' | 'failed'>('all');
+
   const filteredDocs = documents.filter((d) => {
     const matchesSearch =
       d.fileName.toLowerCase().includes(searchFilter.toLowerCase()) ||
@@ -206,7 +208,13 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
       }
     }
 
-    return matchesSearch && matchesMatter && matchesFolder;
+    let matchesOcrStatus = true;
+    const status = String(d.ocrStatus);
+    if (ocrStatusFilter === 'ready') matchesOcrStatus = status === 'Completed' || status === 'Ready';
+    if (ocrStatusFilter === 'pending') matchesOcrStatus = status === 'Processing' || status === 'Queued' || status === 'Pending';
+    if (ocrStatusFilter === 'failed') matchesOcrStatus = status === 'Failed';
+
+    return matchesSearch && matchesMatter && matchesFolder && matchesOcrStatus;
   });
 
   const [docPage, setDocPage] = useState(1);
@@ -622,32 +630,80 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
               </div>
             </div>
 
-            {/* Matter Filter Pills */}
-            <div className="flex items-center gap-1.5 text-[11px]">
-              <span className="text-slate-400 font-bold mr-1 flex items-center gap-1">
-                <Filter className="w-3 h-3" /> Filter:
-              </span>
-              <button
-                onClick={() => setMatterFilterMode('all')}
-                className={`px-2 py-0.5 rounded-md font-bold transition-all ${
-                  matterFilterMode === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-                }`}
-              >
-                All Case Files
-              </button>
-              <button
-                onClick={() => setMatterFilterMode('selected')}
-                className={`px-2 py-0.5 rounded-md font-bold transition-all truncate max-w-[170px] ${
-                  matterFilterMode === 'selected'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-                }`}
-                title={matters.find((m) => m.id === selectedMatterId)?.title || 'Selected Case File'}
-              >
-                Target Case Only
-              </button>
+            {/* Matter & OCR Status Filter Pills */}
+            <div className="flex flex-col gap-2 text-[11px]">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-slate-400 font-bold mr-1 flex items-center gap-1">
+                  <Filter className="w-3 h-3" /> Scope:
+                </span>
+                <button
+                  onClick={() => setMatterFilterMode('all')}
+                  className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                    matterFilterMode === 'all'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                  }`}
+                >
+                  All Case Files
+                </button>
+                <button
+                  onClick={() => setMatterFilterMode('selected')}
+                  className={`px-2 py-0.5 rounded-md font-bold transition-all truncate max-w-[170px] ${
+                    matterFilterMode === 'selected'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                  }`}
+                  title={matters.find((m) => m.id === selectedMatterId)?.title || 'Selected Case File'}
+                >
+                  Target Case Only
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-slate-400 font-bold mr-1 flex items-center gap-1">
+                  <Cpu className="w-3 h-3" /> OCR Status:
+                </span>
+                <button
+                  onClick={() => setOcrStatusFilter('all')}
+                  className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                    ocrStatusFilter === 'all'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => setOcrStatusFilter('ready')}
+                  className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                    ocrStatusFilter === 'ready'
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                  }`}
+                >
+                  Ready (Completed)
+                </button>
+                <button
+                  onClick={() => setOcrStatusFilter('pending')}
+                  className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                    ocrStatusFilter === 'pending'
+                      ? 'bg-amber-600 text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                  }`}
+                >
+                  Pending
+                </button>
+                <button
+                  onClick={() => setOcrStatusFilter('failed')}
+                  className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                    ocrStatusFilter === 'failed'
+                      ? 'bg-rose-600 text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                  }`}
+                >
+                  Failed
+                </button>
+              </div>
             </div>
           </div>
 

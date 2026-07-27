@@ -947,7 +947,18 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               onNavigateToCases={() => setActiveTab('matters')}
             />
           )}
-          {activeTab === 'ecourt_tracker' && <ECourtTrackerView />}
+          {activeTab === 'ecourt_tracker' && (
+            <ECourtTrackerView
+              matters={matters}
+              onSelectMatter={(m) => {
+                setSelectedMatter(m);
+                setActiveTab('matters');
+              }}
+              onUpdateMatter={(m) => {
+                setAllMatters((prev) => prev.map((x) => (x.id === m.id ? m : x)));
+              }}
+            />
+          )}
           {activeTab === 'reports' && <ReportsView />}
           {activeTab === 'manage_team' && <ManageTeamView currentUser={currentUser} currentFirm={currentFirm} />}
           {activeTab === 'reminders' && <RemindersView />}
