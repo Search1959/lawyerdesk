@@ -16,6 +16,7 @@ import { LandingPage } from './components/LandingPage';
 import { LoginPage } from './components/LoginPage';
 import { HelpCenterView } from './components/HelpCenterView';
 import { AccountManagerModal } from './components/AccountManagerModal';
+import { ChangePasswordModal } from './components/ChangePasswordModal';
 import { EnquiriesView } from './components/EnquiriesView';
 import { TasksView } from './components/TasksView';
 import { KanbanBoardView } from './components/KanbanBoardView';
@@ -68,6 +69,7 @@ export default function App() {
 
   // Modals & Read-Only Notice
   const [showAccountManager, setShowAccountManager] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [showNewMatterModal, setShowNewMatterModal] = useState(false);
   const [demoNoticeMessage, setDemoNoticeMessage] = useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -813,6 +815,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         onOpenLogin={() => setViewMode('login')}
         onOpenHelp={() => setActiveTab('help')}
         onOpenAccountManager={() => setShowAccountManager(true)}
+        onOpenChangePassword={() => setShowChangePasswordModal(true)}
         onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
       />
 
@@ -1074,6 +1077,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               currentFirm={currentFirm}
               currentUser={currentUser}
               onUpdateFirm={handleUpdateFirm}
+              onOpenChangePassword={() => setShowChangePasswordModal(true)}
             />
           )}
 
@@ -1101,6 +1105,13 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         existingUsers={users}
         onAddFirm={handleAddFirm}
         onAddUser={handleAddUser}
+      />
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
+        currentUser={currentUser}
       />
 
       {/* New Matter Modal */}

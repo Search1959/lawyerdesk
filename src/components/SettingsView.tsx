@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Shield, Building, FileText, Database, Save, CheckCircle2, CreditCard, PhoneCall, Globe, Key } from 'lucide-react';
+import { Settings, Shield, Building, FileText, Database, Save, CheckCircle2, CreditCard, PhoneCall, Globe, Key, KeyRound } from 'lucide-react';
 import { LawFirm, User } from '../types';
 
 interface SettingsViewProps {
   currentFirm?: LawFirm;
   currentUser?: User;
   onUpdateFirm?: (updatedFirm: LawFirm) => Promise<void> | void;
+  onOpenChangePassword?: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
   currentFirm,
   currentUser,
   onUpdateFirm,
+  onOpenChangePassword,
 }) => {
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -389,6 +391,34 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Section 6: Account Security & Password */}
+        {onOpenChangePassword && (
+          <div className="space-y-4 pt-2">
+            <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+              <Shield className="w-4 h-4 text-amber-500" /> Account Security & Credentials
+            </h3>
+
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-xl flex items-center justify-between gap-4">
+              <div className="space-y-1">
+                <span className="font-bold text-xs text-amber-900 dark:text-amber-200 block">
+                  User Password & Authentication Policy
+                </span>
+                <p className="text-[11px] text-amber-800 dark:text-amber-300">
+                  Every user account can update their password at any time. Changes take effect immediately and are saved to the secure cloud directory.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onOpenChangePassword}
+                className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 shrink-0"
+              >
+                <KeyRound className="w-4 h-4" />
+                <span>Change Password</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Submit */}
         <div className="flex justify-end pt-4 border-t border-slate-200 dark:border-slate-800">

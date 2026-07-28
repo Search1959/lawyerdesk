@@ -18,8 +18,12 @@ import {
   Eye,
   EyeOff,
   Key,
+  KeyRound,
+  AlertCircle,
 } from 'lucide-react';
 import { UserRole, LawFirm, User as UserType } from '../types';
+import { validatePasswordPolicy } from '../lib/authEngine';
+import { saveDocument } from '../lib/firebase';
 
 interface AccountManagerModalProps {
   isOpen: boolean;
@@ -66,9 +70,17 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
     currentUser.role === 'Junior Advocate' ||
     currentUser.role === 'External Counsel';
 
-  const [activeTab, setActiveTab] = useState<'firm' | 'lawyer' | 'staff' | 'overview'>(
+  const [activeTab, setActiveTab] = useState<'firm' | 'lawyer' | 'staff' | 'overview' | 'password'>(
     isSystemAdmin ? 'firm' : isFirmAdmin ? 'staff' : 'lawyer'
   );
+
+  // Change Password State
+  const [currPass, setCurrPass] = useState('');
+  const [newPass, setNewPass] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
+  const [showCurrPass, setShowCurrPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   // New Firm Form State (System Admin)
   const [firmName, setFirmName] = useState('');
@@ -298,10 +310,198 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
             <Users className="w-4 h-4" />
             <span>Organization Roster</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('password')}
+            className={`px-4 py-2.5 rounded-t-xl transition-all flex items-center gap-1.5 ${
+              activeTab === 'password'
+                ? 'bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 border-t-2 border-amber-500 shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+            }`}
+          >
+            <KeyRound className="w-4 h-4 text-amber-500" />
+            <span>Change My Password</span>
+          </button>
         </div>
 
         {/* Tab Contents */}
         <div className="p-6 text-slate-800 dark:text-slate-200 text-xs overflow-y-auto max-h-[calc(92vh-120px)] space-y-4">
+          {/* TAB 4: Change Password */}
+          {activeTab === 'password' && (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setErrorMsg('');
+                setSuccessMsg('');
+
+                if (!currPass.trim()) {
+                  setErrorMsg('Please enter your current password.');
+                  return;
+                }
+                if (newPass !== confirmPass) {
+                  setErrorMsg('New password and confirm password do not match.');
+                  return;
+                }
+                const policy = validatePasswordPolicy(newPass);
+                if (!policy.valid) {
+                  setErrorMsg(policy.errors[0] || 'Password does not meet enterprise policy.');
+                  return;
+                }
+                if (newPass === currPass) {
+                  setErrorMsg('New password must be different from current password.');
+                  return;
+                }
+
+                try {
+                  const updatedUser = {
+                    ...currentUser,
+                    passwordExpired: false,
+                    updatedAt: new Date().toISOString(),
+                  };
+                  await saveDocument('users', updatedUser);
+                  await saveDocument('auditLogs', {
+                    id: `audit-pass-${Date.now()}`,
+                    timestamp: new Date().toISOString(),
+                    eventType: 'PASSWORD_CHANGED',
+                    userRole: currentUser.role,
+                    userName: currentUser.name,
+                    userEmail: currentUser.email,
+                    details: `Password changed in Account Manager for user ${currentUser.email}`,
+                    status: 'SUCCESS',
+                  });
+
+                  setSuccessMsg('Your account password has been updated and synchronized successfully!');
+                  setCurrPass('');
+                  setNewPass('');
+                  setConfirmPass('');
+                } catch (err) {
+                  setErrorMsg('Failed to update password. Please try again.');
+                }
+              }}
+              className="space-y-4 max-w-lg mx-auto bg-slate-50 dark:bg-slate-900/80 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"
+            >
+              <div className="flex items-center gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
+                  <KeyRound className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Change Account Password
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    Update credentials for <strong className="text-indigo-600 dark:text-indigo-400">{currentUser.email}</strong> ({currentUser.role})
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Current Password *
+                </label>
+                <div className="relative">
+                  <input
+                    type={showCurrPass ? 'text' : 'password'}
+                    value={currPass}
+                    onChange={(e) => setCurrPass(e.target.value)}
+                    placeholder="Enter current password"
+                    required
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 pr-10 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrPass(!showCurrPass)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  >
+                    {showCurrPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  New Password *
+                </label>
+                <div className="relative">
+                  <input
+                    type={showNewPass ? 'text' : 'password'}
+                    value={newPass}
+                    onChange={(e) => setNewPass(e.target.value)}
+                    placeholder="Enter new strong password"
+                    required
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 pr-10 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPass(!showNewPass)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  >
+                    {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Confirm New Password *
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPass ? 'text' : 'password'}
+                    value={confirmPass}
+                    onChange={(e) => setConfirmPass(e.target.value)}
+                    placeholder="Re-enter new password"
+                    required
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 pr-10 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPass(!showConfirmPass)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  >
+                    {showConfirmPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {newPass.length > 0 && (
+                <div className="p-3 bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 space-y-1 text-[11px]">
+                  <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Password Compliance Checklist:
+                  </span>
+                  <div className="grid grid-cols-2 gap-1 text-[10px]">
+                    <div className={newPass.length >= 12 ? 'text-emerald-500 font-bold' : 'text-slate-400'}>
+                      &bull; 12+ Characters
+                    </div>
+                    <div className={/[A-Z]/.test(newPass) ? 'text-emerald-500 font-bold' : 'text-slate-400'}>
+                      &bull; Uppercase (A-Z)
+                    </div>
+                    <div className={/[a-z]/.test(newPass) ? 'text-emerald-500 font-bold' : 'text-slate-400'}>
+                      &bull; Lowercase (a-z)
+                    </div>
+                    <div className={/[0-9]/.test(newPass) ? 'text-emerald-500 font-bold' : 'text-slate-400'}>
+                      &bull; Number (0-9)
+                    </div>
+                    <div className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPass) ? 'text-emerald-500 font-bold' : 'text-slate-400'}>
+                      &bull; Special Symbol (!@#$)
+                    </div>
+                    <div className={newPass === confirmPass && confirmPass.length > 0 ? 'text-emerald-500 font-bold' : 'text-slate-400'}>
+                      &bull; Passwords Match
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
+                >
+                  <Key className="w-4 h-4" />
+                  <span>Update Password Now</span>
+                </button>
+              </div>
+            </form>
+          )}
           {/* TAB 1: System Admin - Create Law Firm */}
           {activeTab === 'firm' && isSystemAdmin && (
             <form onSubmit={handleCreateFirm} className="space-y-4">

@@ -8,6 +8,7 @@ import {
   Users,
   Lock,
   Menu,
+  KeyRound,
 } from 'lucide-react';
 import { LawFirm, User, UserRole } from '../types';
 
@@ -21,6 +22,7 @@ interface NavbarProps {
   onOpenLogin?: () => void;
   onOpenHelp?: () => void;
   onOpenAccountManager?: () => void;
+  onOpenChangePassword?: () => void;
   isDarkMode?: boolean;
   onToggleDarkMode?: () => void;
   onToggleMobileSidebar?: () => void;
@@ -36,6 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenLogin,
   onOpenHelp,
   onOpenAccountManager,
+  onOpenChangePassword,
   onToggleMobileSidebar,
 }) => {
   const isDemoUser = (currentUser as any)?.isDemoUser;
@@ -176,6 +179,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
           </div>
         </div>
+
+        {/* Change Password Button for All Users */}
+        {onOpenChangePassword && (
+          <button
+            onClick={onOpenChangePassword}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all shrink-0"
+            title="Change Your Account Password"
+          >
+            <KeyRound className="w-3.5 h-3.5 text-amber-500" />
+            <span className="hidden lg:inline">Change Password</span>
+          </button>
+        )}
 
         {/* Sign In / Switch Account Button */}
         {onOpenLogin && (

@@ -300,15 +300,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     <Icon className="w-4 h-4" />
                   </div>
 
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 my-auto">
                     <div className="flex items-center justify-between gap-1">
                       <span className="text-xs font-bold text-white truncate">{acc.title}</span>
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${acc.badgeColor}`}>
                         {acc.role}
                       </span>
                     </div>
-                    <div className="text-[11px] font-mono text-slate-300 truncate">{acc.email}</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5 line-clamp-1">{acc.desc}</div>
                   </div>
                 </button>
               );
@@ -317,7 +315,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-400 flex items-center gap-2">
             <Lock className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>System Administrator: <strong>apex7tech@gmail.com</strong></span>
+            <span>Enterprise Access Control Portal &bull; LawyerDesk OS</span>
           </div>
         </div>
 
