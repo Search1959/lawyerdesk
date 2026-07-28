@@ -28,7 +28,13 @@ interface AccountManagerModalProps {
   currentFirm?: LawFirm;
   existingFirms: LawFirm[];
   existingUsers: UserType[];
-  onAddFirm: (firm: Partial<LawFirm>, adminEmail: string, adminName: string) => void;
+  onAddFirm: (
+    firm: Partial<LawFirm>,
+    adminEmail: string,
+    adminName: string,
+    adminRole?: UserRole,
+    initZeroData?: boolean
+  ) => void;
   onAddUser: (user: Partial<UserType>) => void;
 }
 
@@ -43,10 +49,22 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
   onAddUser,
 }) => {
   const isDemo = (currentUser as any)?.isDemoUser;
-  const isSystemAdmin = currentUser.role === 'Super Admin';
-  const isFirmAdmin = currentUser.role === 'Firm Admin';
+  const isSystemAdmin =
+    currentUser.role === 'Super Admin' ||
+    currentUser.role === 'System Administrator' ||
+    currentUser.role === 'System Owner' ||
+    currentUser.email === 'apex7tech@gmail.com';
+  const isFirmAdmin =
+    currentUser.role === 'Firm Admin' ||
+    currentUser.role === 'Law Firm' ||
+    isSystemAdmin;
   const isIndividualLawyer =
-    currentUser.role === 'Senior Lawyer' || currentUser.role === 'Associate';
+    currentUser.role === 'Senior Lawyer' ||
+    currentUser.role === 'Senior Advocate' ||
+    currentUser.role === 'Associate' ||
+    currentUser.role === 'Associate Advocate' ||
+    currentUser.role === 'Junior Advocate' ||
+    currentUser.role === 'External Counsel';
 
   const [activeTab, setActiveTab] = useState<'firm' | 'lawyer' | 'staff' | 'overview'>(
     isSystemAdmin ? 'firm' : isFirmAdmin ? 'staff' : 'lawyer'
@@ -62,6 +80,8 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
   const [firmAdminConfirmPassword, setFirmAdminConfirmPassword] = useState('');
   const [showFirmPassword, setShowFirmPassword] = useState(false);
   const [firmPlan, setFirmPlan] = useState<'Enterprise Unlimited' | 'Partner Suite' | 'Standard Firm'>('Partner Suite');
+  const [firmAdminRole, setFirmAdminRole] = useState<UserRole>('System Administrator');
+  const [initZeroData, setInitZeroData] = useState(true);
 
   // New User Form State
   const [userName, setUserName] = useState('');
@@ -112,10 +132,12 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
         ],
       },
       firmAdminEmail,
-      firmAdminName || 'Firm Admin'
+      firmAdminName || 'System Administrator',
+      firmAdminRole,
+      initZeroData
     );
 
-    setSuccessMsg(`Law Firm "${firmName}" & Firm Admin (${firmAdminEmail}) created successfully!`);
+    setSuccessMsg(`Law Firm "${firmName}" & ${firmAdminRole} Account (${firmAdminEmail}) provisioned with Zero Demo Data!`);
     setFirmName('');
     setFirmCode('');
     setFirmAdminName('');
@@ -162,8 +184,8 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-3xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-4xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col my-auto">
         {/* Modal Header */}
         <div className="p-5 bg-slate-900 text-white border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -279,7 +301,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
         </div>
 
         {/* Tab Contents */}
-        <div className="p-6 text-slate-800 dark:text-slate-200 text-xs">
+        <div className="p-6 text-slate-800 dark:text-slate-200 text-xs overflow-y-auto max-h-[calc(92vh-120px)] space-y-4">
           {/* TAB 1: System Admin - Create Law Firm */}
           {activeTab === 'firm' && isSystemAdmin && (
             <form onSubmit={handleCreateFirm} className="space-y-4">
@@ -405,6 +427,54 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
                   />
                 </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Firm Admin Account Privilege Level *
+                  </label>
+                  <select
+                    value={firmAdminRole}
+                    onChange={(e) => setFirmAdminRole(e.target.value as UserRole)}
+                    className="w-full px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-300 dark:border-indigo-700 text-indigo-950 dark:text-indigo-200 font-bold focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="System Administrator">System Administrator (Full Owner & System Admin)</option>
+                    <option value="Firm Admin">Firm Admin (Managing Partner / Firm Operations)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Zero Demo Data & Isolation Option */}
+              <div className="p-3.5 rounded-xl bg-slate-900 text-slate-100 border border-slate-800 space-y-2.5 shadow-inner">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={initZeroData}
+                    onChange={(e) => setInitZeroData(e.target.checked)}
+                    className="w-4 h-4 text-emerald-500 rounded border-slate-700 focus:ring-emerald-500"
+                  />
+                  <span className="font-extrabold text-emerald-400 text-xs flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    Provision Pure Clean Workspace (Zero Demo Data Mode)
+                  </span>
+                </label>
+                <div className="grid grid-cols-2 gap-2 text-[10.5px] text-slate-300 pt-1 border-t border-slate-800">
+                  <div className="flex items-center gap-1.5 text-emerald-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <span>Isolated Firm ID & Branch</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-emerald-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <span>0 Pre-existing Matters / Clients</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-emerald-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <span>Full Admin User Management</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-emerald-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <span>Independent Audit Log & GST Billing</span>
+                  </div>
+                </div>
               </div>
 
               <div className="pt-3 flex justify-end">
@@ -497,19 +567,21 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
 
                 <div>
                   <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Role & Authority Level
+                    Role & Authority Level *
                   </label>
                   <select
                     value={userRole}
                     onChange={(e) => setUserRole(e.target.value as UserRole)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-300 dark:border-indigo-700 text-indigo-950 dark:text-indigo-200 font-bold focus:ring-2 focus:ring-indigo-500"
                   >
-                    <option value="Senior Lawyer">Senior Lawyer / Advocate</option>
-                    <option value="Associate">Associate Lawyer</option>
-                    <option value="Junior">Junior Advocate</option>
-                    <option value="Staff">Paralegal / Legal Staff</option>
-                    <option value="Accounts">Accounts & Billing Specialist</option>
-                    <option value="Client">Client Account</option>
+                    {isSystemAdmin && <option value="System Administrator">System Administrator (Full Owner & Admin)</option>}
+                    <option value="Firm Admin">Firm Admin (Managing Partner / Firm Ops)</option>
+                    <option value="Senior Advocate">Senior Advocate / Partner</option>
+                    <option value="Associate Advocate">Associate Advocate</option>
+                    <option value="Junior Advocate">Junior Advocate</option>
+                    <option value="Office Staff">Paralegal / Legal Secretary</option>
+                    <option value="Accounts Staff">Accounts & GST Billing Specialist</option>
+                    <option value="Client Portal User">Client Portal Account</option>
                   </select>
                 </div>
 
@@ -536,6 +608,105 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     onChange={(e) => setUserPhone(e.target.value)}
                     className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                   />
+                </div>
+              </div>
+
+              {/* Dynamic Role Authority & Privilege Matrix Card */}
+              <div className="p-3.5 rounded-xl bg-slate-900 text-slate-200 border border-slate-800 space-y-2 shadow-inner">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2 font-bold text-indigo-300">
+                  <span className="flex items-center gap-1.5 text-xs">
+                    <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                    Role Authority & Privilege Matrix
+                  </span>
+                  <span className="px-2 py-0.5 rounded text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">
+                    {userRole}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                  {(userRole === 'System Administrator' || userRole === 'Firm Admin' || userRole === 'Super Admin') && (
+                    <>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>Full Firm Management & User Provisioning</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>All Court Matters, Cause Lists & OCR</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>GST Invoicing, Collections & Financial Analytics</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>System Settings, Audit Logs & Database Export</span>
+                      </div>
+                    </>
+                  )}
+
+                  {(userRole === 'Senior Lawyer' || userRole === 'Associate' || userRole === 'Junior') && (
+                    <>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>Create & Edit Assigned Court Matters</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>High Court / District Court Cause List Tracker</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>PaddleOCR Document Scanning & AI Grounded RAG</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-500 line-through">
+                        <X className="w-3.5 h-3.5 shrink-0" />
+                        <span>No System Owner Settings / Firm Provisioning</span>
+                      </div>
+                    </>
+                  )}
+
+                  {(userRole === 'Staff' || userRole === 'Accounts') && (
+                    <>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>Manage Cause List Hearings & Task Schedules</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>Issue GST Tax Invoices & Track Receipts</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-500 line-through">
+                        <X className="w-3.5 h-3.5 shrink-0" />
+                        <span>No Senior Advocate Privileges</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-500 line-through">
+                        <X className="w-3.5 h-3.5 shrink-0" />
+                        <span>No System Admin Controls</span>
+                      </div>
+                    </>
+                  )}
+
+                  {userRole === 'Client' && (
+                    <>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>Isolated Client Portal Access</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>View Assigned Cases, Order PDFs & Invoices</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-500 line-through">
+                        <X className="w-3.5 h-3.5 shrink-0" />
+                        <span>No Access to Other Clients' Data</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-500 line-through">
+                        <X className="w-3.5 h-3.5 shrink-0" />
+                        <span>No Advocate / Firm Tools</span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 

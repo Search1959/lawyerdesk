@@ -166,6 +166,28 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         matchedUser.is_active = true;
         matchedUser.is_deleted = false;
         matchedUser.status = 'Active';
+
+        // Override/update user role with selected dropdown role if chosen by user
+        const effectiveRole = selectedRole || matchedUser.role;
+        matchedUser.role = effectiveRole;
+
+        // Upgrade permissions if logging in with Advocate/Admin role
+        if (
+          effectiveRole === 'System Administrator' ||
+          effectiveRole === 'System Owner' ||
+          effectiveRole === 'Super Admin' ||
+          effectiveRole === 'Law Firm' ||
+          effectiveRole === 'Firm Admin' ||
+          effectiveRole === 'Senior Advocate' ||
+          effectiveRole === 'Senior Lawyer' ||
+          effectiveRole === 'Associate Advocate' ||
+          effectiveRole === 'Associate' ||
+          effectiveRole === 'Junior Advocate' ||
+          effectiveRole === 'Junior'
+        ) {
+          matchedUser.permissions = ['all_access', 'matter_read', 'matter_write', 'ai_copilot'];
+        }
+
         saveDocument('users', matchedUser).catch(() => {});
 
         const statusValidation = validateAccountStatus(matchedUser);
@@ -174,8 +196,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           return;
         }
 
-        const isDemoUser = matchedUser.isDemoUser || matchedUser.role === 'Demo User';
-        onLoginSuccess(matchedUser.email, matchedUser.role || selectedRole, matchedUser.name, isDemoUser);
+        const isDemoUser = matchedUser.isDemoUser || effectiveRole === 'Demo User';
+        onLoginSuccess(matchedUser.email, effectiveRole, matchedUser.name, isDemoUser);
         return;
       }
 
@@ -187,8 +209,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           setErrorMsg('Your account has been deactivated. Please contact the System Administrator.');
           return;
         }
-        const isDemoUser = matchedPreset.isDemoUser || matchedPreset.role === 'Demo User';
-        onLoginSuccess(matchedPreset.email, matchedPreset.role, matchedPreset.name, isDemoUser);
+        const effectiveRole = selectedRole || matchedPreset.role;
+        const isDemoUser = matchedPreset.isDemoUser || effectiveRole === 'Demo User';
+        onLoginSuccess(matchedPreset.email, effectiveRole, matchedPreset.name, isDemoUser);
         return;
       }
 

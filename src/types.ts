@@ -39,6 +39,26 @@ export interface LawFirm {
   is_deleted?: boolean;
   deleted_at?: string;
   deleted_by?: string;
+
+  // Law Firm Credentials & Preferences
+  barRegistrationNo?: string;
+  gstin?: string;
+  panNumber?: string;
+  tanNumber?: string;
+  defaultCourt?: string;
+  managingPartner?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  invoiceHeaderNotes?: string;
+  bankName?: string;
+  bankAccountNo?: string;
+  bankIfsc?: string;
+  eCourtsApiKey?: string;
+  eCourtsAdvocateCode?: string;
+  autoSyncCauseList?: boolean;
+  aiModel?: string;
+  strictGrounding?: boolean;
 }
 
 export interface Branch {

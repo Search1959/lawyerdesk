@@ -187,12 +187,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <nav className="flex-1 p-2.5 space-y-4 overflow-y-auto custom-scrollbar">
           {navGroups.map((group, idx) => {
+            const isSysAdminUser =
+              role === 'Super Admin' ||
+              role === 'System Administrator' ||
+              role === 'System Owner' ||
+              currentUser?.email === 'apex7tech@gmail.com';
+
             const filteredItems = group.items.filter((item) => {
-              if (role === 'Super Admin' || (currentUser as any)?.isDemoUser) return true;
-              if (item.isSystemOnly) return false;
-              if (role === 'Client') {
+              // System-Only items (e.g., PostgreSQL Schema, RBAC & Security) MUST strictly only be shown to System Administrators
+              if (item.isSystemOnly) {
+                return isSysAdminUser;
+              }
+
+              if (role === 'Client' || role === 'Client Portal User') {
                 return ['dashboard', 'matters', 'hearings', 'invoices', 'help', 'messages'].includes(item.id);
               }
+
               return true;
             });
 

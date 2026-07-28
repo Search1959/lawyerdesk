@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
 import {
   Sparkles,
@@ -6,6 +6,8 @@ import {
   BookOpen,
   Mic,
   MicOff,
+  Volume2,
+  VolumeX,
   Copy,
   Check,
   Scale,
@@ -21,6 +23,7 @@ import {
   FilePenLine,
   X,
   ExternalLink,
+  Radio,
 } from 'lucide-react';
 import { Matter, AIChatMessage, Document } from '../types';
 
@@ -40,7 +43,9 @@ export const AIChatView: React.FC<AIChatViewProps> = ({
   const [messages, setMessages] = useState<AIChatMessage[]>([]);
   const [inputQuery, setInputQuery] = useState('');
   const [isThinking, setIsThinking] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+  const [autoReadAloud, setAutoReadAloud] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [citationModalText, setCitationModalText] = useState<{
     title: string;
@@ -48,6 +53,24 @@ export const AIChatView: React.FC<AIChatViewProps> = ({
     details: string;
     excerpt: string;
   } | null>(null);
+
+  const recognitionRef = useRef<any>(null);
+
+  // Clean up speech on unmount
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          // ignore
+        }
+      }
+    };
+  }, []);
 
   React.useEffect(() => {
     if (selectedMatter) {
@@ -66,13 +89,117 @@ Welcome to LAWYER DESK AI Copilot. I am strictly grounded in the case files for 
 
 I search only case documents, court orders, OCR chunks, and hearings for this case. Every response cites exact Document Name, Page Number, Paragraph, and Date.
 
-Try typing or selecting a **Quick Command** from the left panel.`,
+Try typing, dictating with the **Voice Mic**, or selecting a **Quick Command** from the left panel.`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           groundedInCase: true,
         },
       ]);
     }
   }, [selectedMatter?.id]);
+
+  const stripMarkdownForSpeech = (text: string): string => {
+    return text
+      .replace(/#{1,6}\s?/g, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/_{1,2}(.*?)_{1,2}/g, '$1')
+      .replace(/`{1,3}(.*?)(`{1,3}|$)/g, '$1')
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+      .replace(/---/g, '')
+      .replace(/\|\s*/g, ' ')
+      .trim();
+  };
+
+  const speakMessage = (msgId: string, text: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      alert('Text-to-speech voice synthesis is not supported in this browser.');
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    if (speakingMsgId === msgId) {
+      setSpeakingMsgId(null);
+      return;
+    }
+
+    const cleanText = stripMarkdownForSpeech(text);
+    if (!cleanText) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'en-IN';
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    utterance.onend = () => setSpeakingMsgId(null);
+    utterance.onerror = () => setSpeakingMsgId(null);
+
+    setSpeakingMsgId(msgId);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const toggleSpeechRecognition = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          // ignore
+        }
+      }
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setIsListening(true);
+      setInputQuery('What are the key grounds for interim injunction under Order 39 Rule 1?');
+      setTimeout(() => {
+        setIsListening(false);
+      }, 3000);
+      return;
+    }
+
+    try {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setSpeakingMsgId(null);
+
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-IN';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0].transcript)
+          .join('');
+        setInputQuery(transcript);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Voice dictation error:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error('Could not start speech recognition:', err);
+      setIsListening(false);
+    }
+  };
 
   const caseDocsCount = documents.filter((d) => !selectedMatter || d.matterId === selectedMatter.id).length;
 
@@ -94,6 +221,15 @@ Try typing or selecting a **Quick Command** from the left panel.`,
   const handleSendMessage = async (queryText?: string) => {
     const textToSend = queryText || inputQuery;
     if (!textToSend.trim() || !selectedMatter) return;
+
+    if (isListening && recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        // ignore
+      }
+      setIsListening(false);
+    }
 
     const userMsg: AIChatMessage = {
       id: `usr-${Date.now()}`,
@@ -131,6 +267,12 @@ Try typing or selecting a **Quick Command** from the left panel.`,
       };
 
       setMessages((prev) => [...prev, aiMsg]);
+
+      if (autoReadAloud && aiMsg.text) {
+        setTimeout(() => {
+          speakMessage(aiMsg.id, aiMsg.text);
+        }, 300);
+      }
     } catch (err) {
       console.error(err);
       setMessages((prev) => [
@@ -170,18 +312,6 @@ Try typing or selecting a **Quick Command** from the left panel.`,
     const text = messages.map((m) => `${m.sender.toUpperCase()}: ${m.text}`).join('\n\n');
     navigator.clipboard.writeText(text);
     alert('Entire chat copied to clipboard!');
-  };
-
-  const toggleRecording = () => {
-    if (!isRecording) {
-      setIsRecording(true);
-      setTimeout(() => {
-        setIsRecording(false);
-        setInputQuery('What is the key ground for bank guarantee stay under EPC contract clause 14.3?');
-      }, 2500);
-    } else {
-      setIsRecording(false);
-    }
   };
 
   const handleCopy = (id: string, text: string) => {
@@ -300,7 +430,7 @@ Try typing or selecting a **Quick Command** from the left panel.`,
         {/* Right Column (8 cols) - Main Chat Stream & Controls */}
         <div className="lg:col-span-8 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 min-h-[520px] flex flex-col justify-between">
           {/* Right Header Bar */}
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <Bot className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               <span className="font-extrabold text-xs text-slate-900 dark:text-white uppercase tracking-wider">
@@ -309,6 +439,18 @@ Try typing or selecting a **Quick Command** from the left panel.`,
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setAutoReadAloud(!autoReadAloud)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all ${
+                  autoReadAloud
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+                }`}
+                title="Automatically read aloud new AI responses using voice synthesis"
+              >
+                <Volume2 className={`w-3 h-3 ${autoReadAloud ? 'animate-pulse' : ''}`} />
+                <span>{autoReadAloud ? 'Auto Read Aloud On' : 'Auto Read Aloud Off'}</span>
+              </button>
               <button
                 onClick={handleCopyAll}
                 className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center gap-1 transition-colors"
@@ -358,13 +500,34 @@ Try typing or selecting a **Quick Command** from the left panel.`,
                   ) : (
                     <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/90 shadow-sm overflow-hidden transition-all">
                       {/* Document Sheet Header */}
-                      <div className="px-4 py-2.5 bg-slate-200/60 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-[11px] text-slate-700 dark:text-slate-300">
+                      <div className="px-4 py-2.5 bg-slate-200/60 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-[11px] text-slate-700 dark:text-slate-300 flex-wrap gap-2">
                         <div className="flex items-center gap-2 font-bold">
                           <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                           <span>LEGAL MEMORANDUM & BRIEF REPORT</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-[10px] opacity-70">{msg.timestamp}</span>
+                          <button
+                            onClick={() => speakMessage(msg.id, msg.text)}
+                            className={`px-2 py-1 rounded border text-[10px] font-semibold flex items-center gap-1 transition-all ${
+                              speakingMsgId === msg.id
+                                ? 'bg-indigo-600 text-white border-indigo-600 animate-pulse'
+                                : 'bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
+                            }`}
+                            title="Read Aloud AI response using text-to-speech voice"
+                          >
+                            {speakingMsgId === msg.id ? (
+                              <>
+                                <VolumeX className="w-3 h-3 text-white" />
+                                <span>Stop Voice</span>
+                              </>
+                            ) : (
+                              <>
+                                <Volume2 className="w-3 h-3 text-indigo-500" />
+                                <span>Read Aloud</span>
+                              </>
+                            )}
+                          </button>
                           <button
                             onClick={() => handleCopy(msg.id, msg.text)}
                             className="px-2 py-1 rounded bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 border border-slate-300 dark:border-slate-600 text-[10px] font-semibold flex items-center gap-1 transition-colors"
@@ -498,10 +661,29 @@ Try typing or selecting a **Quick Command** from the left panel.`,
 
           {/* Textarea Input Bar (Ctrl+Enter to Send) */}
           <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+            {isListening && (
+              <div className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center justify-between animate-pulse">
+                <div className="flex items-center gap-2">
+                  <Mic className="w-4 h-4 animate-bounce text-rose-600" />
+                  <span>Speech Recognition Active — Speak into your microphone...</span>
+                </div>
+                <button
+                  onClick={toggleSpeechRecognition}
+                  className="px-2 py-0.5 rounded bg-rose-600 text-white text-[10px] font-extrabold uppercase tracking-wide hover:bg-rose-700"
+                >
+                  Stop Mic
+                </button>
+              </div>
+            )}
+
             <div className="relative">
               <textarea
                 rows={2}
-                placeholder={`Ask AI about ${selectedMatter.caseNumber}... (Press Ctrl+Enter or click Send)`}
+                placeholder={
+                  isListening
+                    ? 'Listening... Speak into microphone to dictating query...'
+                    : `Ask AI about ${selectedMatter.caseNumber}... (Press Ctrl+Enter or click Send)`
+                }
                 value={inputQuery}
                 onChange={(e) => setInputQuery(e.target.value)}
                 onKeyDown={(e) => {
@@ -510,20 +692,22 @@ Try typing or selecting a **Quick Command** from the left panel.`,
                     handleSendMessage();
                   }
                 }}
-                className="w-full px-4 py-2.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                className={`w-full px-4 py-2.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800/90 border text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none transition-all ${
+                  isListening ? 'border-rose-500 ring-2 ring-rose-300 dark:ring-rose-900' : 'border-slate-200 dark:border-slate-700'
+                }`}
               />
 
               <div className="absolute right-2 bottom-2.5 flex items-center gap-1.5">
                 <button
-                  onClick={toggleRecording}
+                  onClick={toggleSpeechRecognition}
                   className={`p-1.5 rounded-lg border transition-all ${
-                    isRecording
-                      ? 'bg-rose-600 text-white border-rose-600 animate-pulse'
-                      : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600'
+                    isListening
+                      ? 'bg-rose-600 text-white border-rose-600 animate-pulse shadow-sm'
+                      : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/60'
                   }`}
-                  title="Voice Dictation"
+                  title={isListening ? 'Stop Voice Dictation' : 'Start Voice Dictation'}
                 >
-                  {isRecording ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5 text-indigo-600" />}
+                  {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />}
                 </button>
 
                 <button
@@ -537,7 +721,10 @@ Try typing or selecting a **Quick Command** from the left panel.`,
               </div>
             </div>
             <div className="flex items-center justify-between text-[10px] text-slate-400">
-              <span>Shortcut: <strong>Ctrl + Enter</strong> to submit</span>
+              <span className="flex items-center gap-1">
+                <Radio className={`w-3 h-3 ${isListening ? 'text-rose-500 animate-pulse' : 'text-emerald-500'}`} />
+                <span>Voice Dictation & Speech Readout Active</span>
+              </span>
               <span>Grounded in case: <strong>{selectedMatter.caseNumber}</strong></span>
             </div>
           </div>

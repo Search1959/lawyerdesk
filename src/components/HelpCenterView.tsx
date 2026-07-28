@@ -446,7 +446,13 @@ export const HelpCenterView: React.FC = () => {
       )}
 
       {/* TAB 3: VIDEO ACADEMY */}
-      {activeTab === 'videos' && <VideoLibrary videos={videos} currentLang={currentLang} />}
+      {activeTab === 'videos' && (
+        <VideoLibrary
+          videos={videos}
+          currentLang={currentLang}
+          onAddVideo={(newVideo) => setVideos((prev) => [newVideo, ...prev])}
+        />
+      )}
 
       {/* TAB 4: AI HELP ASSISTANT */}
       {activeTab === 'ai-assistant' && (

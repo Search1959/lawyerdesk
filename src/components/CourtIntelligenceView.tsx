@@ -18,6 +18,10 @@ import {
   MessageSquare,
   BarChart3,
   Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
+  Send,
   Database,
   Settings,
   ShieldCheck,
@@ -221,6 +225,9 @@ export const CourtIntelligenceView: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
   const [voiceQuery, setVoiceQuery] = useState('');
   const [voiceResponse, setVoiceResponse] = useState('');
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [customVoiceInput, setCustomVoiceInput] = useState('');
+  const [copiedVoiceResult, setCopiedVoiceResult] = useState(false);
 
   // Selected Profiles / Details Modals
   const [selectedCourt, setSelectedCourt] = useState<CourtDirectoryProfile | null>(mockCourtDirectory[0]);
@@ -373,23 +380,102 @@ export const CourtIntelligenceView: React.FC = () => {
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
+  const speakText = (text: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    if (isSpeaking) {
+      setIsSpeaking(false);
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.lang = 'en-IN';
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const startMicListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      handleTriggerVoice(customVoiceInput || "Prepare today's arguments");
+      return;
+    }
+
+    try {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = 'en-IN';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        setVoiceQuery('Listening to microphone...');
+        setVoiceResponse('');
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0].transcript)
+          .join('');
+        setVoiceQuery(transcript);
+        setCustomVoiceInput(transcript);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        handleTriggerVoice(customVoiceInput || "Prepare today's arguments");
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        if (voiceQuery && voiceQuery !== 'Listening to microphone...') {
+          handleTriggerVoice(voiceQuery);
+        } else {
+          handleTriggerVoice(customVoiceInput || "Prepare today's arguments");
+        }
+      };
+
+      recognition.start();
+    } catch (err) {
+      console.error('Error starting speech recognition:', err);
+      setIsListening(false);
+      handleTriggerVoice(customVoiceInput || "Prepare today's arguments");
+    }
+  };
+
   const handleTriggerVoice = (phrase: string) => {
-    setVoiceQuery(phrase);
+    const cleanPhrase = phrase.trim() || "Prepare today's arguments";
+    setVoiceQuery(cleanPhrase);
     setIsListening(true);
     setVoiceResponse('');
+    setActiveTab('voice_assistant');
 
     setTimeout(() => {
       setIsListening(false);
-      if (phrase.toLowerCase().includes('tomorrow\'s hearings') || phrase.toLowerCase().includes('today\'s arguments')) {
-        setVoiceResponse('Found 4 hearings scheduled for Court Room 312 and Delhi High Court Court 4. Primary matter: CIVIL/877/2024 (Cross Exam PW-1). Argument notes & precedent Vineeta Sharma v. Rakesh Sharma prepared.');
-      } else if (phrase.toLowerCase().includes('summarize last hearing')) {
-        setVoiceResponse('Last Hearing Summary: On 12-06-2026, Court framed 5 issues. PW-1 affidavit taken on record. Next date fixed for cross-examination.');
-      } else if (phrase.toLowerCase().includes('pending documents')) {
-        setVoiceResponse('Missing Documents: Certified Death Certificate of Late Sohanlal Jaiswal & original title deed copy pending court stamp.');
+      let responseText = '';
+      const q = cleanPhrase.toLowerCase();
+
+      if (q.includes('tomorrow') || q.includes("today's arguments") || q.includes('argument')) {
+        responseText = 'Found 4 hearings scheduled for Court Room 312 and Delhi High Court Court 4. Primary matter: CIVIL/877/2024 (Cross Exam PW-1). Argument notes & precedent Vineeta Sharma v. Rakesh Sharma prepared.';
+      } else if (q.includes('summarize') || q.includes('last hearing')) {
+        responseText = 'Last Hearing Summary: On 12-06-2026, Court framed 5 issues. PW-1 affidavit taken on record. Next date fixed for cross-examination.';
+      } else if (q.includes('pending') || q.includes('document')) {
+        responseText = 'Missing Documents: Certified Death Certificate of Late Sohanlal Jaiswal & original title deed copy pending court stamp.';
+      } else if (q.includes('cause list') || q.includes('item') || q.includes('cnr')) {
+        responseText = 'Cause List Query: 12 matters listed for today across Tis Hazari & Delhi High Court. Item #4 before Justice Swarana Kanta Sharma at 10:45 AM.';
       } else {
-        setVoiceResponse('Voice Command Executed: Retrieved latest court intelligence records and updated cause list schedule.');
+        responseText = `Voice Command Executed: "${cleanPhrase}". Retrieved latest eCourts intelligence records, updated cause list schedule, and generated AI briefing notes.`;
       }
-    }, 1500);
+
+      setVoiceResponse(responseText);
+      speakText(responseText);
+    }, 1200);
   };
 
   const handleSendNotification = (channel: string, matterNo: string) => {
@@ -432,19 +518,34 @@ export const CourtIntelligenceView: React.FC = () => {
 
           <div className="flex items-center gap-3 self-start md:self-auto">
             <button
-              onClick={() => handleTriggerVoice("Prepare today's arguments")}
-              className="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg transition-all"
+              onClick={() => {
+                setActiveTab('voice_assistant');
+                startMicListening();
+              }}
+              className="px-4.5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
+              title="Click to launch Voice AI Copilot & Speech Recognition"
             >
-              <Mic className="w-4 h-4 text-indigo-200" />
+              <Mic className="w-4 h-4 text-indigo-200 animate-pulse" />
               <span>Voice AI Command</span>
             </button>
-            <div className="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-right">
-              <div className="text-[10px] font-mono text-slate-400 uppercase">Live CNR & Cause List Sync</div>
-              <div className="text-xs font-bold text-emerald-400 flex items-center justify-end gap-1.5">
+
+            <button
+              onClick={() => {
+                setActiveTab('case_tracker');
+                setNotificationSent('✓ Live eCourts & NJDG 07:00 AM Cause List Sync Active! 12 Matters Synced.');
+              }}
+              className="p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 hover:border-emerald-500/50 text-right transition-all cursor-pointer group shadow-md"
+              title="Click to open Live eCourts Status & CNR Terminal"
+            >
+              <div className="text-[10px] font-mono text-slate-400 uppercase flex items-center justify-end gap-1 group-hover:text-slate-300">
+                <span>Live CNR & Cause List Sync</span>
+                <ArrowUpRight className="w-3 h-3 text-emerald-400 opacity-60 group-hover:opacity-100" />
+              </div>
+              <div className="text-xs font-bold text-emerald-400 flex items-center justify-end gap-1.5 mt-0.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                 <span>eCourts / NJDG Active</span>
               </div>
-            </div>
+            </button>
           </div>
         </div>
 
@@ -1983,44 +2084,184 @@ export const CourtIntelligenceView: React.FC = () => {
       {activeTab === 'voice_assistant' && (
         <div className="space-y-6">
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
-            <div className="space-y-1">
-              <h2 className="text-xl font-black text-slate-900 dark:text-white">AI Voice Assistant & Command Center</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Speak natural commands to prepare arguments, search cause lists, or summarize hearings
-              </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-black text-slate-900 dark:text-white">AI Voice Assistant & Command Center</h2>
+                  <span className="px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] uppercase border border-indigo-200 dark:border-indigo-800 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-indigo-500" />
+                    Web Speech & Audio Synthesis
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Speak or type natural commands to prepare arguments, search cause lists, summarize hearings, or draft court notes.
+                </p>
+              </div>
+
+              {/* Status Indicator */}
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <span className={`w-2.5 h-2.5 rounded-full ${isListening ? 'bg-rose-500 animate-ping' : isSpeaking ? 'bg-indigo-500 animate-pulse' : 'bg-emerald-500'}`} />
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 font-mono">
+                  {isListening ? 'MICROPHONE RECORDING' : isSpeaking ? 'AI SPEAKING AUDIO' : 'VOICE ENGINE READY'}
+                </span>
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {[
-                "Show tomorrow's hearings",
-                "Prepare today's arguments",
-                "Summarize last hearing",
-                "Show pending documents",
-              ].map((phrase) => (
+            {/* Custom Interactive Voice Input Command Bar */}
+            <div className="space-y-3">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Speak into Mic or Type Custom Command
+              </label>
+              <div className="flex items-center gap-2">
                 <button
-                  key={phrase}
-                  onClick={() => handleTriggerVoice(phrase)}
-                  className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white font-bold text-xs transition-all"
+                  onClick={startMicListening}
+                  disabled={isListening}
+                  className={`p-3.5 rounded-2xl text-white font-bold text-xs flex items-center justify-center transition-all shadow-md shrink-0 cursor-pointer ${
+                    isListening
+                      ? 'bg-rose-600 animate-pulse ring-4 ring-rose-500/30'
+                      : 'bg-indigo-600 hover:bg-indigo-500'
+                  }`}
+                  title="Click to activate Web Speech Recognition"
                 >
-                  "{phrase}"
+                  <Mic className="w-5 h-5" />
                 </button>
-              ))}
+
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={customVoiceInput}
+                    onChange={(e) => setCustomVoiceInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleTriggerVoice(customVoiceInput)}
+                    placeholder="Type or dictate command (e.g., 'Find cases listed before Justice Swarana Kanta Sharma', 'Show tomorrow hearings')..."
+                    className="w-full pl-4 pr-12 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    onClick={() => handleTriggerVoice(customVoiceInput)}
+                    className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
+                    title="Run Voice AI Command"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
             </div>
 
+            {/* Quick Preset Voice Command Chips */}
+            <div className="space-y-2">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Recommended Voice Prompts</span>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "Show tomorrow's hearings",
+                  "Prepare today's arguments",
+                  "Summarize last hearing",
+                  "Show pending documents",
+                  "Search cause list item #4",
+                  "Check bail status in FIR 204/2024",
+                ].map((phrase) => (
+                  <button
+                    key={phrase}
+                    onClick={() => {
+                      setCustomVoiceInput(phrase);
+                      handleTriggerVoice(phrase);
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white font-bold text-xs text-slate-700 dark:text-slate-300 transition-all cursor-pointer shadow-2xs border border-slate-200/60 dark:border-slate-700/60"
+                  >
+                    "{phrase}"
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Listening State Card */}
             {isListening && (
-              <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center gap-3">
-                <Mic className="w-5 h-5 animate-pulse text-rose-500" />
-                <span>Listening & processing voice command: "{voiceQuery}"...</span>
+              <div className="p-5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center justify-between gap-3 animate-in fade-in">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-rose-500/20 text-rose-500 animate-pulse">
+                    <Mic className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="block font-extrabold text-sm text-indigo-950 dark:text-indigo-200">
+                      Speech Recognition Active
+                    </span>
+                    <p className="text-slate-600 dark:text-slate-300 font-mono text-[11px] mt-0.5">
+                      "{voiceQuery || 'Listening to microphone...'}"
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-1.5 h-6 bg-indigo-500 rounded-full animate-bounce" />
+                  <span className="w-1.5 h-8 bg-rose-500 rounded-full animate-bounce delay-100" />
+                  <span className="w-1.5 h-4 bg-emerald-500 rounded-full animate-bounce delay-200" />
+                </div>
               </div>
             )}
 
+            {/* AI Voice Command Result Box */}
             {voiceResponse && (
-              <div className="p-5 rounded-2xl bg-slate-900 text-white space-y-2 border border-slate-800 font-sans text-xs">
-                <div className="font-bold text-indigo-400 flex items-center gap-2">
-                  <Bot className="w-4 h-4" />
-                  <span>AI Voice Command Result</span>
+              <div className="p-6 rounded-2xl bg-slate-900 text-white space-y-4 border border-slate-800 font-sans text-xs shadow-xl animate-in fade-in">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-xl bg-indigo-600/30 border border-indigo-500/40 text-indigo-400">
+                      <Bot className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="font-extrabold text-sm text-white">AI Voice Command Result</span>
+                      <p className="text-[11px] text-slate-400 font-mono">Query: "{voiceQuery}"</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {/* Speak / Pause Audio Button */}
+                    <button
+                      onClick={() => speakText(voiceResponse)}
+                      className={`px-3 py-1.5 rounded-xl font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer ${
+                        isSpeaking
+                          ? 'bg-rose-600 hover:bg-rose-500 text-white animate-pulse'
+                          : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                      }`}
+                    >
+                      {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                      <span>{isSpeaking ? 'Stop Audio' : 'Read Aloud (TTS)'}</span>
+                    </button>
+                  </div>
                 </div>
-                <p className="text-slate-300 leading-relaxed font-medium">{voiceResponse}</p>
+
+                <p className="text-slate-200 text-sm leading-relaxed font-medium bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+                  {voiceResponse}
+                </p>
+
+                {/* Quick Result Action Buttons */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(voiceResponse);
+                        setCopiedVoiceResult(true);
+                        setTimeout(() => setCopiedVoiceResult(false), 2000);
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                    >
+                      {copiedVoiceResult ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+                      <span>{copiedVoiceResult ? 'Copied!' : 'Copy Result'}</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleSendNotification('WhatsApp', 'CIVIL/877/2024')}
+                      className="px-3 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800 text-emerald-300 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Send via WhatsApp</span>
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => setNotificationSent('✓ Generated AI Hearing Briefing Note from Voice Output!')}
+                    className="px-3 py-1.5 rounded-xl bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-800 text-indigo-300 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Save to Hearing Prep File</span>
+                  </button>
+                </div>
               </div>
             )}
           </div>

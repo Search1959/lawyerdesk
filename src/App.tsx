@@ -406,7 +406,13 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
   };
 
   // Account creation handlers from AccountManagerModal
-  const handleAddFirm = async (firmData: Partial<LawFirm>, adminEmail: string, adminName: string) => {
+  const handleAddFirm = async (
+    firmData: Partial<LawFirm>,
+    adminEmail: string,
+    adminName: string,
+    adminRole?: UserRole,
+    initZeroData?: boolean
+  ) => {
     const newFirmId = `firm-${Date.now()}`;
     const newFirm: LawFirm = {
       id: newFirmId,
@@ -421,23 +427,49 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         { id: 'dept-2', name: 'Criminal & White Collar', code: 'CRIM' },
       ],
       createdAt: new Date().toISOString().split('T')[0],
+      status: 'Active',
+      is_active: true,
+      is_deleted: false,
     };
+
+    const assignedRole = adminRole || 'System Administrator';
 
     const newAdmin: User = {
       id: `usr-${Date.now()}`,
       name: adminName,
       email: adminEmail,
-      role: 'Firm Admin',
+      role: assignedRole,
       firmId: newFirmId,
       branchId: `branch-${Date.now()}`,
       phone: '+91 98000 00000',
       permissions: ['all_access', 'firm_manage', 'user_manage'],
+      status: 'Active',
+      is_active: true,
+      is_deleted: false,
     };
 
     await saveDocument('firms', newFirm);
     await saveDocument('users', newAdmin);
     setFirms((prev) => [...prev, newFirm]);
     setUsers((prev) => [...prev, newAdmin]);
+  };
+
+  const handleUpdateFirm = async (updatedFirm: LawFirm) => {
+    if (checkReadOnlyDemo('Update Firm Settings')) return;
+    setCurrentFirm(updatedFirm);
+    setFirms((prev) => {
+      const exists = prev.some((f) => f.id === updatedFirm.id);
+      if (exists) {
+        return prev.map((f) => (f.id === updatedFirm.id ? updatedFirm : f));
+      }
+      return [...prev, updatedFirm];
+    });
+    try {
+      localStorage.setItem(`lawyerdesk_firm_${updatedFirm.id}`, JSON.stringify(updatedFirm));
+    } catch (e) {
+      // ignore
+    }
+    await saveDocument('firms', updatedFirm);
   };
 
   const handleSendMessage = async (msgData: Message) => {
@@ -562,6 +594,23 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       if (role) {
         existingUser.role = role;
       }
+
+      // Upgrade permissions if logging in with Advocate/Admin role
+      if (
+        role === 'System Administrator' ||
+        role === 'System Owner' ||
+        role === 'Super Admin' ||
+        role === 'Law Firm' ||
+        role === 'Firm Admin' ||
+        role === 'Senior Advocate' ||
+        role === 'Senior Lawyer' ||
+        role === 'Associate Advocate' ||
+        role === 'Associate' ||
+        role === 'Junior Advocate' ||
+        role === 'Junior'
+      ) {
+        existingUser.permissions = ['all_access', 'matter_read', 'matter_write', 'ai_copilot'];
+      }
     }
 
     const isDemoAccount = isDemoUser || role === 'Demo User' || cleanEmail.includes('demo');
@@ -570,8 +619,14 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
     let targetFirm = firms[0];
 
     if (existingUser) {
-      // If user was previously assigned to benchmark firm-1 but is a real user account, migrate to isolated firm space
-      if (existingUser.firmId === 'firm-1' && !isDemoAccount && !isSysAdmin) {
+      // If user was previously assigned to benchmark firm-1 or client space but is logging in as an Advocate/Firm Admin, assign dedicated Law Firm space
+      if (
+        (existingUser.firmId === 'firm-1' || !existingUser.firmId) &&
+        !isDemoAccount &&
+        !isSysAdmin &&
+        role !== 'Client' &&
+        role !== 'Client Portal User'
+      ) {
         const dedicatedFirmId = `firm-${cleanEmail.split('@')[0].replace(/[^a-z0-9]/g, '') || Date.now()}`;
         let dedicatedFirm = firms.find((f) => f.id === dedicatedFirmId);
         if (!dedicatedFirm) {
@@ -607,7 +662,18 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         await saveDocument('users', existingUser);
         targetFirm = dedicatedFirm;
       } else {
-        targetFirm = firms.find((f) => f.id === existingUser.firmId) || firms[0];
+        let foundFirm = firms.find((f) => f.id === existingUser.firmId);
+        if (!foundFirm && existingUser.firmId) {
+          try {
+            const cached = localStorage.getItem(`lawyerdesk_firm_${existingUser.firmId}`);
+            if (cached) {
+              foundFirm = JSON.parse(cached);
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+        targetFirm = foundFirm || firms[0];
       }
     } else if (isDemoAccount || isSysAdmin) {
       targetFirm = firms[0];
@@ -854,7 +920,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           )}
 
           {activeTab === 'clients' && (
-            <ClientsView clients={clients} onAddNewClient={handleAddNewClient} />
+            <ClientsView clients={clients} onAddNewClient={handleAddNewClient} currentUser={currentUser} />
           )}
 
           {activeTab === 'hearings' && (
@@ -962,7 +1028,13 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           {activeTab === 'reports' && <ReportsView />}
           {activeTab === 'manage_team' && <ManageTeamView currentUser={currentUser} currentFirm={currentFirm} />}
           {activeTab === 'reminders' && <RemindersView />}
-          {activeTab === 'settings' && <SettingsView />}
+          {activeTab === 'settings' && (
+            <SettingsView
+              currentFirm={currentFirm}
+              currentUser={currentUser}
+              onUpdateFirm={handleUpdateFirm}
+            />
+          )}
 
           {(activeTab === 'invoices' || activeTab === 'financials') && (
             <FinancialsView

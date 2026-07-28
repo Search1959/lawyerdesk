@@ -39,10 +39,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleMobileSidebar,
 }) => {
   const isDemoUser = (currentUser as any)?.isDemoUser;
-  const isSystemAdmin = currentUser.role === 'Super Admin';
-  const isFirmAdmin = currentUser.role === 'Firm Admin';
+  const isSystemAdmin =
+    currentUser.role === 'Super Admin' ||
+    currentUser.role === 'System Administrator' ||
+    currentUser.role === 'System Owner' ||
+    currentUser.email === 'apex7tech@gmail.com';
+  const isFirmAdmin =
+    currentUser.role === 'Firm Admin' ||
+    currentUser.role === 'Law Firm' ||
+    isSystemAdmin;
   const isIndividualLawyer =
-    currentUser.role === 'Senior Lawyer' || currentUser.role === 'Associate';
+    currentUser.role === 'Senior Lawyer' ||
+    currentUser.role === 'Senior Advocate' ||
+    currentUser.role === 'Associate' ||
+    currentUser.role === 'Associate Advocate' ||
+    currentUser.role === 'Junior Advocate' ||
+    currentUser.role === 'External Counsel';
 
   return (
     <header className="h-14 border-b border-[#E2E8F0] dark:border-slate-800 flex items-center justify-between px-3 sm:px-6 bg-white dark:bg-slate-900 shrink-0 sticky top-0 z-30 transition-colors shadow-sm">

@@ -20,6 +20,7 @@ import {
   Lock,
   RefreshCw,
   X,
+  CheckCircle2,
 } from 'lucide-react';
 import { Client, User } from '../types';
 import { saveDocument, removeDocument } from '../lib/firebase';
@@ -29,9 +30,10 @@ import { PaginationControls } from './PaginationControls';
 interface ClientsViewProps {
   clients: Client[];
   onAddNewClient: (client: Partial<Client>) => void;
+  currentUser?: User;
 }
 
-export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClient }) => {
+export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClient, currentUser }) => {
   const [clientList, setClientList] = useState<Client[]>(clients);
   const [selectedClient, setSelectedClient] = useState<Client | null>(clients[0] || null);
 
@@ -45,6 +47,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
   const [showModal, setShowModal] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
+  const [clientPrivilegeLevel, setClientPrivilegeLevel] = useState<'standard' | 'restricted' | 'full'>('standard');
 
   // BCI Conflict of Interest Checker State
   const [showConflictChecker, setShowConflictChecker] = useState(false);
@@ -130,9 +133,10 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    const activeFirmId = currentUser?.firmId || 'firm-1';
     const created: Client = {
       id: `client-${Date.now()}`,
-      firmId: 'firm-1',
+      firmId: activeFirmId,
       name: newClientData.name,
       type: newClientData.type,
       email: newClientData.email || `${newClientData.name.toLowerCase().replace(/[^a-z0-9]/g, '')}@client.com`,
@@ -150,15 +154,22 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
 
     if (provisionAccount) {
       const clientUserEmail = created.email;
+      let perms = ['view_own_matters', 'view_invoices', 'make_payments'];
+      if (clientPrivilegeLevel === 'restricted') {
+        perms = ['view_own_matters', 'view_hearings_only'];
+      } else if (clientPrivilegeLevel === 'full') {
+        perms = ['view_own_matters', 'view_invoices', 'make_payments', 'download_ocr_documents', 'send_case_messages'];
+      }
+
       const portalUser: User = {
         id: `usr-client-${Date.now()}`,
         name: created.name,
         email: clientUserEmail,
-        role: 'Client',
-        firmId: 'firm-1',
+        role: 'Client Portal User',
+        firmId: activeFirmId,
         branchId: 'branch-1',
         phone: created.phone,
-        permissions: ['view_own_matters', 'view_invoices', 'make_payments'],
+        permissions: perms,
         status: 'Active',
         is_active: true,
         is_deleted: false,
@@ -435,8 +446,8 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
 
       {/* New Client Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto my-auto animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Users className="w-5 h-5 text-indigo-500" />
@@ -563,7 +574,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                 </p>
 
                 {provisionAccount && (
-                  <div className="pt-2 border-t border-indigo-200/60 dark:border-indigo-800/40 space-y-2">
+                  <div className="pt-2 border-t border-indigo-200/60 dark:border-indigo-800/40 space-y-3">
                     <div className="flex items-center justify-between">
                       <label className="block font-bold text-slate-800 dark:text-indigo-200 text-xs">
                         Portal Login Password *
@@ -598,8 +609,76 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
+
+                    {/* Privilege Level Selector */}
+                    <div className="space-y-1.5 pt-1">
+                      <label className="block font-bold text-slate-800 dark:text-indigo-200 text-xs flex items-center gap-1">
+                        <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
+                        Account Privilege & Access Level *
+                      </label>
+                      <select
+                        value={clientPrivilegeLevel}
+                        onChange={(e) => setClientPrivilegeLevel(e.target.value as any)}
+                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="standard">Standard Client Access (Assigned Cases, Orders & Invoices)</option>
+                        <option value="restricted">Restricted Tracker (Upcoming Hearings & Case Status Only)</option>
+                        <option value="full">Full Client Access (Cases, OCR Downloads, Invoices & Direct Notes)</option>
+                      </select>
+                    </div>
+
+                    {/* Privilege Capabilities Breakdown Card */}
+                    <div className="p-3 rounded-xl bg-slate-900 text-slate-200 text-[11px] space-y-2 border border-slate-800 shadow-inner">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 font-bold text-indigo-300">
+                        <span>Client Account Privilege Matrix</span>
+                        <span className="px-2 py-0.5 rounded text-[9.5px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono uppercase">
+                          {clientPrivilegeLevel} Privilege
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5 text-[10.5px]">
+                        <div className="flex items-center gap-1.5 text-emerald-400">
+                          <CheckCircle2 className="w-3 h-3 shrink-0" />
+                          <span>Login via Email & Password</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-emerald-400">
+                          <CheckCircle2 className="w-3 h-3 shrink-0" />
+                          <span>View Assigned Court Matters</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-emerald-400">
+                          <CheckCircle2 className="w-3 h-3 shrink-0" />
+                          <span>View Cause List Hearing Dates</span>
+                        </div>
+                        {clientPrivilegeLevel !== 'restricted' ? (
+                          <div className="flex items-center gap-1.5 text-emerald-400">
+                            <CheckCircle2 className="w-3 h-3 shrink-0" />
+                            <span>View & Pay GST Invoices</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 text-slate-500 line-through">
+                            <X className="w-3 h-3 shrink-0" />
+                            <span>No Invoice / Billing Access</span>
+                          </div>
+                        )}
+                        {clientPrivilegeLevel === 'full' ? (
+                          <div className="flex items-center gap-1.5 text-emerald-400">
+                            <CheckCircle2 className="w-3 h-3 shrink-0" />
+                            <span>Download OCR Orders & Direct Notes</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 text-slate-500 line-through">
+                            <X className="w-3 h-3 shrink-0" />
+                            <span>No OCR File Downloads</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1.5 text-slate-500 line-through">
+                          <X className="w-3 h-3 shrink-0" />
+                          <span>No Firm Admin / User Controls</span>
+                        </div>
+                      </div>
+                    </div>
+
                     <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                      Share these credentials (<span className="font-mono text-indigo-600 dark:text-indigo-300">{newClientData.email || 'client email'}</span> / <span className="font-mono text-indigo-600 dark:text-indigo-300">{clientPassword}</span>) with the client for portal login.
+                      Share credentials (<span className="font-mono text-indigo-600 dark:text-indigo-300">{newClientData.email || 'client email'}</span> / <span className="font-mono text-indigo-600 dark:text-indigo-300">{clientPassword}</span>) with client for portal access.
                     </p>
                   </div>
                 )}
@@ -627,8 +706,8 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
 
       {/* Edit Client Modal */}
       {editingClient && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full p-6 sm:p-7 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white max-h-[90vh] overflow-y-auto my-auto animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">Edit Client Profile</h3>
               <button
