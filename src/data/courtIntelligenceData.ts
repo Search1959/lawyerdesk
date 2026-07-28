@@ -719,7 +719,7 @@ export const mockJudgeDirectory: JudgeDirectoryProfile[] = [
 export const mockCauseListItems: CauseListItem[] = [
   {
     id: 'cl-100',
-    date: '2026-07-27',
+    date: '2026-07-28',
     courtName: 'Calcutta High Court',
     judgeName: 'Hon\'ble Mr. Justice T. S. Sivagnanam',
     courtRoomNo: 'Court Room No. 01 (Original Side)',
@@ -739,7 +739,7 @@ export const mockCauseListItems: CauseListItem[] = [
   },
   {
     id: 'cl-102',
-    date: '2026-07-27',
+    date: '2026-07-28',
     courtName: 'Barasat District & Sessions Court, North 24 Parganas',
     judgeName: 'Shri P.K. Ganguly, WBJES',
     courtRoomNo: 'Court Room No. 03 (Barasat)',
@@ -759,7 +759,7 @@ export const mockCauseListItems: CauseListItem[] = [
   },
   {
     id: 'cl-105',
-    date: '2026-07-27',
+    date: '2026-07-28',
     courtName: 'City Civil & Sessions Court, Kolkata',
     judgeName: 'Shri Subhasis Gangopadhyay, WBJES',
     courtRoomNo: 'Court Room No. 01',
@@ -779,7 +779,7 @@ export const mockCauseListItems: CauseListItem[] = [
   },
   {
     id: 'cl-103',
-    date: '2026-07-27',
+    date: '2026-07-28',
     courtName: 'National Company Law Tribunal (NCLT) - Kolkata Bench',
     judgeName: 'Hon\'ble Bench Court I (Kolkata)',
     courtRoomNo: 'Esplanade Row Court Room 01',
@@ -799,7 +799,7 @@ export const mockCauseListItems: CauseListItem[] = [
   },
   {
     id: 'cl-101',
-    date: '2026-07-27',
+    date: '2026-07-28',
     courtName: 'Delhi High Court',
     judgeName: 'Hon\'ble Mr. Justice Rajesh Kumar Sharma',
     courtRoomNo: 'Court Room No. 04',

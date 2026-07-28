@@ -161,6 +161,32 @@ const PaginationControls: React.FC<PaginationProps> = ({
   );
 };
 
+const getTodayIsoDate = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const formatDisplayDate = (isoStr: string) => {
+  if (!isoStr) return '28 Jul 2026';
+  try {
+    const parts = isoStr.split('-');
+    if (parts.length !== 3) return '28 Jul 2026';
+    const [y, m, d] = parts.map(Number);
+    if (!y || !m || !d) return '28 Jul 2026';
+    const dateObj = new Date(y, m - 1, d);
+    return dateObj.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  } catch {
+    return '28 Jul 2026';
+  }
+};
+
 export const CourtIntelligenceView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
     | 'dashboard'
@@ -186,7 +212,7 @@ export const CourtIntelligenceView: React.FC = () => {
   const [courtSearchCategory, setCourtSearchCategory] = useState<string>('All');
   const [courtSearchText, setCourtSearchText] = useState('');
   const [judgeSearchQuery, setJudgeSearchQuery] = useState('');
-  const [causeListDate, setCauseListDate] = useState('2026-07-27');
+  const [causeListDate, setCauseListDate] = useState('2026-07-28');
   const [causeListPriority, setCauseListPriority] = useState<string>('All');
   const [cnrSearchQuery, setCnrSearchQuery] = useState('');
   const [caseSearchType, setCaseSearchType] = useState<'cnr' | 'case_no' | 'party' | 'advocate'>('cnr');
@@ -213,6 +239,45 @@ export const CourtIntelligenceView: React.FC = () => {
 
   // Notification Trigger State
   const [notificationSent, setNotificationSent] = useState<string | null>(null);
+
+  // Interactive WhatsApp & Alerts State
+  const [waMobile, setWaMobile] = useState('+91 98301 23456');
+  const [waCase, setWaCase] = useState('CIVIL/877/2024');
+  const [waTemplate, setWaTemplate] = useState<'hearing' | 'causelist' | 'invoice' | 'order'>('hearing');
+  const [waCustomNote, setWaCustomNote] = useState('');
+  const [waLog, setWaLog] = useState<{ id: string; time: string; channel: string; recipient: string; caseNo: string; status: string }[]>([
+    { id: '1', time: 'Today, 09:15 AM', channel: 'WhatsApp', recipient: '+91 98301 23456 (Arun Jaiswal)', caseNo: 'CIVIL/877/2024', status: 'Delivered ✅' },
+    { id: '2', time: 'Yesterday, 06:30 PM', channel: 'WhatsApp', recipient: '+91 98765 43210 (M/s Apex Logistics)', caseNo: 'CS(COMM)/420/2024', status: 'Read ✅' },
+  ]);
+
+  // Judge Profile Modal State
+  const [showJudgeModal, setShowJudgeModal] = useState(false);
+
+  // CNR Search Result State
+  const [fetchedCnrResult, setFetchedCnrResult] = useState<CauseListItem | null>(null);
+  const [cnrNotFoundMsg, setCnrNotFoundMsg] = useState(false);
+
+  const handleFetchCnr = () => {
+    setCnrNotFoundMsg(false);
+    if (!cnrSearchQuery.trim()) {
+      setFetchedCnrResult(null);
+      return;
+    }
+    const q = cnrSearchQuery.toLowerCase().trim();
+    const found = mockCauseListItems.find(
+      (c) =>
+        c.cnrNumber.toLowerCase().includes(q) ||
+        c.caseNumber.toLowerCase().includes(q) ||
+        c.matterTitle.toLowerCase().includes(q) ||
+        c.clientName.toLowerCase().includes(q)
+    );
+    if (found) {
+      setFetchedCnrResult(found);
+    } else {
+      setFetchedCnrResult(null);
+      setCnrNotFoundMsg(true);
+    }
+  };
 
   // Pagination States
   const [courtListPage, setCourtListPage] = useState(1);
@@ -492,18 +557,35 @@ export const CourtIntelligenceView: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Hearings Roster Column */}
             <div className="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div className="flex items-center gap-2 font-black text-base">
+              <div className="flex flex-wrap items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 gap-2">
+                <div className="flex items-center gap-2 font-black text-base text-slate-900 dark:text-white">
                   <Gavel className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Today's Court Appearance Roster (27 Jul 2026)</span>
+                  <span>Court Appearance Roster ({formatDisplayDate(causeListDate)})</span>
                 </div>
-                <button
-                  onClick={() => setActiveTab('cause_list')}
-                  className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
-                >
-                  <span>View Cause List</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <Calendar className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 ml-1" />
+                    <input
+                      type="date"
+                      value={causeListDate}
+                      onChange={(e) => setCauseListDate(e.target.value)}
+                      className="bg-transparent text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+                    />
+                    <button
+                      onClick={() => setCauseListDate('2026-07-28')}
+                      className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-bold transition-all shadow-xs"
+                    >
+                      Today
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab('cause_list')}
+                    className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 ml-1"
+                  >
+                    <span>View Cause List</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -613,6 +695,138 @@ export const CourtIntelligenceView: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 1.5: UNIVERSAL SEARCH VIEW */}
+      {activeTab === 'universal_search' && (
+        <div className="space-y-6">
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <Search className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <span>Universal Litigation Search Results</span>
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Cross-indexing Courts, Judges, Cause Lists, AI Briefs & Knowledge Graph Nodes
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={universalQuery}
+                  onChange={(e) => setUniversalQuery(e.target.value)}
+                  placeholder="Search across all legal data..."
+                  className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64"
+                />
+                {universalQuery && (
+                  <button
+                    onClick={() => setUniversalQuery('')}
+                    className="px-2.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-xs font-bold"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {!universalQuery.trim() ? (
+              <div className="p-12 text-center text-slate-400 space-y-2">
+                <Search className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-700" />
+                <p className="text-sm font-bold text-slate-600 dark:text-slate-300">Type a keyword above to search across all court registries and case records.</p>
+                <p className="text-xs text-slate-400">Try searching "Delhi", "High Court", "Partition", "PW-1", or "Jaiswal"</p>
+              </div>
+            ) : (
+              <div className="space-y-6 pt-2">
+                {/* Courts Match */}
+                {mockCourtDirectory.filter(c => c.name.toLowerCase().includes(universalQuery.toLowerCase()) || c.city.toLowerCase().includes(universalQuery.toLowerCase()) || c.state.toLowerCase().includes(universalQuery.toLowerCase())).length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-mono font-bold uppercase text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                      <Building2 className="w-4 h-4" />
+                      <span>Matching Courts & Tribunals</span>
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {mockCourtDirectory
+                        .filter(c => c.name.toLowerCase().includes(universalQuery.toLowerCase()) || c.city.toLowerCase().includes(universalQuery.toLowerCase()) || c.state.toLowerCase().includes(universalQuery.toLowerCase()))
+                        .map(c => (
+                          <div key={c.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between">
+                            <div>
+                              <div className="font-bold text-xs text-slate-900 dark:text-white">{c.name}</div>
+                              <div className="text-[11px] text-slate-500">{c.city}, {c.state} • {c.category}</div>
+                            </div>
+                            <button
+                              onClick={() => { setSelectedCourt(c); setActiveTab('court_directory'); }}
+                              className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[11px]"
+                            >
+                              Open Court
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Judges Match */}
+                {mockJudgeDirectory.filter(j => j.name.toLowerCase().includes(universalQuery.toLowerCase()) || j.courtName.toLowerCase().includes(universalQuery.toLowerCase()) || j.currentAssignment.toLowerCase().includes(universalQuery.toLowerCase())).length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-mono font-bold uppercase text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                      <UserCheck className="w-4 h-4" />
+                      <span>Matching Judicial Officers</span>
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {mockJudgeDirectory
+                        .filter(j => j.name.toLowerCase().includes(universalQuery.toLowerCase()) || j.courtName.toLowerCase().includes(universalQuery.toLowerCase()) || j.currentAssignment.toLowerCase().includes(universalQuery.toLowerCase()))
+                        .map(j => (
+                          <div key={j.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between">
+                            <div>
+                              <div className="font-bold text-xs text-slate-900 dark:text-white">{j.name}</div>
+                              <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">{j.designation} • {j.courtName}</div>
+                            </div>
+                            <button
+                              onClick={() => { setSelectedJudge(j); setShowJudgeModal(true); }}
+                              className="px-2.5 py-1 rounded-lg bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 font-bold text-[11px]"
+                            >
+                              View Profile
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Cause List Match */}
+                {mockCauseListItems.filter(item => item.caseNumber.toLowerCase().includes(universalQuery.toLowerCase()) || item.matterTitle.toLowerCase().includes(universalQuery.toLowerCase()) || item.clientName.toLowerCase().includes(universalQuery.toLowerCase()) || item.judgeName.toLowerCase().includes(universalQuery.toLowerCase())).length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-mono font-bold uppercase text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                      <FileText className="w-4 h-4" />
+                      <span>Matching Cause List Hearings</span>
+                    </h3>
+                    <div className="space-y-2">
+                      {mockCauseListItems
+                        .filter(item => item.caseNumber.toLowerCase().includes(universalQuery.toLowerCase()) || item.matterTitle.toLowerCase().includes(universalQuery.toLowerCase()) || item.clientName.toLowerCase().includes(universalQuery.toLowerCase()) || item.judgeName.toLowerCase().includes(universalQuery.toLowerCase()))
+                        .map(item => (
+                          <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between text-xs">
+                            <div>
+                              <div className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{item.caseNumber} - Item #{item.itemNo}</div>
+                              <div className="font-bold text-slate-900 dark:text-white">{item.matterTitle}</div>
+                              <div className="text-slate-500">{item.courtName} ({item.courtRoomNo}) • Judge: {item.judgeName}</div>
+                            </div>
+                            <button
+                              onClick={() => setActiveTab('cause_list')}
+                              className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs"
+                            >
+                              Go to Roster
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1047,7 +1261,10 @@ export const CourtIntelligenceView: React.FC = () => {
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
                     <div className="text-slate-500">Upcoming List: <span className="font-bold text-slate-900 dark:text-white">{judge.upcomingCauseListCount} Cases</span></div>
                     <button
-                      onClick={() => setSelectedJudge(judge)}
+                      onClick={() => {
+                        setSelectedJudge(judge);
+                        setShowJudgeModal(true);
+                      }}
                       className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
                     >
                       View Profile
@@ -1110,15 +1327,26 @@ export const CourtIntelligenceView: React.FC = () => {
                   type="text"
                   value={cnrSearchQuery}
                   onChange={(e) => setCnrSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleFetchCnr()}
                   placeholder="Enter 16-Digit CNR (e.g., DLHC010045212024 or CIVIL/877/2024)..."
                   className="w-full pl-10 pr-24 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
-                <button className="absolute right-1.5 top-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs">
+                <button
+                  onClick={handleFetchCnr}
+                  className="absolute right-1.5 top-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs"
+                >
                   Fetch CNR
                 </button>
               </div>
             </div>
           </div>
+
+          {cnrNotFoundMsg && (
+            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs font-bold flex items-center justify-between">
+              <span>⚠️ No direct matching record found for "{cnrSearchQuery}". Showing default featured case record below or try searching "DLCT010008772024".</span>
+              <button onClick={() => setCnrNotFoundMsg(false)} className="text-amber-700 underline text-[11px]">Dismiss</button>
+            </div>
+          )}
 
           {/* Fetched Case Details View */}
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
@@ -1156,7 +1384,7 @@ export const CourtIntelligenceView: React.FC = () => {
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
                 <span className="text-slate-500 font-bold uppercase text-[10px]">Next Hearing Date</span>
-                <div className="font-black text-sm text-indigo-600 dark:text-indigo-400">27 Jul 2026 (Item #4)</div>
+                <div className="font-black text-sm text-indigo-600 dark:text-indigo-400">{formatDisplayDate(causeListDate)} (Item #4)</div>
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
                 <span className="text-slate-500 font-bold uppercase text-[10px]">Acts & Sections</span>
@@ -1435,7 +1663,7 @@ export const CourtIntelligenceView: React.FC = () => {
                 { date: '14 Jul 2024', title: 'Plaint Instituted in Barasat / Tis Hazari', desc: 'Suit for Partition and Injunction filed on behalf of Plaintiff Arun Kumar Jaiswal.', type: 'Filing' },
                 { date: '20 Sep 2024', title: 'Written Statement Filed', desc: 'Defendant No. 1 filed WS claiming prior oral partition in 1998.', type: 'Pleading' },
                 { date: '12 Jun 2026', title: 'Order Passed - 5 Issues Framed', desc: 'Court framed issues regarding limitation, coparcenary share and suit valuation.', type: 'Court Order' },
-                { date: '27 Jul 2026', title: 'Today: Cross Examination PW-1', desc: 'PW-1 chief affidavit marked Ex PW1/A. Cross examination in Court Room 312.', type: 'Hearing' },
+                { date: formatDisplayDate(causeListDate), title: 'Today: Cross Examination PW-1', desc: 'PW-1 chief affidavit marked Ex PW1/A. Cross examination in Court Room 312.', type: 'Hearing' },
               ].map((event, idx) => (
                 <div key={idx} className="relative space-y-1">
                   <span className="w-3.5 h-3.5 rounded-full bg-indigo-600 border-4 border-white dark:border-slate-900 absolute -left-[31px] top-1" />
@@ -1482,34 +1710,212 @@ export const CourtIntelligenceView: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 10: SMART NOTIFICATIONS */}
+      {/* TAB 10: SMART NOTIFICATIONS & WHATSAPP ALERT DISPATCHER */}
       {activeTab === 'notifications' && (
         <div className="space-y-6">
-          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
             <div className="space-y-1">
-              <h2 className="text-xl font-black text-slate-900 dark:text-white">Smart Notification & WhatsApp Alert Dispatcher</h2>
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-6 h-6 text-emerald-500" />
+                <h2 className="text-xl font-black text-slate-900 dark:text-white">Smart WhatsApp & Multi-Channel Alert Dispatcher</h2>
+              </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Multi-channel alert dispatcher for hearing dates, limitation expiries, cause list updates & fee reminders
+                Direct WhatsApp API & SMS gateway integration for instant cause list alerts, hearing date changes, fee reminders and order copies
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { title: 'WhatsApp Alert Service', sub: 'Instant court date update to client mobile', channel: 'WhatsApp', color: 'bg-emerald-600' },
-                { title: 'SMS Notice Engine', sub: 'Statutory deadline SMS notifications', channel: 'SMS', color: 'bg-blue-600' },
-                { title: 'Email Cause List Roster', sub: 'Daily chamber court roster PDF dispatch', channel: 'Email', color: 'bg-indigo-600' },
-              ].map((notif, idx) => (
-                <div key={idx} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-3">
-                  <div className="font-bold text-sm text-slate-900 dark:text-white">{notif.title}</div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">{notif.sub}</p>
-                  <button
-                    onClick={() => handleSendNotification(notif.channel, 'CIVIL/877/2024')}
-                    className={`w-full py-2 rounded-xl text-white font-bold text-xs shadow-sm ${notif.color}`}
-                  >
-                    Send Sample {notif.channel} Alert
-                  </button>
+            {/* Dispatcher Workspace */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column: Dispatch Controls */}
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-4">
+                <div className="font-bold text-sm text-slate-900 dark:text-white flex items-center justify-between">
+                  <span>1. Configure Alert Parameters</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-mono text-[10px] font-bold">
+                    WhatsApp Business API Active
+                  </span>
                 </div>
-              ))}
+
+                <div className="space-y-3 text-xs">
+                  <div>
+                    <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase mb-1">
+                      Recipient Mobile Number
+                    </label>
+                    <input
+                      type="text"
+                      value={waMobile}
+                      onChange={(e) => setWaMobile(e.target.value)}
+                      placeholder="+91 98301 23456"
+                      className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase mb-1">
+                      Select Matter / Case Number
+                    </label>
+                    <select
+                      value={waCase}
+                      onChange={(e) => setWaCase(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    >
+                      <option value="CIVIL/877/2024">CIVIL/877/2024 - Arun Kumar Jaiswal vs. Sohanlal Jaiswal</option>
+                      <option value="CS(COMM)/420/2024">CS(COMM)/420/2024 - M/s Apex Logistics vs. Union of India</option>
+                      <option value="WP(C)/4521/2024">WP(C)/4521/2024 - Rajesh Verma vs. State of WB</option>
+                      <option value="BAIL/1092/2026">BAIL/1092/2026 - State vs. Vikrant Sharma</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase mb-1">
+                      Notification Message Template
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'hearing', label: '🗓️ Next Hearing Date' },
+                        { id: 'causelist', label: '⚡ Cause List Approaching' },
+                        { id: 'invoice', label: '💳 Fee Invoice Due' },
+                        { id: 'order', label: '📑 Order Copy Ready' },
+                      ].map((t) => (
+                        <button
+                          key={t.id}
+                          onClick={() => setWaTemplate(t.id as any)}
+                          className={`p-2 rounded-xl font-bold text-[11px] text-left transition-all ${
+                            waTemplate === t.id
+                              ? 'bg-emerald-600 text-white shadow-sm'
+                              : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase mb-1">
+                      Additional Advocate Note (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={waCustomNote}
+                      onChange={(e) => setWaCustomNote(e.target.value)}
+                      placeholder="e.g. Please bring original property deed documents tomorrow at 10 AM."
+                      className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Live Message Preview & Dispatch */}
+              <div className="p-5 rounded-2xl bg-[#0B141B] text-slate-100 border border-slate-800 space-y-4 flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-xs border-b border-slate-800 pb-2">
+                    <span className="font-mono text-emerald-400 font-bold uppercase tracking-wider text-[10px]">
+                      WhatsApp Live Message Preview
+                    </span>
+                    <span className="text-[10px] text-slate-400">Recipient: {waMobile}</span>
+                  </div>
+
+                  {/* WhatsApp Chat Bubble Mock */}
+                  <div className="p-4 rounded-2xl bg-[#202C33] border border-slate-700/60 text-xs text-slate-200 space-y-2 shadow-lg font-sans">
+                    <div className="font-bold text-emerald-400 text-sm">⚖️ LawyerDesk eCourt Alert</div>
+                    <div className="text-slate-300 leading-relaxed space-y-1">
+                      {waTemplate === 'hearing' && (
+                        <>
+                          <p>Dear Client, your matter <strong>{waCase}</strong> is scheduled for hearing on <strong>{formatDisplayDate(causeListDate)} at 10:45 AM</strong>.</p>
+                          <p>Court: <strong>Tis Hazari Court Room 312</strong> (Shri Vikramaditya Das, DHJS).</p>
+                          <p>Stage: PW-1 Cross Examination.</p>
+                        </>
+                      )}
+                      {waTemplate === 'causelist' && (
+                        <>
+                          <p>⚡ <strong>Urgent Cause List Update</strong>: Your case <strong>{waCase}</strong> is listed as <strong>Item #4</strong> in Court Room 312 today.</p>
+                          <p>Estimated appearance time: 10:45 AM.</p>
+                        </>
+                      )}
+                      {waTemplate === 'invoice' && (
+                        <>
+                          <p>💳 <strong>Fee Invoice Reminder</strong>: Invoice #INV-2026-881 for matter <strong>{waCase}</strong> is generated.</p>
+                          <p>Amount: ₹15,000 INR. Payable via UPI/Bank transfer.</p>
+                        </>
+                      )}
+                      {waTemplate === 'order' && (
+                        <>
+                          <p>📑 <strong>Certified Order Copy Ready</strong>: The court order for <strong>{waCase}</strong> has been extracted and uploaded to your client vault.</p>
+                        </>
+                      )}
+                      {waCustomNote && (
+                        <p className="pt-2 text-amber-300 font-medium border-t border-slate-700/60">
+                          📌 Note: {waCustomNote}
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-[9px] text-slate-400 text-right font-mono">Today, 09:42 AM • Sent via LawyerDesk Cloud</div>
+                  </div>
+                </div>
+
+                <div className="pt-3 space-y-2">
+                  <button
+                    onClick={() => {
+                      const newLog = {
+                        id: String(Date.now()),
+                        time: 'Just now',
+                        channel: 'WhatsApp',
+                        recipient: `${waMobile} (${waCase})`,
+                        caseNo: waCase,
+                        status: 'Sent ✅',
+                      };
+                      setWaLog([newLog, ...waLog]);
+                      handleSendNotification('WhatsApp Alert', waCase);
+                      setWaCustomNote('');
+                    }}
+                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg transition-all"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>Dispatch WhatsApp Alert Now</span>
+                  </button>
+                  <p className="text-[10px] text-slate-400 text-center">
+                    Compliant with TRAI DND regulations & WhatsApp Business Cloud API
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Historical Dispatch Logs */}
+            <div className="space-y-3 pt-2">
+              <div className="font-bold text-xs text-slate-900 dark:text-white flex items-center justify-between">
+                <span>Recent Dispatched Alert History</span>
+                <span className="text-slate-400 text-[10px] font-mono">{waLog.length} Total Alerts Logged</span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400 text-[10px] uppercase font-mono">
+                      <th className="pb-2">Time</th>
+                      <th className="pb-2">Channel</th>
+                      <th className="pb-2">Recipient / Client</th>
+                      <th className="pb-2">Case No</th>
+                      <th className="pb-2 text-right">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                    {waLog.map((log) => (
+                      <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                        <td className="py-2.5 font-mono text-slate-500">{log.time}</td>
+                        <td className="py-2.5">
+                          <span className="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">
+                            {log.channel}
+                          </span>
+                        </td>
+                        <td className="py-2.5 font-bold text-slate-900 dark:text-white">{log.recipient}</td>
+                        <td className="py-2.5 font-mono text-indigo-600 dark:text-indigo-400 font-bold">{log.caseNo}</td>
+                        <td className="py-2.5 text-right font-mono text-emerald-500 font-bold">{log.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -1532,7 +1938,7 @@ export const CourtIntelligenceView: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
                 <span className="text-slate-500 font-bold">Next Court Hearing</span>
-                <div className="font-bold text-sm text-slate-900 dark:text-white">27 Jul 2026 - 10:45 AM</div>
+                <div className="font-bold text-sm text-slate-900 dark:text-white">{formatDisplayDate(causeListDate)} - 10:45 AM</div>
                 <div className="text-slate-500">Tis Hazari Court Room 312</div>
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
@@ -1758,6 +2164,108 @@ export const CourtIntelligenceView: React.FC = () => {
               >
                 {copiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
                 <span>{copiedLink ? 'Copied!' : 'Copy URL'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Judge Profile Drawer / Modal */}
+      {showJudgeModal && selectedJudge && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="w-full max-w-2xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-lg">
+                  <UserCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 dark:text-white text-lg">
+                    {selectedJudge.name}
+                  </h3>
+                  <p className="text-xs text-indigo-600 dark:text-indigo-400 font-bold">
+                    {selectedJudge.designation} • {selectedJudge.courtName}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowJudgeModal(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-slate-400 font-bold uppercase text-[10px]">Bench Type</span>
+                <div className="font-black text-slate-900 dark:text-white">{selectedJudge.benchType}</div>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-slate-400 font-bold uppercase text-[10px]">Court Room</span>
+                <div className="font-black text-slate-900 dark:text-white">{selectedJudge.courtRoomNo}</div>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-slate-400 font-bold uppercase text-[10px]">Appointed Date</span>
+                <div className="font-black text-slate-900 dark:text-white">{selectedJudge.appointedDate}</div>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-slate-400 font-bold uppercase text-[10px]">Retirement Date</span>
+                <div className="font-black text-slate-900 dark:text-white">{selectedJudge.retirementDate}</div>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 space-y-1.5 text-xs">
+              <div className="font-bold text-indigo-900 dark:text-indigo-300">Current Bench Roster & Subject Assignment</div>
+              <p className="text-slate-700 dark:text-slate-300 leading-relaxed font-medium">{selectedJudge.currentAssignment}</p>
+            </div>
+
+            {/* Notable Judgments */}
+            <div className="space-y-3">
+              <div className="font-bold text-sm text-slate-900 dark:text-white">Notable Judgments & Legal Precedents</div>
+              <div className="space-y-2">
+                {selectedJudge.notableJudgments.map((j, idx) => (
+                  <div key={idx} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{j.citation}</span>
+                      <span className="text-[10px] text-slate-400">{j.date}</span>
+                    </div>
+                    <div className="font-bold text-slate-900 dark:text-white">{j.title}</div>
+                    <p className="text-slate-500">{j.subject}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Transfer History */}
+            <div className="space-y-3">
+              <div className="font-bold text-sm text-slate-900 dark:text-white">Judicial Transfer & Posting History</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                {selectedJudge.transferHistory.map((t, idx) => (
+                  <div key={idx} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{t.previousCourt}</span>
+                    <span className="font-mono text-slate-400 text-[10px]">{t.tenure}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => {
+                  setShowJudgeModal(false);
+                  setActiveTab('cause_list');
+                }}
+                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs"
+              >
+                View Roster in Cause List
+              </button>
+              <button
+                onClick={() => setShowJudgeModal(false)}
+                className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
+              >
+                Close Profile
               </button>
             </div>
           </div>

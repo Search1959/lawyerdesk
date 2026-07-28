@@ -15,6 +15,9 @@ import {
   FilePlus,
   Building,
   UserCheck,
+  Search,
+  BookMarked,
+  Printer,
 } from 'lucide-react';
 import { Matter } from '../types';
 
@@ -41,10 +44,17 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
 }) => {
   const [draftType, setDraftType] = useState<string>('Legal Notice');
   const [specificInstructions, setSpecificInstructions] = useState<string>('');
+  const [jurisdiction, setJurisdiction] = useState<string>('High Court of Delhi');
   const [generatedDraft, setGeneratedDraft] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [savedBanner, setSavedBanner] = useState<string | null>(null);
+
+  // Indian Kanoon Precedent Search State
+  const [kanoonQuery, setKanoonQuery] = useState<string>('');
+  const [precedents, setPrecedents] = useState<any[]>([]);
+  const [isSearchingKanoon, setIsSearchingKanoon] = useState<boolean>(false);
+  const [showKanoonModal, setShowKanoonModal] = useState<boolean>(false);
 
   // 10 Core Indian Court Document Types
   const draftTypesList = [
@@ -60,6 +70,28 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
     'Rejoinder / Reply',
   ];
 
+  const handleSearchKanoon = async () => {
+    setIsSearchingKanoon(true);
+    try {
+      const q = kanoonQuery.trim() || selectedMatter.actsAndSections?.[0] || 'Order 39 Rule 1 CPC';
+      const res = await fetch(`/api/ai/precedents/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      setPrecedents(data.precedents || []);
+    } catch (e) {
+      console.error('Kanoon search error:', e);
+    } finally {
+      setIsSearchingKanoon(false);
+    }
+  };
+
+  const handleInsertCitation = (precedent: any) => {
+    const citationSnippet = `\n\n[RELIED UPON PRECEDENT]:\n"In ${precedent.title} (${precedent.citation}), the ${precedent.court} held as follows:\n'${precedent.ratioDecidendi}'"`;
+    setGeneratedDraft((prev) => prev + citationSnippet);
+    setShowKanoonModal(false);
+    setSavedBanner(`Citation "${precedent.citation}" inserted into draft!`);
+    setTimeout(() => setSavedBanner(null), 3000);
+  };
+
   const handleGenerateDraft = async () => {
     setIsGenerating(true);
     setSavedBanner(null);
@@ -70,7 +102,7 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
         body: JSON.stringify({
           matterId: selectedMatter.id,
           draftType,
-          specificInstructions,
+          specificInstructions: `Jurisdiction: ${jurisdiction}. ${specificInstructions}`,
         }),
       });
 
@@ -192,8 +224,25 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
           </div>
 
           <div>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Court Forum / Jurisdiction</label>
+            <select
+              value={jurisdiction}
+              onChange={(e) => setJurisdiction(e.target.value)}
+              className="w-full p-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold"
+            >
+              <option value="High Court of Delhi">High Court of Delhi</option>
+              <option value="Supreme Court of India">Supreme Court of India</option>
+              <option value="District & Sessions Court, New Delhi">District & Sessions Court, New Delhi</option>
+              <option value="National Company Law Tribunal (NCLT)">National Company Law Tribunal (NCLT)</option>
+              <option value="Debts Recovery Tribunal (DRT)">Debts Recovery Tribunal (DRT)</option>
+              <option value="Calcutta High Court">Calcutta High Court</option>
+              <option value="Bombay High Court">Bombay High Court</option>
+            </select>
+          </div>
+
+          <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Select Document Type</label>
-            <div className="space-y-1 max-h-56 overflow-y-auto pr-1">
+            <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
               {draftTypesList.map((dt) => (
                 <button
                   key={dt}
@@ -211,11 +260,22 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-              Specific Instructions / Custom Facts
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                Specific Instructions / Custom Facts
+              </label>
+              <button
+                onClick={() => {
+                  setShowKanoonModal(true);
+                  handleSearchKanoon();
+                }}
+                className="text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1"
+              >
+                <BookMarked className="w-3 h-3" /> Insert Precedent
+              </button>
+            </div>
             <textarea
-              rows={4}
+              rows={3}
               placeholder="e.g., Mention 15-day notice period under Sec 138 NI Act; emphasize cheque bounce date 12th Jan 2026..."
               value={specificInstructions}
               onChange={(e) => setSpecificInstructions(e.target.value)}
@@ -319,6 +379,76 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
           )}
         </div>
       </div>
+
+      {/* Indian Kanoon Search & Citation Modal */}
+      {showKanoonModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <BookMarked className="w-5 h-5 text-amber-500" />
+                <span>Search Indian Kanoon Landmark Precedents</span>
+              </h2>
+              <button
+                onClick={() => setShowKanoonModal(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <input
+                  type="text"
+                  placeholder="e.g., Order 39 Rule 1 CPC, Section 138 NI Act, BSES Rajdhani..."
+                  value={kanoonQuery}
+                  onChange={(e) => setKanoonQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearchKanoon()}
+                  className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <button
+                onClick={handleSearchKanoon}
+                disabled={isSearchingKanoon}
+                className="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
+              >
+                {isSearchingKanoon ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
+                <span>Search</span>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+              {precedents.map((p) => (
+                <div key={p.id} className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 space-y-2 hover:border-amber-400/50 transition-colors">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h4 className="font-extrabold text-xs text-slate-900 dark:text-white">{p.title}</h4>
+                      <span className="text-[11px] font-mono text-amber-600 dark:text-amber-400 font-bold">{p.citation} • {p.court}</span>
+                    </div>
+                    <button
+                      onClick={() => handleInsertCitation(p)}
+                      className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold rounded-lg shrink-0 flex items-center gap-1"
+                    >
+                      <BookMarked className="w-3 h-3" /> Insert Citation
+                    </button>
+                  </div>
+                  <div className="text-[11px] text-slate-600 dark:text-slate-300">
+                    <strong>Bench:</strong> {p.judgeBench} ({p.decidedDate})
+                  </div>
+                  <div className="text-[11px] text-slate-600 dark:text-slate-300">
+                    <strong>Provision:</strong> <span className="font-semibold text-slate-900 dark:text-white">{p.statutoryProvision}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 italic bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
+                    "{p.ratioDecidendi}"
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
