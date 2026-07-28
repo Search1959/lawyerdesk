@@ -2,26 +2,38 @@ import React, { useState, useEffect } from 'react';
 import {
   Receipt,
   Plus,
+  Eye,
+  Edit3,
+  Trash2,
+  MessageCircle,
+  Search,
+  Building,
+  User,
+  ShieldCheck,
+  FileText,
   IndianRupee,
   CheckCircle2,
   Clock,
   AlertCircle,
+  Upload,
   Download,
-  Building,
-  Trash2,
-  MessageCircle,
-  Search,
+  FileSpreadsheet,
 } from 'lucide-react';
-import { Invoice, Client, Matter } from '../types';
+import { Invoice, Client, Matter, LawFirm } from '../types';
 import { WhatsAppReminderModal } from './WhatsAppReminderModal';
 import { WhatsAppReminderData } from '../lib/whatsapp';
 import { PaginationControls } from './PaginationControls';
+import { InvoiceViewModal } from './InvoiceViewModal';
+import { InvoiceEditModal } from './InvoiceEditModal';
+import { exportInvoicesToCSV, exportInvoicesToJSON, parseInvoicesFromText } from '../lib/invoiceUtils';
 
 interface FinancialsViewProps {
   invoices: Invoice[];
   clients: Client[];
   matters: Matter[];
+  currentFirm?: LawFirm;
   onAddNewInvoice: (inv: Partial<Invoice>) => void;
+  onUpdateInvoice?: (inv: Invoice) => void;
   onDeleteInvoice?: (invoiceId: string) => void;
 }
 
@@ -29,26 +41,21 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
   invoices,
   clients,
   matters,
+  currentFirm,
   onAddNewInvoice,
+  onUpdateInvoice,
   onDeleteInvoice,
 }) => {
-  const [showModal, setShowModal] = useState(false);
   const [whatsappModalData, setWhatsappModalData] = useState<WhatsAppReminderData | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [invoicePage, setInvoicePage] = useState(1);
   const [invoicePageSize, setInvoicePageSize] = useState(5);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
-  const [newInv, setNewInv] = useState({
-    invoiceNumber: `INV-2026-0${invoices.length + 1}`,
-    clientId: clients[0]?.id || '',
-    matterId: matters[0]?.id || '',
-    amountINR: 150000,
-    dueDate: '2026-08-30',
-    feeType: 'Appearance Fee' as const,
-    items: [
-      { description: 'High Court Senior Counsel Appearance Fee', amountINR: 150000 },
-    ],
-  });
+  // Modals
+  const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
+  const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   useEffect(() => {
     setInvoicePage(1);
@@ -58,9 +65,12 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
     const client = clients.find((c) => c.id === inv.clientId);
     const matter = matters.find((m) => m.id === inv.matterId);
     const query = searchQuery.toLowerCase();
+    const firmName = (inv.lawFirmName || currentFirm?.name || '').toLowerCase();
     return (
       inv.invoiceNumber.toLowerCase().includes(query) ||
       inv.feeType.toLowerCase().includes(query) ||
+      inv.clientName.toLowerCase().includes(query) ||
+      firmName.includes(query) ||
       (client && client.name.toLowerCase().includes(query)) ||
       (matter && matter.title.toLowerCase().includes(query))
     );
@@ -73,31 +83,21 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
     activeInvoicePage * invoicePageSize
   );
 
-  const totalBilled = invoices.reduce((acc, inv) => acc + inv.totalINR, 0);
-  const totalPaid = invoices.filter((i) => i.status === 'Paid').reduce((acc, inv) => acc + inv.totalINR, 0);
+  const totalBilled = invoices.reduce((acc, inv) => acc + (inv.totalINR || 0), 0);
+  const totalPaid = invoices
+    .filter((i) => i.status === 'Paid')
+    .reduce((acc, inv) => acc + (inv.totalINR || 0), 0);
   const totalPending = totalBilled - totalPaid;
+  const pendingCount = invoices.filter((i) => i.status !== 'Paid').length;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const subtotal = newInv.amountINR;
-    const gst = Math.round(subtotal * 0.18);
-    const total = subtotal + gst;
-
-    onAddNewInvoice({
-      invoiceNumber: newInv.invoiceNumber,
-      clientId: newInv.clientId,
-      matterId: newInv.matterId,
-      issueDate: new Date().toISOString().split('T')[0],
-      dueDate: newInv.dueDate,
-      subtotalINR: subtotal,
-      gstINR: gst,
-      totalINR: total,
-      status: 'Pending',
-      feeType: newInv.feeType,
-      items: newInv.items,
-    });
-
-    setShowModal(false);
+  const handleSaveInvoice = (data: Partial<Invoice>) => {
+    if (data.id) {
+      if (onUpdateInvoice) {
+        onUpdateInvoice(data as Invoice);
+      }
+    } else {
+      onAddNewInvoice(data);
+    }
   };
 
   return (
@@ -107,30 +107,91 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <Receipt className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-            <h1 className="text-xl font-extrabold text-slate-900 dark:text-white">Legal Invoicing & GST Accounting</h1>
+            <h1 className="text-xl font-extrabold text-slate-900 dark:text-white">
+              Legal Invoicing & GST Accounting
+            </h1>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Appearance Fees • Retainers • Success Commissions • 18% CGST/SGST Invoicing for Indian Law Firms
+            Law Firm & Client GST Tax Invoices • SAC 998211 • CGST/SGST/IGST Calculations • Reverse Charge (RCM) Sec 9(3)
           </p>
         </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Generate New Invoice</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <input
+            type="file"
+            id="import-invoice-file-fin"
+            accept=".csv,.json"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                  const content = event.target?.result as string;
+                  if (content) {
+                    const parsed = parseInvoicesFromText(content);
+                    if (parsed.length > 0) {
+                      parsed.forEach((inv) => onAddNewInvoice(inv));
+                      alert(`Successfully imported ${parsed.length} invoice(s)!`);
+                    } else {
+                      alert('Could not parse any valid invoice rows from the uploaded file.');
+                    }
+                  }
+                };
+                reader.readAsText(file);
+              }
+              e.target.value = '';
+            }}
+          />
+
+          <label
+            htmlFor="import-invoice-file-fin"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer border border-slate-200 dark:border-slate-700"
+            title="Import Invoices from CSV or JSON file"
+          >
+            <Upload className="w-4 h-4 text-emerald-500" />
+            <span>Import CSV/JSON</span>
+          </label>
+
+          <button
+            onClick={() => exportInvoicesToCSV(invoices)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200 dark:border-slate-700"
+            title="Export all invoices to CSV"
+          >
+            <Download className="w-4 h-4 text-indigo-500" />
+            <span>Export CSV</span>
+          </button>
+
+          <button
+            onClick={() => exportInvoicesToJSON(invoices)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200 dark:border-slate-700"
+            title="Export full JSON backup"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-amber-500" />
+            <span>Export JSON</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setEditingInvoice(null);
+              setIsCreateOpen(true);
+            }}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <span>+ Generate New GST Invoice</span>
+          </button>
+        </div>
       </div>
 
-      {/* Financial Metrics */}
+      {/* Financial Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="text-xs font-medium text-slate-500">Total Invoiced</div>
+          <div className="text-xs font-medium text-slate-500">Total Billed (Incl. GST)</div>
           <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">
             ₹{(totalBilled / 100000).toFixed(2)} Lakhs
           </div>
-          <div className="text-[11px] text-slate-400 mt-1">Incl. 18% GST</div>
+          <div className="text-[11px] text-slate-400 mt-1">18% GST Compliance Rate</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -138,7 +199,7 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
           <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
             ₹{(totalPaid / 100000).toFixed(2)} Lakhs
           </div>
-          <div className="text-[11px] text-emerald-600 mt-1">Direct Bank Wire / NEFT</div>
+          <div className="text-[11px] text-emerald-600 mt-1">Settled via NEFT / RTGS / Bank Wire</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -146,20 +207,25 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
           <div className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">
             ₹{(totalPending / 100000).toFixed(2)} Lakhs
           </div>
-          <div className="text-[11px] text-amber-600 mt-1">3 Invoices Pending</div>
+          <div className="text-[11px] text-amber-600 mt-1">{pendingCount} Pending Invoices</div>
         </div>
       </div>
 
-      {/* Invoice List */}
+      {/* Invoice List Table */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2 border-b border-slate-100 dark:border-slate-800">
-          <h2 className="font-bold text-slate-900 dark:text-white text-sm">Active Invoices ({filteredInvoices.length})</h2>
-          
+          <div className="flex items-center gap-2">
+            <h2 className="font-extrabold text-slate-900 dark:text-white text-sm">
+              Active GST Tax Invoices ({filteredInvoices.length})
+            </h2>
+            <span className="text-xs text-slate-400 font-normal">• Showing Law Firm & Client Details</span>
+          </div>
+
           <div className="relative w-full sm:w-72">
             <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Search invoice #, client, matter..."
+              placeholder="Search invoice #, client, firm, matter..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
@@ -170,45 +236,116 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
         <div className="space-y-3">
           {paginatedInvoices.length === 0 ? (
             <div className="p-8 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-              No invoices found matching "{searchQuery}"
+              No legal fee invoices found matching "{searchQuery}"
             </div>
           ) : (
             paginatedInvoices.map((inv) => {
               const client = clients.find((c) => c.id === inv.clientId);
               const matter = matters.find((m) => m.id === inv.matterId);
+              const firmName = inv.lawFirmName || currentFirm?.name || 'LawyerDesk Chambers';
+              const clientName = inv.clientName || client?.name || 'Client Entity';
+              const clientGstin = inv.clientGstin || client?.gstin || client?.panNumber || '19AAAC1234F1Z0';
 
               return (
                 <div
                   key={inv.id}
-                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-xs flex flex-col md:flex-row md:items-center justify-between gap-3"
+                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 text-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4 hover:border-indigo-300 dark:hover:border-indigo-800 transition-all"
                 >
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{inv.invoiceNumber}</span>
+                  {/* Left Column: Law Firm & Client Info */}
+                  <div className="space-y-1.5 flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-mono font-extrabold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/80 px-2 py-0.5 rounded border border-indigo-200 dark:border-indigo-800 text-xs">
+                        {inv.invoiceNumber}
+                      </span>
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        className={`px-2 py-0.5 rounded text-[10px] font-black ${
                           inv.status === 'Paid'
                             ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                            : inv.status === 'Overdue'
+                            ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
                             : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
                         }`}
                       >
                         {inv.status}
                       </span>
-                      <span className="text-slate-400">• {inv.feeType}</span>
+                      <span className="text-slate-500 font-medium text-[11px]">• Fee: {inv.feeType}</span>
+                      <span className="text-slate-400 font-mono text-[10px]">SAC 998211</span>
                     </div>
 
-                    <div className="font-bold text-slate-900 dark:text-white text-sm">
-                      {client ? client.name : 'Client Entity'}
+                    {/* Law Firm Name & Client Name Header */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                      <div>
+                        <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                          <Building className="w-3 h-3" />
+                          <span>Law Firm Issuer:</span>
+                        </div>
+                        <div className="font-bold text-slate-900 dark:text-white truncate">
+                          {firmName}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          <span>Billed Client Entity:</span>
+                        </div>
+                        <div className="font-bold text-slate-900 dark:text-white truncate">
+                          {clientName} <span className="font-mono font-normal text-slate-500 text-[10px]">({clientGstin})</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-slate-500 text-[11px] mt-0.5">{matter ? matter.title : ''}</div>
+
+                    {matter && (
+                      <div className="text-slate-500 text-[11px] truncate pt-0.5">
+                        <strong>Matter:</strong> {matter.caseNumber} - {matter.title} ({matter.court})
+                      </div>
+                    )}
                   </div>
 
-                  <div className="text-right flex flex-col md:items-end justify-between gap-1">
-                    <div className="flex items-center gap-2">
+                  {/* Right Column: Amount, Dates, and VIEW / EDIT / DELETE Action Buttons */}
+                  <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-3 shrink-0">
+                    <div className="text-left sm:text-right">
+                      <div className="text-lg font-black text-slate-900 dark:text-white">
+                        ₹{(inv.totalINR || 0).toLocaleString('en-IN')}
+                      </div>
+                      <div className="text-[10px] text-slate-400 font-mono">
+                        Subtotal: ₹{(inv.subtotalINR || 0).toLocaleString('en-IN')} + GST: ₹{(inv.gstINR || 0).toLocaleString('en-IN')}
+                      </div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">
+                        Issue: {inv.issueDate} | Due: <strong className="text-slate-700 dark:text-slate-300">{inv.dueDate}</strong>
+                      </div>
+                    </div>
+
+                    {/* ACTION BUTTONS: VIEW, EDIT, DELETE, WHATSAPP */}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {/* VIEW BUTTON */}
+                      <button
+                        onClick={() => setViewingInvoice(inv)}
+                        className="px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-600 dark:text-indigo-300 font-bold text-xs flex items-center gap-1 border border-indigo-200 dark:border-indigo-800 transition-all shadow-2xs"
+                        title="View GST Tax Invoice"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View</span>
+                      </button>
+
+                      {/* EDIT BUTTON */}
+                      <button
+                        onClick={() => {
+                          setEditingInvoice(inv);
+                          setIsCreateOpen(true);
+                        }}
+                        className="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1 border border-slate-200 dark:border-slate-700 transition-all"
+                        title="Edit GST Tax Invoice"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </button>
+
+                      {/* WHATSAPP BUTTON */}
                       <button
                         onClick={() =>
                           setWhatsappModalData({
-                            recipientName: client ? client.name : 'Client Entity',
+                            recipientName: clientName,
                             recipientPhone: client?.phone || '+91 98765 43210',
                             reminderType: 'INVOICE_REMINDER',
                             invoiceNumber: inv.invoiceNumber,
@@ -217,33 +354,44 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
                             caseTitle: matter ? matter.title : `${inv.feeType} Invoice #${inv.invoiceNumber}`,
                           })
                         }
-                        className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
+                        className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-2xs"
                         title="Send WhatsApp Invoice Reminder"
                       >
                         <MessageCircle className="w-3.5 h-3.5" />
-                        <span>WhatsApp Alert</span>
                       </button>
-                      <div className="text-base font-black text-slate-900 dark:text-white">
-                        ₹{inv.totalINR.toLocaleString('en-IN')}
-                      </div>
+
+                      {/* DELETE BUTTON */}
                       {onDeleteInvoice && (
-                        <button
-                          onClick={() => {
-                            if (window.confirm(`Delete invoice ${inv.invoiceNumber}?`)) {
-                              onDeleteInvoice(inv.id);
-                            }
-                          }}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all"
-                          title="Delete Invoice"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        deleteConfirmId === inv.id ? (
+                          <div className="flex items-center gap-1 bg-rose-50 dark:bg-rose-950/80 p-1 rounded-lg border border-rose-200 dark:border-rose-800 animate-in fade-in duration-150">
+                            <span className="text-[10px] font-bold text-rose-700 dark:text-rose-300 px-1">Delete?</span>
+                            <button
+                              onClick={() => {
+                                onDeleteInvoice(inv.id);
+                                setDeleteConfirmId(null);
+                              }}
+                              className="px-2 py-0.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] rounded shadow-xs"
+                            >
+                              Yes
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirmId(null)}
+                              className="px-2 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[10px] rounded"
+                            >
+                              No
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setDeleteConfirmId(inv.id)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all"
+                            title="Delete Invoice"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )
                       )}
                     </div>
-                    <div className="text-[11px] text-slate-400 font-mono">
-                      Subtotal: ₹{inv.subtotalINR.toLocaleString('en-IN')} + GST: ₹{inv.gstINR.toLocaleString('en-IN')}
-                    </div>
-                    <div className="text-[10px] text-slate-400 mt-1">Due Date: {inv.dueDate}</div>
                   </div>
                 </div>
               );
@@ -263,98 +411,39 @@ export const FinancialsView: React.FC<FinancialsViewProps> = ({
         />
       </div>
 
-      {/* New Invoice Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Create Legal Fee Invoice</h2>
-            <form onSubmit={handleSubmit} className="space-y-3 text-xs">
-              <div>
-                <label className="block font-bold mb-1">Client</label>
-                <select
-                  value={newInv.clientId}
-                  onChange={(e) => setNewInv({ ...newInv, clientId: e.target.value })}
-                  className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border"
-                >
-                  {clients.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} ({c.panNumber})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-bold mb-1">Matter</label>
-                <select
-                  value={newInv.matterId}
-                  onChange={(e) => setNewInv({ ...newInv, matterId: e.target.value })}
-                  className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border"
-                >
-                  {matters.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.caseNumber} - {m.title.slice(0, 30)}...
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block font-bold mb-1">Professional Fee (₹ INR)</label>
-                  <input
-                    type="number"
-                    value={newInv.amountINR}
-                    onChange={(e) => setNewInv({ ...newInv, amountINR: Number(e.target.value) })}
-                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold mb-1">Fee Category</label>
-                  <select
-                    value={newInv.feeType}
-                    onChange={(e) => setNewInv({ ...newInv, feeType: e.target.value as any })}
-                    className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border"
-                  >
-                    <option value="Appearance Fee">Appearance Fee</option>
-                    <option value="Retainer">Monthly Retainer</option>
-                    <option value="Drafting Fee">Pleading Drafting Fee</option>
-                    <option value="Success Commission">Success Commission</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-[11px] font-mono space-y-1">
-                <div className="flex justify-between">
-                  <span>Subtotal Fee:</span>
-                  <span>₹{newInv.amountINR.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between text-indigo-600 dark:text-indigo-400 font-bold">
-                  <span>+ 18% GST (CGST 9% + SGST 9%):</span>
-                  <span>₹{Math.round(newInv.amountINR * 0.18).toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between font-extrabold text-slate-900 dark:text-white pt-1 border-t border-indigo-200 dark:border-indigo-800">
-                  <span>Total Invoice Amount:</span>
-                  <span>₹{Math.round(newInv.amountINR * 1.18).toLocaleString('en-IN')}</span>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold"
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-bold">
-                  Generate Invoice
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      {/* GST Tax Invoice Viewer Modal */}
+      {viewingInvoice && (
+        <InvoiceViewModal
+          isOpen={!!viewingInvoice}
+          onClose={() => setViewingInvoice(null)}
+          invoice={viewingInvoice}
+          client={clients.find((c) => c.id === viewingInvoice.clientId)}
+          matter={matters.find((m) => m.id === viewingInvoice.matterId)}
+          firm={currentFirm}
+          onEdit={(inv) => {
+            setViewingInvoice(null);
+            setEditingInvoice(inv);
+            setIsCreateOpen(true);
+          }}
+        />
       )}
+
+      {/* GST Tax Invoice Creator & Editor Modal */}
+      {isCreateOpen && (
+        <InvoiceEditModal
+          isOpen={isCreateOpen}
+          onClose={() => {
+            setIsCreateOpen(false);
+            setEditingInvoice(null);
+          }}
+          invoiceToEdit={editingInvoice}
+          clients={clients}
+          matters={matters}
+          firm={currentFirm}
+          onSave={handleSaveInvoice}
+        />
+      )}
+
       {/* WhatsApp Reminder Modal */}
       {whatsappModalData && (
         <WhatsAppReminderModal

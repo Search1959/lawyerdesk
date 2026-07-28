@@ -27,8 +27,9 @@ import {
   CheckCircle2,
   FileCode2,
 } from 'lucide-react';
-import { Matter, Document, Hearing, CourtOrder, TimelineEvent, Witness, Task, CourtType } from '../types';
+import { Matter, Document, Hearing, CourtOrder, TimelineEvent, Witness, Task, CourtType, Client, LawFirm } from '../types';
 import { PaginationControls } from './PaginationControls';
+import { InvoiceEditModal } from './InvoiceEditModal';
 
 interface MattersViewProps {
   matters: Matter[];
@@ -38,11 +39,14 @@ interface MattersViewProps {
   timeline: TimelineEvent[];
   witnesses: Witness[];
   tasks: Task[];
+  clients?: Client[];
+  currentFirm?: LawFirm;
   onSelectMatter: (matter: Matter) => void;
   onOpenNewMatter: () => void;
   onUploadDocToMatter: (matterId: string) => void;
   onOpenDraftingForMatter: (matter: Matter) => void;
   onOpenAIChatForMatter: (matter: Matter) => void;
+  onAddNewInvoice?: (inv: any) => void;
 }
 
 export const MattersView: React.FC<MattersViewProps> = ({
@@ -53,11 +57,14 @@ export const MattersView: React.FC<MattersViewProps> = ({
   timeline: initialTimeline,
   witnesses,
   tasks,
+  clients,
+  currentFirm,
   onSelectMatter,
   onOpenNewMatter,
   onUploadDocToMatter,
   onOpenDraftingForMatter,
   onOpenAIChatForMatter,
+  onAddNewInvoice,
 }) => {
   const [mattersList, setMattersList] = useState<Matter[]>(initialMatters);
   const [selectedMatter, setSelectedMatter] = useState<Matter | null>(initialMatters[0] || null);
@@ -264,6 +271,129 @@ export const MattersView: React.FC<MattersViewProps> = ({
     setShowEditModal(false);
   };
 
+  const handleExportMattersCSV = () => {
+    if (!mattersList || mattersList.length === 0) return;
+
+    const headers = [
+      'Case Number',
+      'Title',
+      'Court',
+      'Category',
+      'Status',
+      'Client Name',
+      'Lead Lawyer',
+      'CNR Number',
+      'Created Date',
+      'Next Hearing Date',
+      'Opposing Party',
+      'Opposing Advocate',
+      'Judge Name',
+      'Court Room No',
+    ];
+
+    const rows = mattersList.map((m) => [
+      `"${(m.caseNumber || '').replace(/"/g, '""')}"`,
+      `"${(m.title || '').replace(/"/g, '""')}"`,
+      `"${(m.court || '').replace(/"/g, '""')}"`,
+      `"${(m.category || 'Civil').replace(/"/g, '""')}"`,
+      `"${(m.status || 'Active Litigation').replace(/"/g, '""')}"`,
+      `"${(m.clientName || '').replace(/"/g, '""')}"`,
+      `"${(m.leadLawyerName || '').replace(/"/g, '""')}"`,
+      `"${m.cnrNumber || m.cnr || ''}"`,
+      `"${m.createdAt || ''}"`,
+      `"${m.nextHearingDate || ''}"`,
+      `"${(m.opposingParty || '').replace(/"/g, '""')}"`,
+      `"${(m.opposingAdvocate || '').replace(/"/g, '""')}"`,
+      `"${(m.judgeName || '').replace(/"/g, '""')}"`,
+      `"${(m.courtRoomNo || '').replace(/"/g, '""')}"`,
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `LawyerDesk_Case_Directory_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleImportMattersFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (!text) return;
+
+      try {
+        let imported: Matter[] = [];
+        if (text.trim().startsWith('[') || text.trim().startsWith('{')) {
+          const parsed = JSON.parse(text);
+          imported = Array.isArray(parsed) ? parsed : [parsed];
+        } else {
+          const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+          if (lines.length >= 2) {
+            for (let i = 1; i < lines.length; i++) {
+              const cols = lines[i].split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map((c) => c.replace(/^"|"$/g, '').trim());
+              if (cols.length >= 2) {
+                const item: Matter = {
+                  id: `mtr-imp-${Date.now()}-${i}`,
+                  firmId: currentFirm?.id || 'firm-1',
+                  branchId: 'branch-main',
+                  clientId: clients?.[0]?.id || 'client-1',
+                  caseNumber: cols[0] || `${Math.floor(10 + Math.random() * 90)}/${2026}`,
+                  title: cols[1] || 'Imported Matter',
+                  court: (cols[2] as CourtType) || 'Delhi High Court',
+                  category: (cols[3] as any) || 'Civil',
+                  status: (cols[4] as any) || 'Notice Stage',
+                  clientName: cols[5] || 'Client Entity',
+                  leadLawyerId: 'usr-1',
+                  leadLawyerName: cols[6] || 'Adv. Advocate',
+                  cnrNumber: cols[7] || '',
+                  cnr: cols[7] || '',
+                  createdAt: cols[8] || new Date().toISOString().split('T')[0],
+                  nextHearingDate: cols[9] || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
+                  opposingParty: cols[10] || 'Opposing Party Ltd',
+                  opposingAdvocate: cols[11] || 'Senior Advocate',
+                  judgeName: cols[12] || 'Hon’ble Bench',
+                  courtRoomNo: cols[13] || 'Court Hall 5',
+                  actsAndSections: ['IPC Sec 420'],
+                  riskScore: 25,
+                  riskLevel: 'Low',
+                  aiSummary: 'Case imported via CSV batch upload.',
+                  aiMissingDocuments: [],
+                  aiStrategyNotes: [],
+                  aiContradictions: [],
+                  hearingsCount: 1,
+                  documentsCount: 0,
+                };
+                imported.push(item);
+              }
+            }
+          }
+        }
+
+        if (imported.length > 0) {
+          setMattersList((prev) => [...imported, ...prev]);
+          if (!selectedMatter) {
+            setSelectedMatter(imported[0]);
+          }
+          alert(`Successfully imported ${imported.length} case matter(s) into Case Directory!`);
+        } else {
+          alert('No valid case rows found in the uploaded file.');
+        }
+      } catch (err) {
+        console.error('Import error:', err);
+        alert('Failed to parse uploaded file. Please ensure it is a valid CSV or JSON file.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   return (
     <div className="space-y-6 pb-8 animate-in fade-in duration-200 max-w-[1600px] mx-auto">
       {/* Top Header */}
@@ -278,13 +408,41 @@ export const MattersView: React.FC<MattersViewProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={onOpenNewMatter}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm transition-all shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Matter Intake</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <input
+            type="file"
+            id="import-matters-file-header"
+            accept=".csv,.json"
+            className="hidden"
+            onChange={handleImportMattersFile}
+          />
+
+          <label
+            htmlFor="import-matters-file-header"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer border border-slate-200 dark:border-slate-700 shadow-xs"
+            title="Import Cases from CSV or Excel file"
+          >
+            <Upload className="w-4 h-4 text-emerald-500" />
+            <span>Import CSV/Excel</span>
+          </label>
+
+          <button
+            onClick={handleExportMattersCSV}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200 dark:border-slate-700 shadow-xs"
+            title="Export Litigation Directory to CSV/Excel"
+          >
+            <Download className="w-4 h-4 text-indigo-500" />
+            <span>Export CSV/Excel</span>
+          </button>
+
+          <button
+            onClick={onOpenNewMatter}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm transition-all shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Matter Intake</span>
+          </button>
+        </div>
       </div>
 
       {/* Warning Banner for Cases Missing CNR */}
@@ -1002,58 +1160,27 @@ export const MattersView: React.FC<MattersViewProps> = ({
         </div>
       )}
 
-      {/* Modal 3: Invoice */}
+      {/* Modal 3: Professional GST Invoice Form */}
       {showInvoiceModal && selectedMatter && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-              <h3 className="text-base font-extrabold flex items-center gap-2">
-                <Receipt className="w-4 h-4 text-cyan-500" />
-                <span>Generate Legal Fee Invoice</span>
-              </h3>
-              <button onClick={() => setShowInvoiceModal(false)} className="text-slate-400 hover:text-slate-600">✕</button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold">Client</span>
-                <div className="font-bold">{selectedMatter.clientName}</div>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold">Case Reference</span>
-                <div className="font-mono font-bold text-indigo-600">{selectedMatter.caseNumber}</div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Professional Fee Amount (₹)</label>
-                <input
-                  type="number"
-                  value={invoiceAmount}
-                  onChange={(e) => setInvoiceAmount(e.target.value)}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 rounded-xl font-mono text-sm font-bold"
-                />
-              </div>
-
-              <div className="p-3 bg-cyan-50 dark:bg-cyan-950/50 rounded-xl text-cyan-800 dark:text-cyan-200 text-[11px] font-semibold">
-                This invoice will be synced to the Billing & Financials vault for {selectedMatter.clientName}.
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button onClick={() => setShowInvoiceModal(false)} className="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-400">Cancel</button>
-                <button
-                  onClick={() => {
-                    alert(`Invoice for ₹${invoiceAmount} generated successfully for ${selectedMatter.clientName}!`);
-                    setShowInvoiceModal(false);
-                  }}
-                  className="px-4 py-1.5 bg-cyan-500 text-white text-xs font-bold rounded-xl shadow-xs"
-                >
-                  Generate Invoice
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <InvoiceEditModal
+          isOpen={showInvoiceModal}
+          onClose={() => setShowInvoiceModal(false)}
+          initialMatterId={selectedMatter.id}
+          initialClientId={selectedMatter.clientId}
+          clients={
+            clients && clients.length > 0
+              ? clients
+              : ([{ id: selectedMatter.clientId || 'client-1', name: selectedMatter.clientName || 'Client Entity' }] as any)
+          }
+          matters={initialMatters}
+          firm={currentFirm}
+          onSave={async (invData) => {
+            if (onAddNewInvoice) {
+              await onAddNewInvoice(invData);
+            }
+            setShowInvoiceModal(false);
+          }}
+        />
       )}
 
       {/* Modal 4: Edit Case */}

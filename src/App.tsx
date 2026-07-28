@@ -319,7 +319,10 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
     } catch (err) {
       console.warn('Error removing invoice:', err);
     }
-    setAllInvoices((prev) => prev.filter((i) => i.id !== invId));
+    const targetInv = allInvoices.find((i) => i.id === invId);
+    setAllInvoices((prev) =>
+      prev.filter((i) => i.id !== invId && (!targetInv || i.invoiceNumber !== targetInv.invoiceNumber))
+    );
   };
 
   const handleDeleteHearing = async (hrgId: string) => {
@@ -384,25 +387,60 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
   const handleAddNewInvoice = async (inv: Partial<Invoice>) => {
     if (checkReadOnlyDemo('Generate GST Invoice')) return;
 
+    // Check if an invoice with the exact same invoiceNumber already exists to prevent duplicate generation
+    if (inv.invoiceNumber && allInvoices.some((i) => i.invoiceNumber === inv.invoiceNumber)) {
+      console.warn('Invoice number already exists, skipping duplicate creation:', inv.invoiceNumber);
+      return;
+    }
+
     const prefix = 'inv-custom-';
     const newI: Invoice = {
-      id: `${prefix}${Date.now()}`,
-      invoiceNumber: inv.invoiceNumber || `INV-${Date.now()}`,
+      id: inv.id || `${prefix}${Date.now()}`,
+      invoiceNumber: inv.invoiceNumber || `SLA/2026/${Math.floor(100 + Math.random() * 900)}`,
       clientId: inv.clientId || clients[0]?.id || 'client-1',
-      clientName: clients.find((c) => c.id === inv.clientId)?.name || 'Client Name',
+      clientName: inv.clientName || clients.find((c) => c.id === inv.clientId)?.name || 'Client Name',
+      clientGstin: inv.clientGstin || clients.find((c) => c.id === inv.clientId)?.gstin || '19AAAC1234F1Z0',
+      clientAddress: inv.clientAddress || clients.find((c) => c.id === inv.clientId)?.address || 'Connaught Place, New Delhi',
+      clientPhone: inv.clientPhone || clients.find((c) => c.id === inv.clientId)?.phone || '+91 98765 43210',
+      clientEmail: inv.clientEmail || clients.find((c) => c.id === inv.clientId)?.email || 'billing@client.com',
+      lawFirmName: inv.lawFirmName || currentFirm.name || 'LawyerDesk Chambers & Consultants',
+      lawFirmGstin: inv.lawFirmGstin || currentFirm.gstin || '07AAAAA0000A1Z5',
+      lawFirmPan: inv.lawFirmPan || currentFirm.panNumber || 'AAAAA0000A',
+      lawFirmAddress: inv.lawFirmAddress || currentFirm.branches?.[0]?.address || 'Lawyers Chambers, High Court Complex, New Delhi - 110001',
+      lawFirmPhone: inv.lawFirmPhone || currentFirm.phone || '+91 11 2338 9012',
+      lawFirmEmail: inv.lawFirmEmail || 'accounts@lawyerdesk.co.in',
+      lawFirmBankDetails: inv.lawFirmBankDetails || {
+        bankName: 'HDFC Bank Ltd',
+        accountNumber: '50200088991122',
+        ifscCode: 'HDFC0000123',
+        branch: 'High Court Complex Branch, New Delhi',
+        upiId: 'lawyerdesk@hdfcbank',
+      },
       matterId: inv.matterId || matters[0]?.id || 'matter-1',
       issueDate: inv.issueDate || new Date().toISOString().split('T')[0],
       dueDate: inv.dueDate || '2026-08-30',
       subtotalINR: inv.subtotalINR || 100000,
+      taxType: inv.taxType || 'CGST_SGST',
       gstINR: inv.gstINR || 18000,
+      cgstINR: inv.cgstINR || (inv.taxType === 'IGST' ? 0 : Math.round((inv.subtotalINR || 100000) * 0.09)),
+      sgstINR: inv.sgstINR || (inv.taxType === 'IGST' ? 0 : Math.round((inv.subtotalINR || 100000) * 0.09)),
+      igstINR: inv.igstINR || (inv.taxType === 'IGST' ? Math.round((inv.subtotalINR || 100000) * 0.18) : 0),
       totalINR: inv.totalINR || 118000,
-      status: 'Pending',
+      status: inv.status || 'Pending',
       feeType: inv.feeType || 'Appearance Fee',
-      items: inv.items || [{ description: 'High Court Senior Counsel Appearance Fee', amountINR: 100000 }],
+      items: inv.items || [{ description: 'High Court Senior Counsel Appearance Fee', amountINR: 100000, sacCode: '998211' }],
+      notes: inv.notes || 'Tax payable on Reverse Charge basis under Sec 9(3) of CGST Act 2017 for Legal Services.',
     };
 
     await saveDocument('invoices', newI);
-    setAllInvoices((prev) => [newI, ...prev]);
+    setAllInvoices((prev) => [newI, ...prev.filter((i) => i.id !== newI.id && i.invoiceNumber !== newI.invoiceNumber)]);
+  };
+
+  const handleUpdateInvoice = async (updatedInv: Invoice) => {
+    if (checkReadOnlyDemo('Update GST Invoice')) return;
+
+    await saveDocument('invoices', updatedInv);
+    setAllInvoices((prev) => prev.map((i) => (i.id === updatedInv.id ? updatedInv : i)));
   };
 
   // Account creation handlers from AccountManagerModal
@@ -873,6 +911,8 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               timeline={mockTimeline}
               witnesses={mockWitnesses}
               tasks={mockTasks}
+              clients={clients}
+              currentFirm={currentFirm}
               onSelectMatter={setSelectedMatter}
               onOpenNewMatter={() => setShowNewMatterModal(true)}
               onUploadDocToMatter={(mId) => {
@@ -888,6 +928,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
                 setSelectedMatter(m);
                 setActiveTab('ai_chat');
               }}
+              onAddNewInvoice={handleAddNewInvoice}
             />
           )}
 
@@ -1041,7 +1082,9 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               invoices={invoices}
               clients={clients}
               matters={matters}
+              currentFirm={currentFirm}
               onAddNewInvoice={handleAddNewInvoice}
+              onUpdateInvoice={handleUpdateInvoice}
               onDeleteInvoice={handleDeleteInvoice}
             />
           )}

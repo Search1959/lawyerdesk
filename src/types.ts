@@ -409,20 +409,48 @@ export interface LegalDraftRequest {
   targetCourt?: string;
 }
 
+export interface InvoiceItem {
+  description: string;
+  amountINR: number;
+  sacCode?: string;
+}
+
 export interface Invoice {
   id: string;
   invoiceNumber: string;
   matterId: string;
   clientId: string;
   clientName: string;
+  clientGstin?: string;
+  clientAddress?: string;
+  clientPhone?: string;
+  clientEmail?: string;
+  lawFirmName?: string;
+  lawFirmGstin?: string;
+  lawFirmPan?: string;
+  lawFirmAddress?: string;
+  lawFirmPhone?: string;
+  lawFirmEmail?: string;
+  lawFirmBankDetails?: {
+    bankName: string;
+    accountNumber: string;
+    ifscCode: string;
+    branch: string;
+    upiId?: string;
+  };
   issueDate: string;
   dueDate: string;
   subtotalINR: number;
+  taxType?: 'CGST_SGST' | 'IGST';
   gstINR: number;
+  cgstINR?: number;
+  sgstINR?: number;
+  igstINR?: number;
   totalINR: number;
   status: 'Paid' | 'Pending' | 'Overdue';
-  feeType: 'Appearance Fee' | 'Retainer' | 'Drafting Fee' | 'Success Commission';
-  items: { description: string; amountINR: number }[];
+  feeType: 'Appearance Fee' | 'Retainer' | 'Drafting Fee' | 'Success Commission' | 'Legal Opinion' | 'Consultation';
+  items: InvoiceItem[];
+  notes?: string;
 }
 
 export type NavTab =

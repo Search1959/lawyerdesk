@@ -852,7 +852,7 @@ CRITICAL MANDATES:
   if (ai) {
     try {
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.6-flash',
         contents: `${contextBlock}\n\nUSER QUESTION: ${query}`,
         config: {
           systemInstruction,
@@ -1080,82 +1080,185 @@ ${matchedDoc.ocrText}
 
 // AI Legal Drafting Assistant API
 app.post('/api/ai/draft', async (req, res) => {
-  const { matterId, draftType, specificInstructions } = req.body;
-  const matter = mattersStore.find((m) => m.id === matterId) || mattersStore[0];
+  const { matterId, matter: clientMatter, draftType, specificInstructions } = req.body;
+  const matter = clientMatter || mattersStore.find((m) => m.id === matterId) || mattersStore[0];
   const matterDocs = documentsStore.filter((d) => d.matterId === matter.id);
 
   const contextText = matterDocs.map((d) => d.ocrText).join('\n---\n');
 
-  const systemInstruction = `You are a Senior Advocate in the High Court of Delhi and Supreme Court of India.
+  const systemInstruction = `You are a Senior Advocate in the High Court and Supreme Court of India.
 Generate a formal, highly technical, production-ready legal draft in standard Indian Court pleading format.
-Include Title, Cause Title, Preamble, List of Dates & Paragraphs, Grounds, Legal Precedents, Prayer, and Verification.`;
+CRITICAL MANDATES:
+1. The draft MUST be strictly grounded in the specific selected case details provided:
+   - Case Title: ${matter.title}
+   - Case Number: ${matter.caseNumber}
+   - Court Jurisdiction: ${matter.court}
+   - Client Name: ${matter.clientName}
+   - Opposing Party: ${matter.opposingParty}
+   - Acts & Sections: ${matter.actsAndSections ? matter.actsAndSections.join(', ') : 'Civil Procedure Code / CrPC / Indian Laws'}
 
-  const prompt = `Draft Type: ${draftType}
-Matter Title: ${matter.title}
-Case No: ${matter.caseNumber}
-Court: ${matter.court}
-Judge: ${matter.judgeName}
-Client: ${matter.clientName}
+2. Generate the requested document type: "${draftType}". If the client voice dictation asks for a Bail Application, Legal Notice, Petition, or Injunction, generate that exact pleading for ${matter.title} (${matter.caseNumber}).
+3. Include Title, Cause Title, Preamble, List of Dates & Paragraphs, Grounds, Legal Precedents, Prayer, and Verification. Do NOT output placeholder text for another unrelated case.`;
+
+  const prompt = `Requested Document Type: ${draftType}
+Selected Case Title: ${matter.title}
+Selected Case No: ${matter.caseNumber}
+Selected Court / Jurisdiction: ${matter.court}
+Judge / Bench: ${matter.judgeName || 'Hon’ble Bench'}
+Client Name: ${matter.clientName}
 Opposing Party: ${matter.opposingParty}
-Acts & Sections: ${matter.actsAndSections.join(', ')}
-Specific Instructions: ${specificInstructions || 'Prepare complete formal pleading.'}
+Acts & Sections: ${matter.actsAndSections ? matter.actsAndSections.join(', ') : 'Relevant Statutes'}
+Client Voice Dictation & Specific Instructions: ${specificInstructions || 'Prepare complete formal legal pleading.'}
 
-Case Record Context:
-${contextText.substring(0, 4000)}`;
+Case Record Context & Document Summaries:
+${contextText.substring(0, 4000) || matter.aiSummary || 'Fresh litigation matter.'}`;
 
   const ai = getGeminiAI();
 
   if (ai) {
     try {
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+      const aiPromise = ai.models.generateContent({
+        model: 'gemini-3.6-flash',
         contents: prompt,
         config: { systemInstruction },
       });
-      return res.json({ draft: response.text });
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('AI response timeout')), 3500)
+      );
+
+      const response: any = await Promise.race([aiPromise, timeoutPromise]);
+      if (response && response.text && response.text.trim().length > 0) {
+        return res.json({ draft: response.text });
+      }
     } catch (err) {
-      console.error('Draft AI Error:', err);
+      console.error('Draft AI Error or Timeout:', err);
     }
   }
 
-  // Fallback legal draft template generator
-  const template = `IN THE HIGH COURT OF DELHI AT NEW DELHI
-COMMERCIAL / ORIGINAL JURISDICTION
+  // Dynamic Case-Grounded Legal Draft Fallback Generator
+  const instructionsLower = (specificInstructions || '').toLowerCase();
+  const typeLower = (draftType || '').toLowerCase();
+  const isBail = typeLower.includes('bail') || instructionsLower.includes('bail') || instructionsLower.includes('bill app');
+  const isNotice = typeLower.includes('notice') || instructionsLower.includes('notice');
+  const courtName = (matter.court || 'DISTRICT COURT / HIGH COURT').toUpperCase();
+  const actsList = matter.actsAndSections && matter.actsAndSections.length > 0 ? matter.actsAndSections.join(', ') : 'CPC / CrPC / Statutory Provisions';
+
+  let template = '';
+
+  if (isBail) {
+    template = `IN THE COURT OF ${courtName}
+CRIMINAL ORIGINAL / EXTRAORDINARY JURISDICTION
+APPLICATION NO. _______ OF 2026
+IN RE: CASE NO. ${matter.caseNumber} (${matter.title.toUpperCase()})
+
+IN THE MATTER OF:
+${(matter.clientName || 'APPLICANT').toUpperCase()}
+... APPLICANT / ACCUSED
+
+VERSUS
+
+${(matter.opposingParty || 'STATE OF WEST BENGAL / RESPONDENTS').toUpperCase()}
+... RESPONDENT / PROSECUTION
+
+APPLICATION FOR REGULAR BAIL / AD-INTERIM PROTECTION IN CONNECTION WITH ${matter.caseNumber} (${matter.title.toUpperCase()})
+
+MOST RESPECTFULLY SHOWETH:
+
+1. That the Applicant, ${matter.clientName}, is a peaceful, law-abiding citizen and has been falsely implicated in connection with ${matter.title} (${matter.caseNumber}), currently pending before ${matter.court}.
+
+2. That the dispute in question primarily relates to ${matter.category || 'Civil / Criminal'} proceedings under ${actsList}, which concerns property and family disputes and does not warrant custodial detention of the Applicant.
+
+3. That the Applicant has fully cooperated with all court directions and investigation requirements, and has clean antecedents with no prior criminal conviction.
+
+4. That the Applicant is a permanent resident having deep family roots, and there is no apprehension of the Applicant absconding, fleeing from justice, or tampering with witnesses or evidence concerning ${matter.title}.
+
+5. ${specificInstructions ? `CLIENT VOICE DICTATION & SPECIFIC FACTS:\n${specificInstructions}` : `That the dispute regarding ${matter.title} is currently pending before ${matter.court}, and incarceration would cause irreparable hardship to the Applicant's family.`}
+
+PRAYER:
+Wherefore, in light of the facts and circumstances stated above, it is most respectfully prayed that this Hon'ble Court may be pleased to:
+(a) Release the Applicant (${matter.clientName}) on regular bail / protection in connection with ${matter.caseNumber} (${matter.title}) on such terms and conditions as this Hon'ble Court deems fit;
+(b) Pass any such further order(s) as this Hon'ble Court may deem fit and proper in the interest of justice.
+
+APPLICANT (${matter.clientName})
+THROUGH
+ADV. RAJESHWAR V. SHARMA
+SENIOR COUNSEL FOR APPLICANT
+DATED: ${new Date().toLocaleDateString('en-IN')}
+PLACE: ${matter.court.includes('Delhi') ? 'NEW DELHI' : 'BARASAT / KOLKATA'}`;
+  } else if (isNotice) {
+    template = `LEGAL NOTICE
+
+BY REGISTERED POST A.D. / SPEED POST / E-MAIL
+
+To,
+${matter.opposingParty || 'The Respondent Entity'}
+${matter.opposingAdvocate ? `c/o ${matter.opposingAdvocate}` : ''}
+
+Ref: Case File ${matter.caseNumber} - ${matter.title}
+
+SUBJECT: FORMAL LEGAL NOTICE REGARDING ${draftType.toUpperCase()} CONCERNING ${matter.title.toUpperCase()} UNDER ${actsList}
+
+DEAR SIR / MADAM,
+
+UNDER INSTRUCTIONS FROM AND ON BEHALF OF OUR CLIENT, ${matter.clientName.toUpperCase()}, WE HEREBY SERVE UPON YOU THIS LEGAL NOTICE:
+
+1. Our Client (${matter.clientName}) is the lawful title holder / aggrieved party in the matter titled "${matter.title}" bearing Case Reference ${matter.caseNumber}, pending/arising before the ${matter.court}.
+
+2. That under the applicable provisions of ${actsList}, you were obligated to fulfill statutory and contractual commitments in favor of our Client.
+
+3. ${specificInstructions ? `SPECIFIC DIRECTIVES & FACTS:\n${specificInstructions}` : `That despite repeated oral and written requisitions, you have defaulted on your obligations concerning ${matter.title}, thereby causing grave financial and legal prejudice to our Client.`}
+
+4. WE HEREBY CALL UPON YOU to comply with the requisitions outlined above within a period of 15 (fifteen) days from the receipt of this Notice, failing which our Client shall be constrained to initiate formal proceedings before the ${matter.court} at your sole risk, costs, and consequences.
+
+YOURS FAITHFULLY,
+
+ADV. RAJESHWAR V. SHARMA
+SENIOR ADVOCATE & COUNSEL FOR CLIENT (${matter.clientName})
+LAWYERDESK CHAMBERS
+DATED: ${new Date().toLocaleDateString('en-IN')}`;
+  } else {
+    template = `IN THE COURT OF ${courtName}
+CIVIL / COMMERCIAL / ORIGINAL JURISDICTION
 ${matter.caseNumber}
 
 IN THE MATTER OF:
 ${matter.title}
 
-${draftType.toUpperCase()} ON BEHALF OF THE PLAINTIFF / PETITIONER (${matter.clientName})
+${matter.clientName.toUpperCase()}
+... PLAINTIFF / PETITIONER
+
+VERSUS
+
+${(matter.opposingParty || 'DEFENDANTS / RESPONDENTS').toUpperCase()}
+... DEFENDANTS / RESPONDENTS
+
+${draftType.toUpperCase()} ON BEHALF OF THE PETITIONER / PLAINTIFF (${matter.clientName.toUpperCase()}) UNDER ${actsList}
 
 MOST RESPECTFULLY SHOWETH:
 
-I. SYNOPSIS AND LIST OF DATES:
-1. 14.01.2021: Tender awarded to the Petitioner by Respondent NHAI.
-2. 14.11.2023: Joint Field Inspection confirmed that only 64% land was unencumbered, causing work suspension attributable to Respondent.
-3. 02.03.2024: Illegal invocation notice issued for Bank Guarantee No. 00391BG210088 for Rs. 24,80,00,000/-.
-4. 15.03.2024: Ad-interim stay granted by Hon'ble High Court restraining invocation.
+I. SYNOPSIS AND FACTUAL BACKGROUND:
+1. That the present proceeding concerns ${matter.title} (${matter.caseNumber}) pending before the ${matter.court}.
+2. That the Plaintiff/Petitioner (${matter.clientName}) claims legitimate right, title, and relief under ${actsList}.
+3. That the cause of action accrued within the territorial jurisdiction of this Hon'ble Court.
 
 II. GROUNDS IN SUPPORT OF ${draftType.toUpperCase()}:
-A. BECAUSE the invocation of the Performance Bank Guarantee is vitiated by egregious fraud and irretrievable injury, placing the case within the exceptions established in *BSES Rajdhani Power Ltd v. DDA (2022 SCC OnLine Del 1421)*.
-B. BECAUSE Clause 14.3 of the EPC Contract explicitly mandates extension of time without financial penalties where site access is delayed beyond 90 days.
-C. BECAUSE the Respondent suppressed material facts regarding incomplete land acquisition in Sector 88 in its counter-affidavit.
+A. BECAUSE the Petitioner has established a prima facie case, balance of convenience, and irreparable injury in relation to ${matter.title}.
+B. BECAUSE the Respondents (${matter.opposingParty}) have defaulted in complying with statutory provisions of ${actsList}.
+C. ${specificInstructions ? `ADDITIONAL GROUNDS & INSTRUCTIONS:\n${specificInstructions}` : `BECAUSE non-grant of the requested relief under ${draftType} would frustrate the ends of justice and cause severe prejudice to the Petitioner.`}
 
 III. PRAYER:
-Wherefore, in light of the facts and circumstances stated above, it is most humbly prayed that this Hon'ble Court may be pleased to:
-(a) Pass appropriate orders approving the ${draftType};
-(b) Restrain Respondent from taking any coercive action against Petitioner during pendency of proceedings;
-(c) Pass any such further order(s) as this Hon'ble Court may deem fit and proper in the interest of justice.
+Wherefore, it is most humbly prayed that this Hon'ble Court may be pleased to:
+(a) Pass appropriate orders granting the relief sought in this ${draftType} in favor of ${matter.clientName};
+(b) Restrain the Respondents from taking any adverse or third-party action concerning ${matter.title};
+(c) Award costs of these proceedings in favor of the Petitioner.
 
-AND FOR THIS ACT OF KINDNESS, THE PETITIONER SHALL EVER PRAY.
-
-PETITIONER
+PETITIONER (${matter.clientName})
 THROUGH
 ADV. RAJESHWAR V. SHARMA
-SENIOR ADVOCATE
-CHAMBER NO. 412, LAWYERS BLOCK, DELHI HIGH COURT
-DATED: ${new Date().toLocaleDateString('en-IN')}
-NEW DELHI`;
+SENIOR COUNSEL FOR PETITIONER
+DATED: ${new Date().toLocaleDateString('en-IN')}`;
+  }
 
   res.json({ draft: template });
 });

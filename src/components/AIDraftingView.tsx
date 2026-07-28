@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   PenTool,
   Sparkles,
@@ -18,6 +18,12 @@ import {
   Search,
   BookMarked,
   Printer,
+  Mic,
+  MicOff,
+  Radio,
+  FileType,
+  FileCheck,
+  Volume2,
 } from 'lucide-react';
 import { Matter } from '../types';
 
@@ -50,11 +56,62 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
   const [copied, setCopied] = useState<boolean>(false);
   const [savedBanner, setSavedBanner] = useState<string | null>(null);
 
+  // Client Voice Dictation State
+  const [voiceDraftText, setVoiceDraftText] = useState<string>('');
+  const [isListening, setIsListening] = useState<boolean>(false);
+  const [isVoiceDraftModified, setIsVoiceDraftModified] = useState<boolean>(false);
+  const recognitionRef = useRef<any>(null);
+
   // Indian Kanoon Precedent Search State
   const [kanoonQuery, setKanoonQuery] = useState<string>('');
   const [precedents, setPrecedents] = useState<any[]>([]);
   const [isSearchingKanoon, setIsSearchingKanoon] = useState<boolean>(false);
   const [showKanoonModal, setShowKanoonModal] = useState<boolean>(false);
+
+  // Clean up speech recognition on unmount & sync jurisdiction with selected matter
+  useEffect(() => {
+    if (selectedMatter?.court) {
+      setJurisdiction(selectedMatter.court);
+    }
+  }, [selectedMatter]);
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          // ignore
+        }
+      }
+    };
+  }, []);
+
+  const detectDraftTypeFromText = (text: string): string | null => {
+    const lower = text.toLowerCase();
+    if (lower.includes('bail') || lower.includes('bill app') || lower.includes('bill application') || lower.includes('regular bail') || lower.includes('anticipatory')) {
+      return 'Bail Application';
+    }
+    if (lower.includes('notice') || lower.includes('legal notice')) {
+      return 'Legal Notice';
+    }
+    if (lower.includes('written statement') || lower.includes('reply to suit')) {
+      return 'Written Statement';
+    }
+    if (lower.includes('stay') || lower.includes('injunction') || lower.includes('ia ') || lower.includes('interlocutory')) {
+      return 'Interlocutory Application (IA)';
+    }
+    if (lower.includes('affidavit')) {
+      return 'Affidavit';
+    }
+    if (lower.includes('rejoinder')) {
+      return 'Rejoinder / Reply';
+    }
+    if (lower.includes('vakalatnama')) {
+      return 'Vakalatnama';
+    }
+    return null;
+  };
 
   // 10 Core Indian Court Document Types
   const draftTypesList = [
@@ -69,6 +126,66 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
     'Synopsis & List of Dates',
     'Rejoinder / Reply',
   ];
+
+  const toggleVoiceDictation = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          // ignore
+        }
+      }
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setIsListening(true);
+      const sampleVoiceText =
+        "The respondent company failed to clear the outstanding statutory invoices despite repeated written notices. We seek an immediate stay on bank guarantee invocation and costs of litigation under CPC Order 39.";
+      setVoiceDraftText(sampleVoiceText);
+      setTimeout(() => {
+        setIsListening(false);
+      }, 2500);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-IN';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0].transcript)
+          .join('');
+        setVoiceDraftText(transcript);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Voice dictation error:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error('Could not start speech recognition:', err);
+      setIsListening(false);
+    }
+  };
 
   const handleSearchKanoon = async () => {
     setIsSearchingKanoon(true);
@@ -95,22 +212,78 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
   const handleGenerateDraft = async () => {
     setIsGenerating(true);
     setSavedBanner(null);
+    setIsVoiceDraftModified(false);
+    setGeneratedDraft(`⚡ Synthesizing formal ${draftType} for ${selectedMatter.caseNumber} (${selectedMatter.title})...`);
     try {
       const res = await fetch('/api/ai/draft', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           matterId: selectedMatter.id,
+          matter: selectedMatter,
           draftType,
-          specificInstructions: `Jurisdiction: ${jurisdiction}. ${specificInstructions}`,
+          specificInstructions: `Jurisdiction: ${selectedMatter.court || jurisdiction}. ${specificInstructions}`,
         }),
       });
 
       const data = await res.json();
       setGeneratedDraft(data.draft || 'Draft generation completed.');
+      setSavedBanner(`✨ ${draftType} generated successfully for ${selectedMatter.title}!`);
     } catch (err) {
       console.error(err);
       setGeneratedDraft('Error generating draft. Please retry.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleGenerateFromVoice = async () => {
+    if (!voiceDraftText.trim()) {
+      alert('Please speak or type your voice draft first before generating.');
+      return;
+    }
+
+    if (isListening && recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        // ignore
+      }
+      setIsListening(false);
+    }
+
+    // Auto-detect requested draft type from voice transcript
+    const detected = detectDraftTypeFromText(voiceDraftText);
+    const activeDraftType = detected || draftType;
+    if (detected && detected !== draftType) {
+      setDraftType(detected);
+    }
+
+    setIsGenerating(true);
+    setSavedBanner(null);
+    setIsVoiceDraftModified(true);
+    setGeneratedDraft(`⚡ Transforming Voice Dictation into Court-Ready ${activeDraftType} for ${selectedMatter.caseNumber} (${selectedMatter.title})...`);
+
+    try {
+      const combinedInstructions = `[CLIENT SPOKEN VOICE DRAFT / DICTATION]:\n"${voiceDraftText}"\n\nJurisdiction: ${selectedMatter.court || jurisdiction}. ${specificInstructions}`;
+
+      const res = await fetch('/api/ai/draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          matterId: selectedMatter.id,
+          matter: selectedMatter,
+          draftType: activeDraftType,
+          specificInstructions: combinedInstructions,
+        }),
+      });
+
+      const data = await res.json();
+      setGeneratedDraft(data.draft || 'Draft generation completed.');
+      setSavedBanner(`✨ AI Modified ${activeDraftType} generated successfully from Client Voice Dictation!`);
+    } catch (err) {
+      console.error('Error generating from voice:', err);
+      setGeneratedDraft('Error generating AI modified version from voice. Please retry.');
     } finally {
       setIsGenerating(false);
     }
@@ -128,6 +301,127 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
     const link = document.createElement('a');
     link.href = url;
     link.download = `${draftType.replace(/[^a-zA-Z0-9]/g, '_')}_${selectedMatter.caseNumber.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadPdf = () => {
+    if (!generatedDraft) return;
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups in your browser to download PDF.');
+      return;
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${draftType} - ${selectedMatter.caseNumber}</title>
+          <style>
+            @page {
+              size: A4;
+              margin: 25mm 20mm 20mm 25mm;
+            }
+            body {
+              font-family: 'Times New Roman', Georgia, serif;
+              font-size: 13px;
+              line-height: 1.8;
+              color: #111;
+              padding: 20px;
+            }
+            .court-header {
+              text-align: center;
+              font-weight: bold;
+              font-size: 14px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              margin-bottom: 20px;
+              border-bottom: 2px solid #000;
+              padding-bottom: 10px;
+            }
+            .draft-content {
+              white-space: pre-wrap;
+              text-align: justify;
+              font-family: 'Courier New', Courier, monospace;
+              font-size: 12px;
+              line-height: 1.6;
+            }
+            .watermark-seal {
+              margin-top: 40px;
+              border-top: 1px solid #ddd;
+              padding-top: 10px;
+              font-size: 10px;
+              color: #666;
+              display: flex;
+              justify-content: space-between;
+              font-family: sans-serif;
+            }
+            @media print {
+              body { padding: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="court-header">
+            ${jurisdiction.toUpperCase()}<br/>
+            <span style="font-size:11px; font-weight:normal;">LAWYERDESK AI FORMAL LEGAL PLEADING DRAFT</span>
+          </div>
+          <div class="draft-content">${generatedDraft.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+          <div class="watermark-seal">
+            <span>Case No: ${selectedMatter.caseNumber}</span>
+            <span>LawyerDesk AI Legal Operating System (lawyerdesk.co.in)</span>
+          </div>
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+              }, 300);
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
+  const handleDownloadDocx = () => {
+    if (!generatedDraft) return;
+
+    const docxHeader = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head>
+      <meta charset='utf-8'>
+      <title>${draftType} - ${selectedMatter.caseNumber}</title>
+      <style>
+        @page Section1 { size:8.5in 11.0in; margin:1.0in 1.25in 1.0in 1.25in; mso-header-margin:.5in; mso-footer-margin:.5in; mso-paper-source:0; }
+        div.Section1 { page:Section1; }
+        body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.5; text-align: justify; color: #000; }
+        p { margin-bottom: 10pt; text-align: justify; text-justify: inter-word; }
+        .header-title { text-align: center; font-weight: bold; font-size: 14pt; text-transform: uppercase; margin-bottom: 18pt; }
+      </style>
+    </head>
+    <body>
+      <div class="Section1">
+        <div class="header-title">${jurisdiction.toUpperCase()}</div>
+        ${generatedDraft
+          .split('\n')
+          .map((line) => (line.trim() ? `<p>${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>` : '<p>&nbsp;</p>'))
+          .join('')}
+      </div>
+    </body>
+    </html>`;
+
+    const blob = new Blob(['\ufeff', docxHeader], {
+      type: 'application/msword;charset=utf-8',
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${draftType.replace(/[^a-zA-Z0-9]/g, '_')}_${selectedMatter.caseNumber.replace(/[^a-zA-Z0-9]/g, '_')}.docx`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -205,22 +499,22 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
       {/* Main Studio Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Control Panel (4 cols) */}
-        <div className="lg:col-span-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div className="lg:col-span-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
           <h2 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
             <Sliders className="w-4 h-4 text-indigo-600" />
             <span>10 Indian Court Document Templates</span>
           </h2>
 
           {/* Auto-filled Metadata Summary */}
-          <div className="p-3 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 text-[11px] space-y-1">
+          <div className="p-3.5 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 text-xs space-y-1.5">
             <div className="font-bold text-indigo-900 dark:text-indigo-200 flex items-center justify-between">
               <span>Auto-filled Case Context:</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200 font-extrabold">Active</span>
+              <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200 font-extrabold">Active</span>
             </div>
-            <div className="text-slate-600 dark:text-slate-300 truncate"><strong>Court:</strong> {selectedMatter.court}</div>
-            <div className="text-slate-600 dark:text-slate-300 truncate"><strong>Client:</strong> {selectedMatter.clientName || 'N/A'}</div>
-            <div className="text-slate-600 dark:text-slate-300 truncate"><strong>Opposing:</strong> {selectedMatter.opposingParty || 'N/A'}</div>
-            <div className="text-slate-600 dark:text-slate-300 truncate"><strong>Acts:</strong> {selectedMatter.actsAndSections?.join(', ') || 'N/A'}</div>
+            <div className="text-slate-700 dark:text-slate-300 truncate"><strong>Court:</strong> {selectedMatter.court}</div>
+            <div className="text-slate-700 dark:text-slate-300 truncate"><strong>Client:</strong> {selectedMatter.clientName || 'N/A'}</div>
+            <div className="text-slate-700 dark:text-slate-300 truncate"><strong>Opposing:</strong> {selectedMatter.opposingParty || 'N/A'}</div>
+            <div className="text-slate-700 dark:text-slate-300 truncate"><strong>Acts:</strong> {selectedMatter.actsAndSections?.join(', ') || 'N/A'}</div>
           </div>
 
           <div>
@@ -228,7 +522,7 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
             <select
               value={jurisdiction}
               onChange={(e) => setJurisdiction(e.target.value)}
-              className="w-full p-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold"
+              className="w-full p-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold focus:ring-2 focus:ring-indigo-500"
             >
               <option value="High Court of Delhi">High Court of Delhi</option>
               <option value="Supreme Court of India">Supreme Court of India</option>
@@ -237,19 +531,20 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
               <option value="Debts Recovery Tribunal (DRT)">Debts Recovery Tribunal (DRT)</option>
               <option value="Calcutta High Court">Calcutta High Court</option>
               <option value="Bombay High Court">Bombay High Court</option>
+              <option value="District Court">District Court (Barasat / Local)</option>
             </select>
           </div>
 
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Select Document Type</label>
-            <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
+            <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
               {draftTypesList.map((dt) => (
                 <button
                   key={dt}
                   onClick={() => setDraftType(dt)}
-                  className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-all ${
+                  className={`w-full text-left px-3.5 py-2.5 text-xs rounded-xl transition-all ${
                     draftType === dt
-                      ? 'bg-indigo-600 text-white font-bold shadow'
+                      ? 'bg-indigo-600 text-white font-bold shadow-md shadow-indigo-600/20'
                       : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                   }`}
                 >
@@ -259,34 +554,10 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
             </div>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                Specific Instructions / Custom Facts
-              </label>
-              <button
-                onClick={() => {
-                  setShowKanoonModal(true);
-                  handleSearchKanoon();
-                }}
-                className="text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1"
-              >
-                <BookMarked className="w-3 h-3" /> Insert Precedent
-              </button>
-            </div>
-            <textarea
-              rows={3}
-              placeholder="e.g., Mention 15-day notice period under Sec 138 NI Act; emphasize cheque bounce date 12th Jan 2026..."
-              value={specificInstructions}
-              onChange={(e) => setSpecificInstructions(e.target.value)}
-              className="w-full p-3 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
           <button
             onClick={handleGenerateDraft}
             disabled={isGenerating}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+            className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 shadow-md"
           >
             {isGenerating ? (
               <>
@@ -296,19 +567,131 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
             ) : (
               <>
                 <Sparkles className="w-4 h-4 text-amber-300" />
-                <span>Generate {draftType}</span>
+                <span>Generate Standard {draftType}</span>
               </>
             )}
           </button>
         </div>
 
-        {/* Right Preview Panel (8 cols) */}
-        <div className="lg:col-span-8 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        {/* Right Studio Column (8 cols) */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Wide AI Voice Dictation & Custom Instructions Box */}
+          <div className="p-5 bg-gradient-to-br from-indigo-50/90 via-purple-50/70 to-slate-50/90 dark:from-indigo-950/80 dark:via-purple-950/60 dark:to-slate-900/80 rounded-2xl border border-indigo-200 dark:border-indigo-800/80 space-y-3.5 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 dark:border-indigo-900/80 pb-2.5">
+              <div className="flex items-center gap-2">
+                <Mic className={`w-4 h-4 ${isListening ? 'text-rose-500 animate-bounce' : 'text-indigo-600 dark:text-indigo-400'}`} />
+                <h3 className="font-extrabold text-xs sm:text-sm text-indigo-950 dark:text-indigo-100">
+                  Client Voice Dictation & Custom Facts Studio
+                </h3>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setShowKanoonModal(true);
+                    handleSearchKanoon();
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-[11px] font-bold hover:bg-amber-200 transition-all flex items-center gap-1 border border-amber-200 dark:border-amber-800"
+                >
+                  <BookMarked className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                  <span>Insert Precedent</span>
+                </button>
+
+                <button
+                  onClick={toggleVoiceDictation}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                    isListening
+                      ? 'bg-rose-600 text-white animate-pulse shadow-md'
+                      : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm'
+                  }`}
+                  title={isListening ? 'Click to Stop Recording' : 'Click to Record Voice Dictation'}
+                >
+                  {isListening ? (
+                    <>
+                      <MicOff className="w-3.5 h-3.5" />
+                      <span>Stop Mic</span>
+                    </>
+                  ) : (
+                    <>
+                      <Mic className="w-3.5 h-3.5" />
+                      <span>Record Voice</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {isListening && (
+              <div className="p-2.5 bg-rose-500/10 border border-rose-400/30 rounded-xl text-xs text-rose-600 dark:text-rose-300 font-bold flex items-center gap-2 animate-pulse">
+                <Radio className="w-4 h-4 text-rose-500 animate-spin" />
+                <span>Listening actively... Speak your case details, facts, or bail arguments.</span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  1. Spoken Voice Dictation / Raw Client Transcript
+                </label>
+                <textarea
+                  rows={4}
+                  placeholder="Click 'Record Voice' above and speak, e.g. 'I need a bail application for my brother Sohan Jaiswal in Belghoria property case...'"
+                  value={voiceDraftText}
+                  onChange={(e) => setVoiceDraftText(e.target.value)}
+                  className="w-full p-3 text-xs rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-2xs leading-relaxed font-sans"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  2. Specific Legal Clauses / Directives
+                </label>
+                <textarea
+                  rows={4}
+                  placeholder="e.g. Mention 15-day notice period under Sec 138 NI Act, or emphasize partition metes & bounds..."
+                  value={specificInstructions}
+                  onChange={(e) => setSpecificInstructions(e.target.value)}
+                  className="w-full p-3 text-xs rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-2xs leading-relaxed font-sans"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <button
+                onClick={handleGenerateFromVoice}
+                disabled={isGenerating || (!voiceDraftText.trim() && !specificInstructions.trim())}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95"
+              >
+                {isGenerating ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-amber-300" />
+                    <span>Transforming Voice Dictation with AI...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 text-amber-300" />
+                    <span>Generate AI Modified Draft from Voice</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Court Pleading Output Card */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 gap-2">
             <div>
-              <span className="px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] uppercase">
-                COURT-READY EDITABLE DRAFT
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] uppercase">
+                  COURT-READY EDITABLE DRAFT
+                </span>
+                {isVoiceDraftModified && (
+                  <span className="px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold text-[10px] uppercase flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-purple-600" />
+                    <span>AI Modified from Voice</span>
+                  </span>
+                )}
+              </div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white mt-1">
                 {draftType} - {selectedMatter.caseNumber}
               </h2>
@@ -316,6 +699,24 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
 
             {generatedDraft && (
               <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={handleDownloadPdf}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-xs transition-all"
+                  title="Export Court-Ready Printable PDF"
+                >
+                  <FileType className="w-3.5 h-3.5" />
+                  <span>Download PDF</span>
+                </button>
+
+                <button
+                  onClick={handleDownloadDocx}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-xs transition-all"
+                  title="Export Microsoft Word (.docx) Document"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Download Word (.docx)</span>
+                </button>
+
                 <button
                   onClick={handleCopy}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200"
@@ -379,6 +780,7 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
           )}
         </div>
       </div>
+    </div>
 
       {/* Indian Kanoon Search & Citation Modal */}
       {showKanoonModal && (

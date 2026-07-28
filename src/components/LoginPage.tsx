@@ -35,8 +35,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   onLoginSuccess,
   onBackToHome,
 }) => {
-  const [email, setEmail] = useState('apex7tech@gmail.com');
-  const [password, setPassword] = useState('Search@1959');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [selectedRole, setSelectedRole] = useState<UserRole>('System Administrator');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
