@@ -205,13 +205,15 @@ export type CourtType =
 export type CaseCategory =
   | 'Civil'
   | 'Criminal'
+  | 'Commercial'
   | 'Family'
   | 'Consumer'
   | 'Company & Insolvency'
   | 'GST & Indirect Tax'
   | 'Income Tax'
   | 'Arbitration'
-  | 'Property & Real Estate';
+  | 'Property & Real Estate'
+  | 'Motor Accident Claims';
 
 export interface Hearing {
   id: string;
@@ -290,11 +292,87 @@ export interface Matter {
   cnrNumber?: string;
   cnr?: string;
   courtSyncAt?: string;
+  lastSyncedDate?: string;
+  lastSyncedTime?: string;
   courtSyncStatus?: 'Synced' | 'CNR not found' | 'Error' | 'Pending';
   itemNumber?: string;
   caseStageEcourt?: string;
   petitionerName?: string;
   respondentName?: string;
+  filingNumber?: string;
+  filingDate?: string;
+  registrationNumber?: string;
+  registrationDate?: string;
+  firstHearingDate?: string;
+  orders?: { id: string; date: string; orderTitle: string; summary?: string }[];
+  timeline?: { id: string; date: string; event: string; status?: string }[];
+  fieldSources?: Record<string, 'Official Court Data' | 'OCR Extraction' | 'Manual Entry' | 'AI Generated'>;
+}
+
+export interface StateMaster {
+  id: string;
+  code: string; // e.g. WB, DL, MH, KA, TN
+  name: string; // e.g. West Bengal, Delhi, Maharashtra
+}
+
+export interface DistrictMaster {
+  id: string;
+  stateId: string;
+  code: string;
+  name: string; // e.g. North 24 Parganas, Kolkata, Central Delhi
+}
+
+export interface CourtComplex {
+  id: string;
+  districtId: string;
+  code: string;
+  name: string; // e.g. Barasat District Court Complex, Saket Courts Complex
+  address?: string;
+}
+
+export interface CourtEstablishment {
+  id: string;
+  complexId: string;
+  code: string;
+  name: string; // e.g. District & Sessions Judge Court, Additional District Judge 1st Court, M A C C Tribunal
+}
+
+export interface CaseTypeMaster {
+  id: string;
+  code: string; // e.g. MACC, TS, CSCOMM, WPA, CRA
+  name: string; // e.g. Motor Accident Claims Petition, Title Suit, Commercial Suit
+  category: CaseCategory;
+}
+
+export interface MatterHistory {
+  id: string;
+  matterId: string;
+  changedBy: string;
+  changedAt: string;
+  field: string;
+  oldValue: string;
+  newValue: string;
+  source: 'Official Court Data' | 'OCR Extraction' | 'Manual Entry' | 'AI Generated';
+}
+
+export interface CourtUpdates {
+  id: string;
+  cnrNumber: string;
+  matterId?: string;
+  updatedAt: string;
+  status: 'SUCCESS' | 'NOT_FOUND' | 'SERVER_OFFLINE';
+  changesCount: number;
+  rawResponseSummary?: string;
+}
+
+export interface AIExtraction {
+  id: string;
+  documentId?: string;
+  cnrNumber?: string;
+  extractedAt: string;
+  extractedFields: Record<string, string>;
+  confidenceScores: Record<string, number>;
+  sourceType: 'Official Court Data' | 'OCR Extraction' | 'Manual Entry' | 'AI Generated';
 }
 
 export interface ECourtSyncLog {
@@ -528,23 +606,26 @@ export interface JudgeDirectoryProfile {
 
 export interface CauseListItem {
   id: string;
-  date: string;
+  date?: string;
   courtName: string;
-  judgeName: string;
-  courtRoomNo: string;
-  itemNo: number;
+  judgeName?: string;
+  courtRoomNo?: string;
+  itemNo: number | string;
   caseNumber: string;
   cnrNumber: string;
   matterTitle: string;
-  parties: string;
-  petitionerAdvocate: string;
-  respondentAdvocate: string;
-  stage: string;
-  priority: 'Urgent' | 'High' | 'Regular';
-  estimatedTime: string;
-  prepStatus: 'Ready' | 'Draft Pending' | 'Senior Briefed' | 'Witness Pending';
-  clientName: string;
-  assignedLawyer: string;
+  parties?: string;
+  petitionerAdvocate?: string;
+  respondentAdvocate?: string;
+  opposingAdvocate?: string;
+  stage?: string;
+  priority?: 'Urgent' | 'High' | 'Regular';
+  estimatedTime?: string;
+  timeSlot?: string;
+  prepStatus?: 'Ready' | 'Draft Pending' | 'Senior Briefed' | 'Witness Pending';
+  clientName?: string;
+  assignedLawyer?: string;
+  actsAndSections?: string;
 }
 
 export interface AIHearingBrief {

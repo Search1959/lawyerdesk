@@ -570,106 +570,117 @@ export const MattersView: React.FC<MattersViewProps> = ({
         {/* Right Side: Selected Matter Workspace with SUB-MENU & STEPPER */}
         {selectedMatter ? (
           <div className="lg:col-span-8 space-y-6">
-            {/* Top Case Detail Bar with Submenu Action Buttons */}
-            <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
+            {/* Top Case Detail Bar with Submenu Action Buttons split cleanly across 2 lines */}
+            <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 max-w-full overflow-hidden">
+              {/* Line 1: Case Number, Title, Court & Back Button */}
+              <div className="flex items-center justify-between gap-3 w-full">
+                <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                     <FolderOpen className="w-5 h-5" />
                   </div>
-                  <div>
-                    <h2 className="text-xl font-black text-slate-900 dark:text-white font-mono leading-none">
+                  <div className="min-w-0">
+                    <h2 className="text-xl font-black text-slate-900 dark:text-white font-mono leading-none truncate">
                       {selectedMatter.caseNumber}
                     </h2>
-                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 truncate">
                       {selectedMatter.title}
                     </p>
                   </div>
                 </div>
 
-                {/* SubMenu Buttons Bar matching screenshot style */}
-                <div className="flex flex-wrap items-center gap-1.5 shrink-0">
-                  {onOpenCaseBrain && (
-                    <button
-                      onClick={() => onOpenCaseBrain(selectedMatter)}
-                      className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md transition-all ring-2 ring-indigo-500/20"
-                    >
-                      <Brain className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                      <span>AI Case Brain</span>
-                    </button>
-                  )}
+                <button
+                  onClick={() => setSelectedMatter(null)}
+                  className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-all shrink-0 cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back</span>
+                </button>
+              </div>
 
-                  {onOpenHearingPrep && (
-                    <button
-                      onClick={() => onOpenHearingPrep(selectedMatter)}
-                      className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs rounded-xl flex items-center gap-1.5 shadow-md transition-all"
-                    >
-                      <Zap className="w-3.5 h-3.5 fill-current" />
-                      <span>Prepare Hearing</span>
-                    </button>
-                  )}
-
+              {/* Line 2: SubMenu Buttons Bar wrapped neatly within container */}
+              <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-800/80 w-full">
+                {onOpenCaseBrain && (
                   <button
-                    onClick={() => setShowAddDiaryModal(true)}
-                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all"
+                    onClick={() => onOpenCaseBrain(selectedMatter)}
+                    className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md transition-all ring-2 ring-indigo-500/20 cursor-pointer"
                   >
-                    <BookMarked className="w-3.5 h-3.5" />
-                    <span>Add Diary</span>
+                    <Brain className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                    <span>AI Case Brain</span>
                   </button>
+                )}
 
+                {onOpenHearingPrep && (
                   <button
-                    onClick={() => setShowAddHearingModal(true)}
-                    className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all"
+                    onClick={() => onOpenHearingPrep(selectedMatter)}
+                    className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs rounded-xl flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
                   >
-                    <Hammer className="w-3.5 h-3.5" />
-                    <span>Add Hearing</span>
+                    <Zap className="w-3.5 h-3.5 fill-current" />
+                    <span>Prepare Hearing</span>
                   </button>
+                )}
 
-                  <button
-                    onClick={() => setShowInvoiceModal(true)}
-                    className="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all"
-                  >
-                    <Receipt className="w-3.5 h-3.5" />
-                    <span>Invoice</span>
-                  </button>
+                <button
+                  onClick={handleSyncCurrentCase}
+                  disabled={isSyncingCurrentCase}
+                  className="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+                  title={`Last Synced: ${selectedMatter.courtSyncAt || 'Never'}`}
+                >
+                  <Clock className={`w-3.5 h-3.5 ${isSyncingCurrentCase ? 'animate-spin' : ''}`} />
+                  <span>{isSyncingCurrentCase ? 'Syncing...' : 'Sync Court Data'}</span>
+                </button>
 
-                  <button
-                    onClick={() => {
-                      setEditTitle(selectedMatter.title);
-                      setEditCourt(selectedMatter.court);
-                      setEditJudge(selectedMatter.judgeName || '');
-                      setShowEditModal(true);
-                    }}
-                    className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span>Edit</span>
-                  </button>
+                <button
+                  onClick={() => setShowAddDiaryModal(true)}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                >
+                  <BookMarked className="w-3.5 h-3.5" />
+                  <span>Add Diary</span>
+                </button>
 
-                  <button
-                    onClick={() => setShowDeleteModal(true)}
-                    className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                    <span>Delete</span>
-                  </button>
+                <button
+                  onClick={() => setShowAddHearingModal(true)}
+                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                >
+                  <Hammer className="w-3.5 h-3.5" />
+                  <span>Add Hearing</span>
+                </button>
 
-                  <button
-                    onClick={() => setSelectedMatter(null)}
-                    className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-all"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Back</span>
-                  </button>
+                <button
+                  onClick={() => setShowInvoiceModal(true)}
+                  className="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                >
+                  <Receipt className="w-3.5 h-3.5" />
+                  <span>Invoice</span>
+                </button>
 
-                  <button
-                    onClick={() => onOpenAIChatForMatter(selectedMatter)}
-                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all"
-                  >
-                    <Bot className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Ask AI</span>
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    setEditTitle(selectedMatter.title);
+                    setEditCourt(selectedMatter.court);
+                    setEditJudge(selectedMatter.judgeName || '');
+                    setShowEditModal(true);
+                  }}
+                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>Edit</span>
+                </button>
+
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>Delete</span>
+                </button>
+
+                <button
+                  onClick={() => onOpenAIChatForMatter(selectedMatter)}
+                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                >
+                  <Bot className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Ask AI</span>
+                </button>
               </div>
 
               {/* 6-Stage Progression Stepper (1. Filed -> 2. Notice -> 3. Evidence -> 4. Arguments -> 5. Judgment -> 6. Closed) */}

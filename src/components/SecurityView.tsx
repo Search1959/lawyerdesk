@@ -26,6 +26,15 @@ import { UserRole, AuditLog, User, LawFirm, UserSession } from '../types';
 import { mockUsers, mockFirms } from '../data/mockData';
 import { mockSessionsStore, mockAuditLogsStore, validatePasswordPolicy } from '../lib/authEngine';
 import { saveDocument } from '../lib/firebase';
+import {
+  mockStates,
+  mockDistricts,
+  mockComplexes,
+  mockEstablishments,
+  mockCaseTypes,
+  mockCourtIntegrations,
+  mockSyncLogs,
+} from '../data/courtMasterData';
 
 interface SecurityViewProps {
   auditLogs?: AuditLog[];
@@ -44,7 +53,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
   onUserUpdate,
   onFirmUpdate,
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'matrix' | 'users' | 'firms' | 'sessions' | 'audit'>('users');
+  const [activeSubTab, setActiveSubTab] = useState<'matrix' | 'users' | 'firms' | 'sessions' | 'audit' | 'court_master'>('users');
 
   // Local State
   const [usersList, setUsersList] = useState<User[]>(users);
@@ -582,6 +591,18 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
           <List className="w-4 h-4" />
           <span>Security Audit Trail ({logsList.length})</span>
         </button>
+
+        <button
+          onClick={() => setActiveSubTab('court_master')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            activeSubTab === 'court_master'
+              ? 'bg-indigo-600 text-white shadow-md'
+              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+        >
+          <Database className="w-4 h-4 text-amber-400" />
+          <span>Court Master & Gateways</span>
+        </button>
       </div>
 
       {/* Tab Content: Users Management */}
@@ -862,37 +883,149 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
         </div>
       )}
 
-      {/* Tab Content: Audit Logs */}
-      {activeSubTab === 'audit' && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <h2 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
-            <List className="w-4 h-4 text-indigo-600" />
-            <span>Real-time Security Audit Stream</span>
-          </h2>
+      {/* Tab Content: Court Master & Integrations */}
+      {activeSubTab === 'court_master' && (
+        <div className="space-y-6">
+          
+          {/* Active Gateways Header */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-sm">
+                <Database className="w-5 h-5 text-indigo-600" />
+                <span>eCourts NJDG & High Court API Gateways</span>
+              </div>
+              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                All Systems Operational
+              </span>
+            </div>
 
-          <div className="space-y-2">
-            {logsList.map((log) => (
-              <div
-                key={log.id}
-                className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-xs flex flex-col md:flex-row md:items-center justify-between gap-2"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900 dark:text-white">{log.performedByName}</span>
-                    <span className="px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px]">
-                      {log.eventType}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {mockCourtIntegrations.map((int) => (
+                <div
+                  key={int.id}
+                  className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-2 text-xs"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-extrabold text-slate-900 dark:text-white">{int.name}</span>
+                    <span className="px-2 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-300">
+                      {int.status}
                     </span>
                   </div>
-                  <div className="text-slate-600 dark:text-slate-300 mt-1">{log.details}</div>
+                  <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 truncate">
+                    {int.endpoint}
+                  </div>
+                  <div className="flex items-center justify-between pt-1 text-[11px] font-semibold border-t border-slate-200 dark:border-slate-700/60">
+                    <span className="text-slate-500">24h Success Rate:</span>
+                    <span className="text-emerald-400 font-bold">{int.successRate24h}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] font-semibold">
+                    <span className="text-slate-500">Total Synced Cases:</span>
+                    <span className="text-indigo-400 font-mono font-bold">{int.totalSyncedCases.toLocaleString()}</span>
+                  </div>
                 </div>
-
-                <div className="text-right text-[11px] font-mono text-slate-400">
-                  <div>IP: {log.ipAddress}</div>
-                  <div>{new Date(log.timestamp).toLocaleTimeString()}</div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+
+          {/* Master Hierarchies Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            {/* States Master */}
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span className="font-bold text-slate-900 dark:text-white text-xs">States Master ({mockStates.length})</span>
+                <span className="text-[10px] font-bold text-indigo-400 uppercase">National Scope</span>
+              </div>
+              <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                {mockStates.map((st) => (
+                  <div key={st.id} className="p-2 bg-slate-50 dark:bg-slate-800/40 rounded-lg flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{st.name}</span>
+                    <span className="font-mono text-[10px] font-bold text-amber-400 px-1.5 py-0.5 rounded bg-amber-500/10">
+                      {st.code}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Districts Master */}
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span className="font-bold text-slate-900 dark:text-white text-xs">Districts Master ({mockDistricts.length})</span>
+                <span className="text-[10px] font-bold text-sky-400 uppercase">Judicial Divisions</span>
+              </div>
+              <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                {mockDistricts.map((dt) => (
+                  <div key={dt.id} className="p-2 bg-slate-50 dark:bg-slate-800/40 rounded-lg flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{dt.name}</span>
+                    <span className="font-mono text-[10px] font-bold text-sky-400 px-1.5 py-0.5 rounded bg-sky-500/10">
+                      {dt.code}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Case Types Master */}
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span className="font-bold text-slate-900 dark:text-white text-xs">Case Types Master ({mockCaseTypes.length})</span>
+                <span className="text-[10px] font-bold text-emerald-400 uppercase">CIS Standard</span>
+              </div>
+              <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                {mockCaseTypes.map((ct) => (
+                  <div key={ct.id} className="p-2 bg-slate-50 dark:bg-slate-800/40 rounded-lg flex items-center justify-between text-xs">
+                    <div>
+                      <div className="font-bold text-slate-800 dark:text-slate-200">{ct.code}</div>
+                      <div className="text-[10px] text-slate-500">{ct.name}</div>
+                    </div>
+                    <span className="font-mono text-[9px] font-bold text-emerald-400 px-1.5 py-0.5 rounded bg-emerald-500/10">
+                      {ct.category}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Recent Court Sync Audit Table */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+              <span className="font-bold text-slate-900 dark:text-white text-xs">Recent eCourts Sync Audit Stream</span>
+              <span className="text-[10px] text-slate-400">Automatic 30-min background sync</span>
+            </div>
+
+            <div className="space-y-2">
+              {mockSyncLogs.map((log) => (
+                <div
+                  key={log.id}
+                  className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-xs flex flex-col md:flex-row md:items-center justify-between gap-2"
+                >
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-amber-400">{log.cnrNumber}</span>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${
+                          log.status === 'SUCCESS'
+                            ? 'bg-emerald-500/20 text-emerald-300'
+                            : 'bg-rose-500/20 text-rose-300'
+                        }`}
+                      >
+                        {log.status}
+                      </span>
+                    </div>
+                    <div className="text-slate-600 dark:text-slate-300 text-[11px]">{log.rawResponseSummary}</div>
+                  </div>
+
+                  <div className="text-right text-[11px] font-mono text-slate-400 shrink-0">
+                    <div>{log.updatedAt}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       )}
 

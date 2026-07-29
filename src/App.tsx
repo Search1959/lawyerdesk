@@ -11,7 +11,7 @@ import { HearingsView } from './components/HearingsView';
 import { DatabaseSchemaView } from './components/DatabaseSchemaView';
 import { SecurityView } from './components/SecurityView';
 import { FinancialsView } from './components/FinancialsView';
-import { NewMatterModal } from './components/NewMatterModal';
+import { AddMatterWizardModal } from './components/AddMatterWizardModal';
 import { LandingPage } from './components/LandingPage';
 import { LoginPage } from './components/LoginPage';
 import { HelpCenterView } from './components/HelpCenterView';
@@ -921,7 +921,14 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           )}
 
           {activeTab === 'court_intelligence' && (
-            <CourtIntelligenceView />
+            <CourtIntelligenceView
+              matters={matters}
+              onSelectMatter={(m) => {
+                setSelectedMatter(m);
+                setActiveTab('matters');
+              }}
+              onNavigateTab={(tab) => setActiveTab(tab as any)}
+            />
           )}
 
           {activeTab === 'matters' && (
@@ -1179,9 +1186,9 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         currentUser={currentUser}
       />
 
-      {/* New Matter Modal */}
+      {/* New Intelligent Matter Onboarding Wizard Modal */}
       {showNewMatterModal && (
-        <NewMatterModal
+        <AddMatterWizardModal
           clients={clients}
           onClose={() => setShowNewMatterModal(false)}
           onSave={handleCreateMatter}
