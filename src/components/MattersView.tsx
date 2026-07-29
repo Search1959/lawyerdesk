@@ -26,6 +26,8 @@ import {
   FolderOpen,
   CheckCircle2,
   FileCode2,
+  Brain,
+  Zap,
 } from 'lucide-react';
 import { Matter, Document, Hearing, CourtOrder, TimelineEvent, Witness, Task, CourtType, Client, LawFirm } from '../types';
 import { PaginationControls } from './PaginationControls';
@@ -46,6 +48,8 @@ interface MattersViewProps {
   onUploadDocToMatter: (matterId: string) => void;
   onOpenDraftingForMatter: (matter: Matter) => void;
   onOpenAIChatForMatter: (matter: Matter) => void;
+  onOpenCaseBrain?: (matter: Matter) => void;
+  onOpenHearingPrep?: (matter: Matter) => void;
   onAddNewInvoice?: (inv: any) => void;
 }
 
@@ -64,6 +68,8 @@ export const MattersView: React.FC<MattersViewProps> = ({
   onUploadDocToMatter,
   onOpenDraftingForMatter,
   onOpenAIChatForMatter,
+  onOpenCaseBrain,
+  onOpenHearingPrep,
   onAddNewInvoice,
 }) => {
   const [mattersList, setMattersList] = useState<Matter[]>(initialMatters);
@@ -583,6 +589,26 @@ export const MattersView: React.FC<MattersViewProps> = ({
 
                 {/* SubMenu Buttons Bar matching screenshot style */}
                 <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+                  {onOpenCaseBrain && (
+                    <button
+                      onClick={() => onOpenCaseBrain(selectedMatter)}
+                      className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md transition-all ring-2 ring-indigo-500/20"
+                    >
+                      <Brain className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                      <span>AI Case Brain</span>
+                    </button>
+                  )}
+
+                  {onOpenHearingPrep && (
+                    <button
+                      onClick={() => onOpenHearingPrep(selectedMatter)}
+                      className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs rounded-xl flex items-center gap-1.5 shadow-md transition-all"
+                    >
+                      <Zap className="w-3.5 h-3.5 fill-current" />
+                      <span>Prepare Hearing</span>
+                    </button>
+                  )}
+
                   <button
                     onClick={() => setShowAddDiaryModal(true)}
                     className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all"

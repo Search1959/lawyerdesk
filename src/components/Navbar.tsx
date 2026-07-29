@@ -9,6 +9,7 @@ import {
   Lock,
   Menu,
   KeyRound,
+  Mic,
 } from 'lucide-react';
 import { LawFirm, User, UserRole } from '../types';
 
@@ -18,6 +19,7 @@ interface NavbarProps {
   onSelectRole: (role: UserRole) => void;
   onOpenSearch: () => void;
   onOpenAIChat: () => void;
+  onOpenVoiceAssistant?: () => void;
   onOpenLanding?: () => void;
   onOpenLogin?: () => void;
   onOpenHelp?: () => void;
@@ -34,6 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectRole,
   onOpenSearch,
   onOpenAIChat,
+  onOpenVoiceAssistant,
   onOpenLanding,
   onOpenLogin,
   onOpenHelp,
@@ -134,6 +137,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <HelpCircle className="w-3.5 h-3.5 text-amber-500" />
             <span>Help Guide</span>
+          </button>
+        )}
+
+        {/* AI Voice Assistant Launcher */}
+        {onOpenVoiceAssistant && (
+          <button
+            onClick={onOpenVoiceAssistant}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 text-amber-700 dark:text-amber-300 text-xs font-bold transition-all shadow-xs"
+            title="Voice Assistant (English & Bengali)"
+          >
+            <Mic className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+            <span className="hidden sm:inline">Voice AI</span>
           </button>
         )}
 

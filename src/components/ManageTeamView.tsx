@@ -12,19 +12,24 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
   currentUser,
   currentFirm,
 }) => {
+  const isDemo = Boolean((currentUser as any)?.isDemoUser) || currentUser?.role === 'Demo User';
+  const isSysAdminDemo =
+    (currentUser?.role === 'System Administrator' || currentUser?.email === 'apex7tech@gmail.com') &&
+    (!currentFirm || currentFirm.id === 'firm-1');
+
   const getInitialTeam = (): TeamMember[] => {
-    if (!currentFirm || currentFirm.id === 'firm-1') {
+    if (isDemo || isSysAdminDemo) {
       return mockTeamMembers;
     }
     return [
       {
         id: currentUser?.id || 'usr-admin',
-        name: currentUser?.name || 'Law Firm Managing Partner',
-        role: 'Firm Admin',
+        name: currentUser?.name || 'Managing Partner',
+        role: (currentUser?.role as any) || 'Firm Admin',
         department: 'Practice Lead',
         email: currentUser?.email || 'admin@lawfirm.in',
-        phone: '+91 98000 00000',
-        barCouncilNo: 'D/2024/001',
+        phone: currentUser?.phone || '+91 98000 00000',
+        barCouncilNo: currentUser?.barCouncilRegNo || 'Bar Reg Pending',
         activeCasesCount: 0,
         monthlyBillableHours: 0,
         hourlyRateINR: 15000,

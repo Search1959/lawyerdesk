@@ -32,6 +32,12 @@ import { ReportsView } from './components/ReportsView';
 import { ManageTeamView } from './components/ManageTeamView';
 import { RemindersView } from './components/RemindersView';
 import { SettingsView } from './components/SettingsView';
+import { CaseBrainModal } from './components/CaseBrainModal';
+import { HearingPrepModal } from './components/HearingPrepModal';
+import { WestBengalSuite } from './components/WestBengalSuite';
+import { KnowledgeVaultView } from './components/KnowledgeVaultView';
+import { VoiceAssistantModal } from './components/VoiceAssistantModal';
+import { ClientPortalView } from './components/ClientPortalView';
 import { Lock, AlertCircle, Database, RefreshCw, X, Sparkles, Plus } from 'lucide-react';
 import { subscribeCollection, saveDocument, removeDocument } from './lib/firebase';
 
@@ -71,6 +77,10 @@ export default function App() {
   const [showAccountManager, setShowAccountManager] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [showNewMatterModal, setShowNewMatterModal] = useState(false);
+  const [showCaseBrainModal, setShowCaseBrainModal] = useState(false);
+  const [showHearingPrepModal, setShowHearingPrepModal] = useState(false);
+  const [showVoiceAssistantModal, setShowVoiceAssistantModal] = useState(false);
+  const [activeCaseBrainMatter, setActiveCaseBrainMatter] = useState<Matter | null>(null);
   const [demoNoticeMessage, setDemoNoticeMessage] = useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -170,6 +180,14 @@ export default function App() {
         const m = matters.find((item) => item.id === msg.matterId);
         return m ? m.firmId === currentUser.firmId && m.firmId !== DEMO_FIRM_ID : (msg as any).firmId === currentUser.firmId;
       });
+
+  const filteredUsers = isDemoOrSystemAdmin
+    ? (isZeroDemoDataMode ? users.filter((u) => u.id.startsWith('usr-custom-')) : users)
+    : users.filter((u) => (u.firmId === currentUser.firmId || u.email.toLowerCase() === currentUser.email.toLowerCase()) && u.firmId !== DEMO_FIRM_ID);
+
+  const filteredFirms = isDemoOrSystemAdmin
+    ? firms
+    : firms.filter((f) => f.id === currentUser.firmId && f.id !== DEMO_FIRM_ID);
 
   // Read-Only check helper
   const checkReadOnlyDemo = (actionName: string): boolean => {
@@ -811,6 +829,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         onSelectRole={handleSelectRole}
         onOpenSearch={() => setActiveTab('documents')}
         onOpenAIChat={() => setActiveTab('ai_chat')}
+        onOpenVoiceAssistant={() => setShowVoiceAssistantModal(true)}
         onOpenLanding={() => setViewMode('landing')}
         onOpenLogin={() => setViewMode('login')}
         onOpenHelp={() => setActiveTab('help')}
@@ -931,6 +950,14 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
                 setSelectedMatter(m);
                 setActiveTab('ai_chat');
               }}
+              onOpenCaseBrain={(m) => {
+                setActiveCaseBrainMatter(m);
+                setShowCaseBrainModal(true);
+              }}
+              onOpenHearingPrep={(m) => {
+                setActiveCaseBrainMatter(m);
+                setShowHearingPrepModal(true);
+              }}
               onAddNewInvoice={handleAddNewInvoice}
             />
           )}
@@ -979,8 +1006,8 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
             <SecurityView
               auditLogs={auditLogs}
               currentUser={currentUser}
-              users={users}
-              firms={firms}
+              users={filteredUsers.length > 0 ? filteredUsers : [currentUser]}
+              firms={filteredFirms.length > 0 ? filteredFirms : (currentFirm ? [currentFirm] : firms)}
               onUserUpdate={async (updatedUser) => {
                 await saveDocument('users', updatedUser);
                 setUsers((prev) => {
@@ -1081,6 +1108,17 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
             />
           )}
 
+          {activeTab === 'west_bengal_suite' && <WestBengalSuite />}
+          {activeTab === 'knowledge_vault' && <KnowledgeVaultView />}
+          {activeTab === 'client_portal' && (
+            <ClientPortalView
+              matters={matters}
+              hearings={hearings}
+              invoices={invoices}
+              documents={documents}
+            />
+          )}
+
           {(activeTab === 'invoices' || activeTab === 'financials') && (
             <FinancialsView
               invoices={invoices}
@@ -1095,14 +1133,41 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         </main>
       </div>
 
+      {/* Voice Assistant Modal */}
+      <VoiceAssistantModal
+        isOpen={showVoiceAssistantModal}
+        onClose={() => setShowVoiceAssistantModal(false)}
+        onNavigateTab={setActiveTab}
+      />
+
+      {/* AI Case Brain Modal */}
+      {showCaseBrainModal && (
+        <CaseBrainModal
+          isOpen={showCaseBrainModal}
+          onClose={() => setShowCaseBrainModal(false)}
+          matter={activeCaseBrainMatter || selectedMatter || matters[0]}
+          documents={documents}
+        />
+      )}
+
+      {/* Hearing Preparation Assistant Modal */}
+      {showHearingPrepModal && (
+        <HearingPrepModal
+          isOpen={showHearingPrepModal}
+          onClose={() => setShowHearingPrepModal(false)}
+          matter={activeCaseBrainMatter || selectedMatter || matters[0]}
+          hearing={hearings.find((h) => h.matterId === (activeCaseBrainMatter?.id || selectedMatter?.id)) || hearings[0]}
+        />
+      )}
+
       {/* Account & Organization Manager Modal */}
       <AccountManagerModal
         isOpen={showAccountManager}
         onClose={() => setShowAccountManager(false)}
         currentUser={currentUser}
         currentFirm={currentFirm}
-        existingFirms={firms}
-        existingUsers={users}
+        existingFirms={filteredFirms.length > 0 ? filteredFirms : (currentFirm ? [currentFirm] : firms)}
+        existingUsers={filteredUsers.length > 0 ? filteredUsers : [currentUser]}
         onAddFirm={handleAddFirm}
         onAddUser={handleAddUser}
       />

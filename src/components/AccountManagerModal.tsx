@@ -74,6 +74,26 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
     isSystemAdmin ? 'firm' : isFirmAdmin ? 'staff' : 'lawyer'
   );
 
+  const isSystemAdminFull = isSystemAdmin && (currentUser.firmId === 'firm-1' || currentUser.firmId === 'firm-system');
+
+  const visibleRosterUsers = React.useMemo(() => {
+    if (isSystemAdminFull || isDemo) {
+      return existingUsers;
+    }
+    const targetFirmId = currentFirm?.id || currentUser.firmId;
+    const filtered = existingUsers.filter((u) => {
+      if (targetFirmId && targetFirmId !== 'firm-1') {
+        return u.firmId === targetFirmId;
+      }
+      return u.email.toLowerCase() === currentUser.email.toLowerCase();
+    });
+
+    if (filtered.length > 0) {
+      return filtered;
+    }
+    return [currentUser];
+  }, [existingUsers, isSystemAdminFull, isDemo, currentFirm?.id, currentUser]);
+
   // Change Password State
   const [currPass, setCurrPass] = useState('');
   const [newPass, setNewPass] = useState('');
@@ -960,11 +980,11 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
               <div className="space-y-2">
                 <h3 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
                   <Users className="w-4 h-4 text-indigo-500" />
-                  <span>Active Registered Advocates & Staff ({existingUsers.length})</span>
+                  <span>Active Registered Advocates & Staff ({visibleRosterUsers.length})</span>
                 </h3>
 
                 <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-                  {existingUsers.map((u) => (
+                  {visibleRosterUsers.map((u) => (
                     <div
                       key={u.id}
                       className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs"

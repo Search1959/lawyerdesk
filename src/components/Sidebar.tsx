@@ -28,6 +28,9 @@ import {
   Sparkles,
   LogOut,
   HardDrive,
+  Landmark,
+  Lock,
+  User as UserIcon,
 } from 'lucide-react';
 import { User, NavTab } from '../types';
 
@@ -112,10 +115,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       title: 'FILES & UTILITIES',
       items: [
         { id: 'ecourt_tracker', label: 'eCourt Tracker', icon: Scale },
+        { id: 'west_bengal_suite', label: 'WB & Kolkata Suite', icon: Landmark, isAi: true, badge: 'High Court' },
+        { id: 'knowledge_vault', label: 'Knowledge Vault', icon: Lock, isAi: true },
         { id: 'documents', label: 'Documents', icon: FileText, badge: pendingOCRCount > 0 ? `${pendingOCRCount} Pending` : 'AI' },
         { id: 'reports', label: 'Reports', icon: BarChart3 },
         { id: 'ai_chat', label: 'Knowledge Graph AI', icon: MessageSquareCode, isAi: true },
         { id: 'ai_drafting', label: 'AI Drafting Studio', icon: PenTool, isAi: true },
+        { id: 'client_portal', label: 'Client Portal', icon: UserIcon },
       ],
     },
     {
