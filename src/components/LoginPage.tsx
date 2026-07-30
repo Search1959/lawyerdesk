@@ -116,10 +116,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
   const handleSelectPreset = (acc: typeof demoAccounts[0]) => {
     setEmail(acc.email);
-    setPassword(acc.password);
+    setPassword(''); // MUST ALWAYS BE BLANK FOR MANUAL SECURITY!
     setSelectedRole(acc.role);
     setErrorMsg('');
-    setSuccessMsg('');
+    setSuccessMsg(`ID loaded for ${acc.title}. Please enter password manually: "${acc.password}" to sign in.`);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -128,7 +128,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     setSuccessMsg('');
 
     if (!email.trim() || !password.trim()) {
-      setErrorMsg('Please enter both email and password.');
+      setErrorMsg('Please enter both ID/Email and Password manually.');
       return;
     }
 
@@ -139,7 +139,35 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
       // Combine synced database users with mock users
       const cleanEmail = email.trim().toLowerCase();
+      const cleanPass = password.trim();
       const allUsers = [...users, ...mockUsers];
+
+      // Check against preset list password first
+      const matchedPreset = demoAccounts.find((a) => a.email.toLowerCase() === cleanEmail);
+
+      if (matchedPreset) {
+        if (cleanPass !== matchedPreset.password) {
+          setErrorMsg(`Invalid password for ${matchedPreset.title}. Please enter the correct password manually.`);
+          return;
+        }
+
+        if (matchedPreset.email === 'deactivated.advocate@lawyerdesk.in' || matchedPreset.email === 'deactivated.lawyer@lawyerdesk.in') {
+          setErrorMsg('Your account has been deactivated. Please contact the System Administrator.');
+          return;
+        }
+        const effectiveRole = selectedRole || matchedPreset.role;
+        const isDemoUser = matchedPreset.isDemoUser || effectiveRole === 'Demo User';
+        onLoginSuccess(matchedPreset.email, effectiveRole, matchedPreset.name, isDemoUser);
+        return;
+      }
+
+      // Check system admin specific password
+      if (cleanEmail === 'apex7tech@gmail.com') {
+        if (cleanPass !== 'Search@1959') {
+          setErrorMsg('Incorrect password for System Administrator account.');
+          return;
+        }
+      }
 
       // Prefer active non-deleted user account if one exists
       let matchedUser = allUsers.find(
@@ -159,6 +187,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       if (matchedUser) {
         if (cleanEmail === 'deactivated.advocate@lawyerdesk.in' || cleanEmail === 'deactivated.lawyer@lawyerdesk.in') {
           setErrorMsg('Your account has been deactivated. Please contact the System Administrator.');
+          return;
+        }
+
+        // Validate password if user object has password
+        if ((matchedUser as any).password && cleanPass !== (matchedUser as any).password) {
+          setErrorMsg('Invalid password. Please check your credentials and try again.');
           return;
         }
 
@@ -198,20 +232,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
         const isDemoUser = matchedUser.isDemoUser || effectiveRole === 'Demo User';
         onLoginSuccess(matchedUser.email, effectiveRole, matchedUser.name, isDemoUser);
-        return;
-      }
-
-      // Check against preset list
-      const matchedPreset = demoAccounts.find((a) => a.email.toLowerCase() === cleanEmail);
-
-      if (matchedPreset) {
-        if (matchedPreset.email === 'deactivated.advocate@lawyerdesk.in' || matchedPreset.email === 'deactivated.lawyer@lawyerdesk.in') {
-          setErrorMsg('Your account has been deactivated. Please contact the System Administrator.');
-          return;
-        }
-        const effectiveRole = selectedRole || matchedPreset.role;
-        const isDemoUser = matchedPreset.isDemoUser || effectiveRole === 'Demo User';
-        onLoginSuccess(matchedPreset.email, effectiveRole, matchedPreset.name, isDemoUser);
         return;
       }
 
@@ -272,14 +292,48 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </div>
             <h2 className="text-xl font-black text-white">Select Access Persona</h2>
             <p className="text-xs text-slate-400 mt-1">
-              Click any account below to auto-fill credentials:
+              Select an account to load ID (Password must be entered manually):
             </p>
           </div>
 
           <div className="space-y-2.5 my-2">
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('');
+                setPassword('');
+                setErrorMsg('');
+                setSuccessMsg('');
+              }}
+              className={`w-full text-left p-2.5 rounded-2xl border transition-all flex items-center gap-3 ${
+                email === '' && password === ''
+                  ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300 shadow-md shadow-emerald-500/10'
+                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700 hover:bg-slate-800/40 text-slate-400'
+              }`}
+            >
+              <div
+                className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
+                  email === '' && password === '' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'
+                }`}
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white">Blank Input Mode (Manual Entry)</span>
+                  {email === '' && password === '' && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      ACTIVE
+                    </span>
+                  )}
+                </div>
+                <div className="text-[10px] text-slate-400">Blank Email & Password fields for full manual typing</div>
+              </div>
+            </button>
+
             {demoAccounts.map((acc, idx) => {
               const Icon = acc.icon;
-              const isSelected = email.toLowerCase() === acc.email.toLowerCase();
+              const isSelected = email !== '' && email.toLowerCase() === acc.email.toLowerCase();
 
               return (
                 <button
@@ -300,11 +354,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     <Icon className="w-4 h-4" />
                   </div>
 
-                  <div className="min-w-0 flex-1 my-auto">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-1">
                       <span className="text-xs font-bold text-white truncate">{acc.title}</span>
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${acc.badgeColor}`}>
                         {acc.role}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 mt-1">
+                      <span className="text-[10px] text-slate-400 font-mono truncate">{acc.email}</span>
+                      <span className="text-[9px] font-mono text-amber-300/90 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 shrink-0">
+                        Pass: {acc.password}
                       </span>
                     </div>
                   </div>
@@ -372,26 +432,43 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </div>
           )}
 
-          <form onSubmit={handleFormSubmit} className="space-y-4">
+          <form onSubmit={handleFormSubmit} className="space-y-4" autoComplete="off">
             <div>
-              <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-indigo-400" /> Email Address *
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-indigo-400" /> Email Address *
+                </label>
+                {(email !== '' || password !== '') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('');
+                      setPassword('');
+                    }}
+                    className="text-[10px] text-amber-400 hover:text-amber-300 font-bold underline flex items-center gap-1"
+                  >
+                    Clear All Fields
+                  </button>
+                )}
+              </div>
               <input
                 type="email"
                 required
+                name="lawyerdesk_user_id_input"
+                id="lawyerdesk_user_id_input"
+                autoComplete="off"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="advocate@lawyerdesk.in"
+                placeholder="Enter your advocate ID / email address"
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                   <Key className="w-3.5 h-3.5 text-indigo-400" /> Password *
-                </span>
+                </label>
                 <button
                   type="button"
                   onClick={() => {
@@ -402,14 +479,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 >
                   Forgot Password?
                 </button>
-              </label>
+              </div>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
+                  name="lawyerdesk_user_password_input"
+                  id="lawyerdesk_user_password_input"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
+                  placeholder="Enter your password"
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono transition-colors pr-10"
                 />
                 <button
