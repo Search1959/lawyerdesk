@@ -221,6 +221,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   };
 
   useEffect(() => {
+    document.title = 'LawyerDesk – Your Practice. Our Technology. Better Justice. ⚖️🚀';
+  }, []);
+
+  useEffect(() => {
     if (!isAutoPlaying) return;
     const interval = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % dashboardSlides.length);
@@ -335,38 +339,60 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Panel: Headline, Description & CTAs */}
           <div className="lg:col-span-6 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-950/90 border border-indigo-700/60 text-indigo-300 text-xs font-semibold shadow-inner">
-              <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400 animate-pulse" />
-              <span>Powered by Grounded Gemini 3.6 Flash & PaddleOCR Vector Search</span>
+            {/* Primary Requested Slogan & Tech Badge */}
+            <div className="space-y-2.5">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 border border-amber-500/40 text-amber-300 text-xs sm:text-sm font-black shadow-xl shadow-indigo-950/80">
+                <Scale className="w-4 h-4 text-amber-400 shrink-0" />
+                <span className="tracking-tight">LawyerDesk AI – Complete Practice Management & Legal Copilot ⚖️🚀</span>
+              </div>
+
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-800 text-slate-300 text-[11px] font-medium">
+                <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400 animate-pulse" />
+                <span>eCourts Cause Lists &bull; AI Legal Drafting &bull; GST Billing</span>
+              </div>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-              The All-in-One <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-blue-400 to-sky-300">AI Legal Operating System</span> for Indian Practice
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-[1.15]">
+              Your Practice. Our Technology. <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-sky-300 to-amber-300">Better Justice.</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-              Manage court cause lists, OCR scanned petitions, draft legal applications, track client billing, and chat with your case brief using zero-hallucination grounded AI.
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+              LawyerDesk simplifies legal practice management for High Courts, District Courts, NCLT, and DRT advocates. Effortlessly track daily cause list rosters, OCR bilingual petitions, generate AI pleadings, manage GST client billing, and search case files safely.
             </p>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
               <button
                 onClick={onLoginClick}
-                className="px-6 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all active:scale-95"
+                className="px-6 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs sm:text-sm shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all active:scale-95"
               >
-                <span>Access Portal & Login</span>
+                <span>Sign In / Admin Portal</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
                 onClick={onExploreDemo}
-                className="px-5 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all"
+                className="px-5 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md"
               >
                 <Sparkles className="w-4 h-4 text-amber-400" />
                 <span>Explore Live Workspace</span>
               </button>
             </div>
 
-
+            {/* Metrics & Roster Trust Bar */}
+            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-800/80 text-left">
+              <div>
+                <div className="text-lg sm:text-xl font-black text-white">28+ Courts</div>
+                <div className="text-[10px] text-slate-400 font-medium">High Courts & NCLT Synced</div>
+              </div>
+              <div>
+                <div className="text-lg sm:text-xl font-black text-emerald-400">100% Zero</div>
+                <div className="text-[10px] text-slate-400 font-medium">Hallucination Grounded AI</div>
+              </div>
+              <div>
+                <div className="text-lg sm:text-xl font-black text-indigo-400">18% GST</div>
+                <div className="text-[10px] text-slate-400 font-medium">Tax Invoicing Compliant</div>
+              </div>
+            </div>
           </div>
 
           {/* Right Panel: Interactive Dashboard Slide System Card */}

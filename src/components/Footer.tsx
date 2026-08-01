@@ -92,17 +92,19 @@ export const Footer: React.FC = () => {
       </div>
 
       {/* Bottom Bar copyright & domain notice */}
-      <div className="max-w-7xl mx-auto mt-8 pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
-        <div>
-          © {new Date().getFullYear()} <strong className="text-slate-400">LAWYERDESK AI</strong> (lawyerdesk.co.in). All rights reserved. M/s Deinrim Solutionss (P) Ltd.
+      <div className="max-w-7xl mx-auto mt-8 pt-6 border-t border-slate-800/60 flex flex-col md:flex-row items-center justify-between text-[11px] text-slate-400 gap-3">
+        <div className="flex flex-col sm:flex-row items-center gap-2">
+          <span>© {new Date().getFullYear()} <strong className="text-white">LAWYERDESK AI</strong> (lawyerdesk.co.in).</span>
+          <span className="hidden sm:inline text-slate-600">•</span>
+          <span className="text-amber-300 font-semibold">Your Practice. Our Technology. Better Justice. ⚖️🚀</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center gap-1 text-emerald-400">
+          <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
             AES-256 Encrypted
           </span>
           <span>•</span>
-          <span>India Legal OS standard</span>
+          <span className="text-slate-300">Indian Legal OS Standard</span>
         </div>
       </div>
 
