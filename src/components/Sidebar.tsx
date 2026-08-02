@@ -31,6 +31,7 @@ import {
   Landmark,
   Lock,
   User as UserIcon,
+  Smartphone,
 } from 'lucide-react';
 import { User, NavTab } from '../types';
 
@@ -75,6 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       items: [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { id: 'lawyerdesk_pocket', label: 'LawyerDesk Pocket', icon: Smartphone, isAi: true, badge: 'Pocket App' },
         { id: 'enquiries', label: 'Enquiries', icon: UserPlus },
         { id: 'tasks', label: 'Tasks', icon: CheckSquare },
       ],

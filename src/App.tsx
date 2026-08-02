@@ -38,6 +38,7 @@ import { WestBengalSuite } from './components/WestBengalSuite';
 import { KnowledgeVaultView } from './components/KnowledgeVaultView';
 import { VoiceAssistantModal } from './components/VoiceAssistantModal';
 import { ClientPortalView } from './components/ClientPortalView';
+import { LawyerPocketView } from './components/LawyerPocketView';
 import { Lock, AlertCircle, Database, RefreshCw, X, Sparkles, Plus } from 'lucide-react';
 import { subscribeCollection, saveDocument, removeDocument } from './lib/firebase';
 
@@ -829,6 +830,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         onSelectRole={handleSelectRole}
         onOpenSearch={() => setActiveTab('documents')}
         onOpenAIChat={() => setActiveTab('ai_chat')}
+        onOpenLawyerPocket={() => setActiveTab('lawyerdesk_pocket')}
         onOpenVoiceAssistant={() => setShowVoiceAssistantModal(true)}
         onOpenLanding={() => setViewMode('landing')}
         onOpenLogin={() => setViewMode('login')}
@@ -1117,6 +1119,40 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
 
           {activeTab === 'west_bengal_suite' && <WestBengalSuite />}
           {activeTab === 'knowledge_vault' && <KnowledgeVaultView />}
+          {(activeTab === 'lawyerdesk_pocket' || activeTab === 'lawyer_pocket') && (
+            <LawyerPocketView
+              matters={matters}
+              hearings={hearings}
+              clients={clients}
+              tasks={mockTasks}
+              invoices={invoices}
+              currentUser={currentUser}
+              currentFirm={currentFirm}
+              onAddHearing={(h) => {
+                const newH: Hearing = {
+                  id: `h-${Date.now()}`,
+                  matterId: h.matterId || matters[0]?.id || '',
+                  date: h.date || new Date().toISOString().split('T')[0],
+                  time: h.time || '10:30 AM',
+                  courtName: h.courtName || 'Delhi High Court',
+                  courtHallNo: h.courtHallNo || 'Hall 1',
+                  judgeName: h.judgeName || 'Hon’ble Bench',
+                  stage: h.stage || 'Hearing',
+                  synopsis: h.synopsis || '',
+                  outcome: h.outcome || '',
+                  nextHearingDate: h.nextHearingDate || '',
+                  assignedLawyerId: currentUser.id,
+                  assignedLawyerName: currentUser.name
+                };
+                setAllHearings((prev) => [newH, ...prev]);
+              }}
+              onAddInvoice={handleAddNewInvoice}
+              onUpdateMatter={(m) => {
+                setAllMatters((prev) => prev.map((x) => (x.id === m.id ? m : x)));
+              }}
+              onOpenLawyerDeskView={(tab) => setActiveTab(tab as any)}
+            />
+          )}
           {activeTab === 'client_portal' && (
             <ClientPortalView
               matters={matters}

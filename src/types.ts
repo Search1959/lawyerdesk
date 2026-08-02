@@ -554,6 +554,8 @@ export type NavTab =
   | 'reports'
   | 'ai_chat'
   | 'ai_drafting'
+  | 'lawyerdesk_pocket'
+  | 'lawyer_pocket'
   | 'west_bengal_suite'
   | 'knowledge_vault'
   | 'client_portal'
