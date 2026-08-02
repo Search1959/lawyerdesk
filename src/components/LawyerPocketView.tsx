@@ -31,7 +31,23 @@ import {
   Laptop,
   BookOpen,
   Copy,
-  FileSearch
+  FileSearch,
+  QrCode,
+  Pin,
+  Bell,
+  Moon,
+  Sun,
+  Share2,
+  LogOut,
+  Filter,
+  Tag,
+  ChevronDown,
+  ChevronUp,
+  Printer,
+  Download,
+  UserPlus,
+  FilePlus,
+  AlertTriangle
 } from 'lucide-react';
 import { Matter, Hearing, Client, Task, Invoice, User, LawFirm } from '../types';
 
@@ -69,7 +85,7 @@ export const LawyerPocketView: React.FC<LawyerPocketProps> = ({
   onOpenLawyerDeskView
 }) => {
   // Navigation & Frame Modes
-  const [activeTab, setActiveTab] = useState<'home' | 'cases' | 'camera' | 'voice' | 'profile'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'cases' | 'court' | 'camera' | 'voice' | 'profile'>('home');
   const [isMobileFrameMode, setIsMobileFrameMode] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isOfflineMode, setIsOfflineMode] = useState(false);
@@ -147,6 +163,143 @@ export const LawyerPocketView: React.FC<LawyerPocketProps> = ({
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3500);
+  };
+
+  // NEW LAWYERPOCKET GO FEATURE STATES
+  const [isDarkCourtMode, setIsDarkCourtMode] = useState<boolean>(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState<boolean>(false);
+  const [selectedClientForCard, setSelectedClientForCard] = useState<Client | null>(null);
+  const [pinnedMatterIds, setPinnedMatterIds] = useState<string[]>([]);
+  const [caseFilterTab, setCaseFilterTab] = useState<'all' | 'pinned' | 'recent' | 'favourite_clients' | 'urgent'>('all');
+  const [qrCodeMatter, setQrCodeMatter] = useState<Matter | null>(null);
+  const [ecourtsSyncingCaseId, setEcourtsSyncingCaseId] = useState<string | null>(null);
+  const [isLeaveCourtModalOpen, setIsLeaveCourtModalOpen] = useState<boolean>(false);
+  const [leaveCourtHeardIds, setLeaveCourtHeardIds] = useState<string[]>([]);
+  const [leaveCourtNextDates, setLeaveCourtNextDates] = useState<Record<string, string>>({});
+  const [leaveCourtFee, setLeaveCourtFee] = useState<string>('5000');
+  const [isAskAiOpen, setIsAskAiOpen] = useState<boolean>(false);
+  const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
+
+  // Quick New Client Form State
+  const [newClientName, setNewClientName] = useState('');
+  const [newClientPhone, setNewClientPhone] = useState('');
+  const [newClientEmail, setNewClientEmail] = useState('');
+
+  // Quick New Case Form State
+  const [newCaseNumber, setNewCaseNumber] = useState('');
+  const [newCaseTitle, setNewCaseTitle] = useState('');
+  const [newCaseClientName, setNewCaseClientName] = useState(clients[0]?.name || '');
+  const [newCaseCourt, setNewCaseCourt] = useState('Calcutta High Court');
+
+  // Today's Timeline State
+  const [todayTimeline, setTodayTimeline] = useState<Array<{ id: string; time: string; title: string; category: string; done: boolean }>>([
+    { id: 't1', time: '08:30 AM', title: 'Meet Client Rajesh Sharma', category: 'Chamber', done: true },
+    { id: 't2', time: '09:15 AM', title: 'Arrive at Calcutta High Court', category: 'Court Prep', done: true },
+    { id: 't3', time: '10:00 AM', title: 'Hearing Item #14 (Writ Petition 1042/2026)', category: 'Hearing', done: false },
+    { id: 't4', time: '12:00 PM', title: 'Client Consultation - Apex Tech Corp', category: 'Consultation', done: false },
+    { id: 't5', time: '02:00 PM', title: 'File Written Statement - CS(COMM) 420', category: 'Registry Filing', done: false },
+    { id: 't6', time: '03:30 PM', title: 'Collect Certified Copy of Stay Order', category: 'Certified Copy', done: false }
+  ]);
+
+  const handleTogglePinMatter = (matterId: string) => {
+    setPinnedMatterIds((prev) =>
+      prev.includes(matterId) ? prev.filter((id) => id !== matterId) : [...prev, matterId]
+    );
+    showToast(pinnedMatterIds.includes(matterId) ? 'Unpinned case' : '📌 Case pinned to top!');
+  };
+
+  const handleRefreshECourts = (matterId: string) => {
+    setEcourtsSyncingCaseId(matterId);
+    setTimeout(() => {
+      setEcourtsSyncingCaseId(null);
+      showToast(`⚡ eCourts Live Status fetched: Hearing & Orders synced with National Judicial Data Grid!`);
+    }, 1100);
+  };
+
+  const handleSaveQuickClient = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newClientName) return;
+    if (onAddClient) {
+      onAddClient({
+        name: newClientName,
+        phone: newClientPhone || '+91 98301 88888',
+        email: newClientEmail || `${newClientName.toLowerCase().replace(/\s+/g, '')}@client.com`,
+        firmId: currentFirm.id
+      });
+    }
+    setNewClientName('');
+    setNewClientPhone('');
+    setNewClientEmail('');
+    setQuickActionModal(null);
+    showToast(`👤 New Client ${newClientName} added & synced to LawyerDesk ERP!`);
+  };
+
+  const handleSaveQuickCase = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCaseNumber || !newCaseTitle) return;
+    if (onAddMatter) {
+      onAddMatter({
+        caseNumber: newCaseNumber,
+        title: newCaseTitle,
+        clientName: newCaseClientName || clients[0]?.name || 'Client',
+        court: newCaseCourt as any,
+        status: 'Active Litigation',
+        nextHearingDate: '2026-08-25',
+        category: 'Civil',
+        judgeName: 'Hon’ble Bench'
+      });
+    }
+    setNewCaseNumber('');
+    setNewCaseTitle('');
+    setQuickActionModal(null);
+    showToast(`📂 New Case ${newCaseNumber} created & synced to LawyerDesk ERP!`);
+  };
+
+  const handleExecuteLeaveCourt = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Batch update hearings & ERP
+    leaveCourtHeardIds.forEach((mId) => {
+      const m = matters.find((item) => item.id === mId);
+      const nextD = leaveCourtNextDates[mId] || '2026-08-28';
+      if (m && onAddHearing) {
+        onAddHearing({
+          matterId: m.id,
+          date: todayStr,
+          time: '02:00 PM',
+          courtName: m.court,
+          courtHallNo: 'Court Room 4',
+          stage: 'Adjourned / Arguments',
+          synopsis: 'Leave Court Quick Batch Sync - Matter called and adjourned',
+          outcome: 'Adjourned to next date',
+          nextHearingDate: nextD,
+          assignedLawyerId: currentUser.id,
+          assignedLawyerName: currentUser.name
+        });
+      }
+      if (m && onUpdateMatter) {
+        onUpdateMatter({ ...m, nextHearingDate: nextD });
+      }
+    });
+
+    if (leaveCourtFee && Number(leaveCourtFee) > 0 && onAddInvoice && clients[0]) {
+      onAddInvoice({
+        clientId: clients[0].id,
+        clientName: clients[0].name,
+        lawFirmName: currentFirm.name,
+        invoiceNumber: `INV-CRT-${Date.now().toString().slice(-4)}`,
+        issueDate: todayStr,
+        dueDate: todayStr,
+        status: 'Paid',
+        subtotalINR: Number(leaveCourtFee),
+        gstINR: 0,
+        totalINR: Number(leaveCourtFee),
+        feeType: 'Appearance Fee',
+        items: [{ description: 'Court Hearing Daily Retainer', sacCode: '998213', amountINR: Number(leaveCourtFee) }]
+      });
+    }
+
+    setIsLeaveCourtModalOpen(false);
+    showToast(`🏃 Leave Court complete! Batch synced hearings, next dates & ₹${leaveCourtFee} fees to LawyerDesk ERP!`);
   };
 
   // Filtered Today's Data
@@ -528,39 +681,197 @@ Matches found across 3 uploaded case files for **${topCase}**:
           </div>
 
           {/* Header Mobile Toolbar */}
-          <div className="bg-slate-900/90 backdrop-blur-md px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-800/80 flex items-center justify-between shrink-0 sticky top-0 z-20">
+          <div className="bg-slate-900/95 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 border-b border-slate-800/80 flex items-center justify-between shrink-0 sticky top-0 z-20">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white font-black flex items-center justify-center text-xs shadow-md shrink-0">
                 LP
               </div>
-              <div>
-                <h1 className="text-sm font-black text-white leading-tight">LawyerPocket</h1>
-                <p className="text-[10px] text-amber-400 font-semibold truncate max-w-[140px] sm:max-w-[180px]">{currentFirm.name}</p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1">
+                  <h1 className="text-sm font-black text-white leading-tight truncate">LawyerPocket</h1>
+                  <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">GO</span>
+                </div>
+                <p className="text-[10px] text-indigo-300 font-semibold truncate max-w-[120px] sm:max-w-[160px]">{currentFirm.name}</p>
               </div>
             </div>
 
-            {/* Quick 10-sec Voice Mic Button in Header */}
-            <button
-              onClick={() => setQuickActionModal('voice_dictate')}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition-transform shrink-0 min-h-[36px]"
-            >
-              <Mic className="w-3.5 h-3.5 animate-pulse" />
-              <span>Voice AI</span>
-            </button>
+            {/* Top Toolbar Action Group */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              {/* Signature "Leave Court" Button */}
+              <button
+                onClick={() => {
+                  setLeaveCourtHeardIds(todayHearings.map((h) => h.matterId));
+                  setIsLeaveCourtModalOpen(true);
+                }}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-[11px] shadow-lg shadow-amber-500/20 active:scale-95 transition-transform min-h-[34px]"
+                title="Signature 15-Second Leave Court Sync"
+              >
+                <Zap className="w-3.5 h-3.5 fill-slate-950" />
+                <span className="hidden xs:inline">Leave Court</span>
+              </button>
+
+              {/* Dark Court Mode Toggle */}
+              <button
+                onClick={() => {
+                  setIsDarkCourtMode(!isDarkCourtMode);
+                  showToast(isDarkCourtMode ? 'Court Mode: Standard Theme' : '🌙 Court Mode: High-Contrast AMOLED Active');
+                }}
+                className={`p-2 rounded-xl border transition-all active:scale-95 ${
+                  isDarkCourtMode
+                    ? 'bg-amber-500/20 border-amber-500/50 text-amber-300'
+                    : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:text-white'
+                }`}
+                title="Toggle High Contrast Court Mode"
+              >
+                {isDarkCourtMode ? <Sun className="w-3.5 h-3.5 text-amber-300" /> : <Moon className="w-3.5 h-3.5 text-slate-300" />}
+              </button>
+
+              {/* Notifications Bell */}
+              <button
+                onClick={() => setIsNotificationsOpen(true)}
+                className="p-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 hover:text-white relative active:scale-95"
+                title="Smart Notifications & Alerts"
+              >
+                <Bell className="w-3.5 h-3.5" />
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-indigo-500 text-white text-[9px] font-bold flex items-center justify-center border border-slate-900 animate-pulse">
+                  3
+                </span>
+              </button>
+
+              {/* Quick Voice Mic */}
+              <button
+                onClick={() => setQuickActionModal('voice_dictate')}
+                className="p-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 shadow-md active:scale-95"
+                title="Voice AI Studio"
+              >
+                <Mic className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="px-3 sm:px-4 py-2 bg-slate-950/60 border-b border-slate-800/50 shrink-0">
+          {/* Universal Smart Search Bar with Live Category Suggestions Overlay */}
+          <div className="px-3 sm:px-4 py-2 bg-slate-950/80 border-b border-slate-800/50 shrink-0 relative z-30">
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search cases, clients, documents..."
+                placeholder="Search Client, Case #, CNR, Court, Section, Fee, Invoice..."
                 value={searchQuery}
+                onFocus={() => setIsSearchFocused(true)}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-sm sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-8 py-2 text-sm sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
               />
               <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-3 sm:top-2.5" />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="p-1 text-slate-400 hover:text-white absolute right-2 top-2"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
+
+            {/* LIVE UNIVERSAL SEARCH SUGGESTIONS OVERLAY */}
+            {searchQuery.trim().length > 0 && isSearchFocused && (
+              <div className="absolute left-3 right-3 top-12 bg-slate-900/98 border border-slate-700 rounded-2xl shadow-2xl p-3 space-y-3 z-50 backdrop-blur-md max-h-80 overflow-y-auto divide-y divide-slate-800">
+                <div className="flex items-center justify-between pb-1">
+                  <span className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-wider flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" />
+                    Universal Search Results
+                  </span>
+                  <button
+                    onClick={() => setIsSearchFocused(false)}
+                    className="text-[10px] text-slate-400 hover:text-white"
+                  >
+                    Close
+                  </button>
+                </div>
+
+                {/* Clients Section */}
+                {clients.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()) || (c.phone && c.phone.includes(searchQuery))).length > 0 && (
+                  <div className="pt-2 space-y-1">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">👤 Clients</div>
+                    {clients
+                      .filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()) || (c.phone && c.phone.includes(searchQuery)))
+                      .slice(0, 3)
+                      .map((c) => (
+                        <div
+                          key={c.id}
+                          onClick={() => {
+                            setSelectedClientForCard(c);
+                            setIsSearchFocused(false);
+                          }}
+                          className="p-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 flex items-center justify-between cursor-pointer active:scale-98 transition-all"
+                        >
+                          <div>
+                            <div className="font-bold text-slate-100 text-xs">{c.name}</div>
+                            <div className="text-[10px] text-slate-400">{c.phone || '+91 98301 00000'} &bull; {(c as any).category || 'Client'}</div>
+                          </div>
+                          <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">Quick Card &rarr;</span>
+                        </div>
+                      ))}
+                  </div>
+                )}
+
+                {/* Cases Section */}
+                {matters.filter(m => m.caseNumber.toLowerCase().includes(searchQuery.toLowerCase()) || m.title.toLowerCase().includes(searchQuery.toLowerCase()) || (m.court && m.court.toLowerCase().includes(searchQuery.toLowerCase()))).length > 0 && (
+                  <div className="pt-2 space-y-1">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">📂 Cases</div>
+                    {matters
+                      .filter(m => m.caseNumber.toLowerCase().includes(searchQuery.toLowerCase()) || m.title.toLowerCase().includes(searchQuery.toLowerCase()) || (m.court && m.court.toLowerCase().includes(searchQuery.toLowerCase())))
+                      .slice(0, 3)
+                      .map((m) => (
+                        <div
+                          key={m.id}
+                          onClick={() => {
+                            setSelectedMatterId(m.id);
+                            setQuickActionModal('record_hearing');
+                            setIsSearchFocused(false);
+                          }}
+                          className="p-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 flex items-center justify-between cursor-pointer active:scale-98 transition-all"
+                        >
+                          <div>
+                            <div className="font-bold text-indigo-300 text-xs">{m.caseNumber} &bull; {m.court}</div>
+                            <div className="text-[10px] text-slate-300 truncate max-w-[200px]">{m.title}</div>
+                          </div>
+                          <span className="text-[10px] text-indigo-400 font-bold bg-indigo-500/10 px-2 py-0.5 rounded">Record &rarr;</span>
+                        </div>
+                      ))}
+                  </div>
+                )}
+
+                {/* Acts & Sections Quick Results */}
+                <div className="pt-2 space-y-1">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase">📜 Matching Legal Acts & Sections</div>
+                  <div className="grid grid-cols-2 gap-1">
+                    <button
+                      onClick={() => {
+                        setQuickActionModal('doc_search');
+                        setDocSearchQuery(`Section 138 NI Act ${searchQuery}`);
+                        handleExecuteDocSearch(`Section 138 NI Act ${searchQuery}`);
+                        setIsSearchFocused(false);
+                      }}
+                      className="p-1.5 rounded-lg bg-slate-950 border border-purple-800/40 text-left hover:border-purple-500 transition-colors"
+                    >
+                      <div className="font-bold text-purple-300 text-[10px]">Section 138 NI Act</div>
+                      <div className="text-[9px] text-slate-400">Dishonour of Cheque / Notice</div>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setQuickActionModal('doc_search');
+                        setDocSearchQuery(`Order 39 Rule 1 2 CPC ${searchQuery}`);
+                        handleExecuteDocSearch(`Order 39 Rule 1 2 CPC ${searchQuery}`);
+                        setIsSearchFocused(false);
+                      }}
+                      className="p-1.5 rounded-lg bg-slate-950 border border-purple-800/40 text-left hover:border-purple-500 transition-colors"
+                    >
+                      <div className="font-bold text-purple-300 text-[10px]">Order 39 CPC</div>
+                      <div className="text-[9px] text-slate-400">Temporary Injunction / Stay</div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* MAIN SCROLLABLE CONTENT BODY */}
@@ -568,20 +879,32 @@ Matches found across 3 uploaded case files for **${topCase}**:
             {/* TAB 1: HOME DASHBOARD */}
             {activeTab === 'home' && (
               <>
-                {/* 10-Second Quick Action Buttons Grid */}
+                {/* 10-Second Quick Action Buttons Grid (12 Smart Actions) */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-extrabold text-[11px] uppercase tracking-wider text-slate-400 flex items-center gap-1">
                       <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
                       10-Second Quick Actions
                     </span>
-                    <span className="text-[10px] text-indigo-400 font-bold">1-Tap Sync</span>
+                    <span className="text-[10px] text-indigo-400 font-bold">1-Tap ERP Sync</span>
                   </div>
 
-                  <div className="grid grid-cols-5 gap-1.5">
+                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+                    {/* Court Mode */}
+                    <button
+                      onClick={() => setActiveTab('court')}
+                      className="p-2 rounded-xl bg-amber-950/80 hover:bg-amber-900 border border-amber-500/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group shadow-sm"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <BookOpen className="w-3.5 h-3.5 text-amber-300" />
+                      </div>
+                      <span className="text-[9px] font-extrabold text-amber-200 leading-tight">Court Mode</span>
+                    </button>
+
+                    {/* Hearing */}
                     <button
                       onClick={() => setQuickActionModal('record_hearing')}
-                      className="p-2 rounded-xl bg-indigo-950/70 hover:bg-indigo-900/90 border border-indigo-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                      className="p-2 rounded-xl bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
                     >
                       <div className="w-7 h-7 rounded-lg bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
@@ -589,35 +912,38 @@ Matches found across 3 uploaded case files for **${topCase}**:
                       <span className="text-[9px] font-bold text-indigo-200 leading-tight">Hearing</span>
                     </button>
 
+                    {/* Leave Court Signature */}
                     <button
                       onClick={() => {
-                        setQuickActionModal('doc_search');
-                        handleExecuteDocSearch('interim stay');
+                        setLeaveCourtHeardIds(todayHearings.map((h) => h.matterId));
+                        setIsLeaveCourtModalOpen(true);
                       }}
-                      className="p-2 rounded-xl bg-purple-950/70 hover:bg-purple-900/90 border border-purple-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                      className="p-2 rounded-xl bg-gradient-to-tr from-amber-600/80 to-amber-500/80 border border-amber-400/60 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group shadow-sm text-slate-950"
                     >
-                      <div className="w-7 h-7 rounded-lg bg-purple-600/30 border border-purple-500/40 text-purple-300 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <FileSearch className="w-3.5 h-3.5 text-purple-300" />
+                      <div className="w-7 h-7 rounded-lg bg-slate-950/20 border border-slate-950/30 text-slate-950 flex items-center justify-center group-hover:scale-110 transition-transform font-black">
+                        🏃
                       </div>
-                      <span className="text-[9px] font-bold text-purple-200 leading-tight">Doc AI</span>
+                      <span className="text-[9px] font-black leading-tight">Leave Court</span>
                     </button>
 
+                    {/* Fees */}
                     <button
                       onClick={() => setQuickActionModal('record_fee')}
-                      className="p-2 rounded-xl bg-emerald-950/70 hover:bg-emerald-900/90 border border-emerald-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                      className="p-2 rounded-xl bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
                     >
                       <div className="w-7 h-7 rounded-lg bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
                       </div>
-                      <span className="text-[9px] font-bold text-emerald-200 leading-tight">Fees</span>
+                      <span className="text-[9px] font-bold text-emerald-200 leading-tight">Record Fee</span>
                     </button>
 
+                    {/* Scan Order */}
                     <button
                       onClick={() => {
                         setActiveTab('camera');
                         setQuickActionModal('camera_scan');
                       }}
-                      className="p-2 rounded-xl bg-sky-950/70 hover:bg-sky-900/90 border border-sky-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                      className="p-2 rounded-xl bg-sky-950/70 hover:bg-sky-900 border border-sky-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
                     >
                       <div className="w-7 h-7 rounded-lg bg-sky-600/30 border border-sky-500/40 text-sky-300 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Camera className="w-3.5 h-3.5 text-sky-400" />
@@ -625,14 +951,86 @@ Matches found across 3 uploaded case files for **${topCase}**:
                       <span className="text-[9px] font-bold text-sky-200 leading-tight">Scan Order</span>
                     </button>
 
+                    {/* Voice AI */}
                     <button
                       onClick={() => setQuickActionModal('voice_dictate')}
-                      className="p-2 rounded-xl bg-amber-950/70 hover:bg-amber-900/90 border border-amber-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                      className="p-2 rounded-xl bg-amber-950/70 hover:bg-amber-900 border border-amber-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
                     >
                       <div className="w-7 h-7 rounded-lg bg-amber-600/30 border border-amber-500/40 text-amber-300 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Mic className="w-3.5 h-3.5 text-amber-400" />
                       </div>
                       <span className="text-[9px] font-bold text-amber-200 leading-tight">Voice AI</span>
+                    </button>
+
+                    {/* Doc AI */}
+                    <button
+                      onClick={() => {
+                        setQuickActionModal('doc_search');
+                        handleExecuteDocSearch('interim stay');
+                      }}
+                      className="p-2 rounded-xl bg-purple-950/70 hover:bg-purple-900 border border-purple-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-purple-600/30 border border-purple-500/40 text-purple-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <FileSearch className="w-3.5 h-3.5 text-purple-300" />
+                      </div>
+                      <span className="text-[9px] font-bold text-purple-200 leading-tight">Doc AI</span>
+                    </button>
+
+                    {/* New Client */}
+                    <button
+                      onClick={() => setQuickActionModal('new_client')}
+                      className="p-2 rounded-xl bg-blue-950/70 hover:bg-blue-900 border border-blue-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-blue-600/30 border border-blue-500/40 text-blue-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <UserPlus className="w-3.5 h-3.5 text-blue-400" />
+                      </div>
+                      <span className="text-[9px] font-bold text-blue-200 leading-tight">New Client</span>
+                    </button>
+
+                    {/* New Case */}
+                    <button
+                      onClick={() => setQuickActionModal('new_case')}
+                      className="p-2 rounded-xl bg-teal-950/70 hover:bg-teal-900 border border-teal-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-teal-600/30 border border-teal-500/40 text-teal-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <FilePlus className="w-3.5 h-3.5 text-teal-400" />
+                      </div>
+                      <span className="text-[9px] font-bold text-teal-200 leading-tight">New Case</span>
+                    </button>
+
+                    {/* WhatsApp */}
+                    <a
+                      href={`https://wa.me/${(clients[0]?.phone || '').replace(/[^0-9]/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-xl bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                      </div>
+                      <span className="text-[9px] font-bold text-emerald-200 leading-tight">WhatsApp</span>
+                    </a>
+
+                    {/* Call Client */}
+                    <a
+                      href={`tel:${clients[0]?.phone || ''}`}
+                      className="p-2 rounded-xl bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Phone className="w-3.5 h-3.5 text-indigo-400" />
+                      </div>
+                      <span className="text-[9px] font-bold text-indigo-200 leading-tight">Call Client</span>
+                    </a>
+
+                    {/* eCourts Sync */}
+                    <button
+                      onClick={() => handleRefreshECourts('all')}
+                      className="p-2 rounded-xl bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-700/50 flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95 group"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <RefreshCw className="w-3.5 h-3.5 text-cyan-400" />
+                      </div>
+                      <span className="text-[9px] font-bold text-cyan-200 leading-tight">eCourts</span>
                     </button>
                   </div>
                 </div>
@@ -647,7 +1045,13 @@ Matches found across 3 uploaded case files for **${topCase}**:
                         {todayHearings.length}
                       </span>
                     </div>
-                    <span className="text-[10px] font-mono text-slate-400">{todayStr}</span>
+                    <button
+                      onClick={() => setActiveTab('court')}
+                      className="text-[10px] font-bold text-amber-400 hover:underline flex items-center gap-0.5"
+                    >
+                      <span>1-Tap Court Mode</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </button>
                   </div>
 
                   {todayHearings.length === 0 ? (
@@ -656,13 +1060,17 @@ Matches found across 3 uploaded case files for **${topCase}**:
                     <div className="space-y-2">
                       {todayHearings.map((h) => {
                         const m = matters.find((item) => item.id === h.matterId);
+                        const isPinned = pinnedMatterIds.includes(h.matterId);
                         return (
                           <div
                             key={h.id}
-                            className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2 hover:border-slate-700 transition-colors"
+                            className={`p-2.5 rounded-xl bg-slate-900 border flex items-center justify-between gap-2 transition-colors ${
+                              isPinned ? 'border-amber-500/50 bg-amber-950/20' : 'border-slate-800 hover:border-slate-700'
+                            }`}
                           >
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-1.5">
+                                {isPinned && <Pin className="w-3 h-3 text-amber-400 fill-amber-400 shrink-0" />}
                                 <span className="font-bold text-indigo-300 truncate">{m?.caseNumber || 'Matter'}</span>
                                 <span className="text-[9px] font-mono bg-slate-800 text-slate-300 px-1 py-0.5 rounded">
                                   {h.time}
@@ -676,15 +1084,27 @@ Matches found across 3 uploaded case files for **${topCase}**:
                               </div>
                             </div>
 
-                            <button
-                              onClick={() => {
-                                setSelectedMatterId(h.matterId);
-                                setQuickActionModal('record_hearing');
-                              }}
-                              className="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold shrink-0 shadow-sm"
-                            >
-                              Record
-                            </button>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                onClick={() => handleTogglePinMatter(h.matterId)}
+                                className={`p-1.5 rounded-lg border text-[10px] ${
+                                  isPinned ? 'bg-amber-500/20 border-amber-500/50 text-amber-300' : 'bg-slate-800 border-slate-700 text-slate-400'
+                                }`}
+                                title="Pin Case to Top"
+                              >
+                                <Pin className="w-3 h-3" />
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  setSelectedMatterId(h.matterId);
+                                  setQuickActionModal('record_hearing');
+                                }}
+                                className="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold shadow-sm"
+                              >
+                                Record
+                              </button>
+                            </div>
                           </div>
                         );
                       })}
@@ -692,25 +1112,85 @@ Matches found across 3 uploaded case files for **${topCase}**:
                   )}
                 </div>
 
+                {/* TODAY'S TIMELINE FEED */}
+                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-3 space-y-2.5">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <span className="font-extrabold text-xs text-white flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-emerald-400" />
+                      Today's Chronological Schedule
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-mono">{todayTimeline.filter(t => t.done).length}/{todayTimeline.length} Done</span>
+                  </div>
+
+                  <div className="space-y-2 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-800">
+                    {todayTimeline.map((item) => (
+                      <div key={item.id} className="flex items-start gap-3 relative pl-1">
+                        <button
+                          onClick={() => {
+                            setTodayTimeline((prev) =>
+                              prev.map((t) => (t.id === item.id ? { ...t, done: !t.done } : t))
+                            );
+                            showToast(item.done ? 'Task marked incomplete' : '✓ Task completed!');
+                          }}
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 z-10 transition-colors ${
+                            item.done
+                              ? 'bg-emerald-500 border-emerald-400 text-slate-950 font-black'
+                              : 'bg-slate-900 border-slate-700 text-transparent'
+                          }`}
+                        >
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </button>
+
+                        <div className="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-2 flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[10px] font-mono text-emerald-400 font-bold">{item.time}</span>
+                              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">{item.category}</span>
+                            </div>
+                            <div className={`text-xs font-semibold ${item.done ? 'line-through text-slate-500' : 'text-slate-100'}`}>
+                              {item.title}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Quick Call & WhatsApp Clients Bar */}
                 <div className="bg-slate-950 border border-slate-800 rounded-2xl p-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-xs text-white flex items-center gap-1.5">
                       <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      Quick Client Contact
+                      Client Quick Cards ({clients.length})
                     </span>
-                    <span className="text-[10px] text-slate-400">{clients.length} Clients</span>
+                    <button
+                      onClick={() => setQuickActionModal('new_client')}
+                      className="text-[10px] font-bold text-indigo-400 hover:underline flex items-center gap-0.5"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Add Client</span>
+                    </button>
                   </div>
 
                   <div className="divide-y divide-slate-800/60">
                     {clients.slice(0, 3).map((c) => (
                       <div key={c.id} className="py-2 flex items-center justify-between">
-                        <div>
+                        <div
+                          onClick={() => setSelectedClientForCard(c)}
+                          className="cursor-pointer hover:text-indigo-300 transition-colors"
+                        >
                           <div className="font-bold text-slate-200 text-xs">{c.name}</div>
-                          <div className="text-[10px] text-slate-400">{c.phone || '+91 98301 00000'}</div>
+                          <div className="text-[10px] text-slate-400">{c.phone || '+91 98301 00000'} &bull; Tap for Quick Card</div>
                         </div>
 
                         <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => setSelectedClientForCard(c)}
+                            className="px-2 py-1 rounded-lg bg-indigo-600/20 text-indigo-300 text-[10px] font-bold border border-indigo-500/30"
+                          >
+                            Card
+                          </button>
                           <a
                             href={`https://wa.me/${(c.phone || '').replace(/[^0-9]/g, '')}`}
                             target="_blank"
@@ -752,63 +1232,280 @@ Matches found across 3 uploaded case files for **${topCase}**:
               </>
             )}
 
-            {/* TAB 2: CASES LIST */}
+            {/* TAB: DEDICATED HIGH-CONTRAST COURT MODE */}
+            {activeTab === 'court' && (
+              <div className="space-y-3 bg-slate-950 p-1 rounded-2xl">
+                <div className="bg-gradient-to-r from-amber-950/80 to-indigo-950/80 border border-amber-500/50 rounded-2xl p-3 flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <BookOpen className="w-4 h-4 text-amber-400" />
+                      <span className="font-extrabold text-sm text-amber-300">HIGH-CONTRAST COURT MODE</span>
+                    </div>
+                    <p className="text-[10px] text-slate-300">Optimized for 1-thumb use inside Court Room Benches</p>
+                  </div>
+                  <span className="px-2 py-0.5 bg-amber-500 text-slate-950 font-black text-[10px] rounded-full">LIVE BENCH</span>
+                </div>
+
+                <div className="space-y-2.5">
+                  {todayHearings.map((h, idx) => {
+                    const m = matters.find((item) => item.id === h.matterId);
+                    return (
+                      <div
+                        key={h.id}
+                        className="p-3 rounded-2xl bg-slate-900 border-2 border-slate-700 space-y-2 shadow-lg"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono font-black text-xs text-amber-400">ITEM #{idx + 14} &bull; {h.time}</span>
+                          <span className="font-bold text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-200">{h.courtHallNo || 'Court Room 4'}</span>
+                        </div>
+
+                        <div className="font-extrabold text-white text-sm leading-tight">{m?.caseNumber || 'Writ Petition'}</div>
+                        <div className="text-xs font-semibold text-slate-300 truncate">{m?.title || 'Case Title'}</div>
+
+                        {/* 1-Tap Fast Outcome Buttons Grid */}
+                        <div className="grid grid-cols-3 gap-1.5 pt-1">
+                          <button
+                            onClick={() => {
+                              if (m && onAddHearing) {
+                                onAddHearing({
+                                  matterId: m.id,
+                                  date: todayStr,
+                                  time: h.time,
+                                  courtName: m.court,
+                                  stage: 'Heard / Arguments Complete',
+                                  synopsis: 'Matter heard at length by Hon’ble Bench. Submissions concluded.',
+                                  outcome: 'Heard / Order Reserved',
+                                  nextHearingDate: '2026-08-20',
+                                  assignedLawyerId: currentUser.id,
+                                  assignedLawyerName: currentUser.name
+                                });
+                              }
+                              showToast(`✔ Item #${idx + 14} marked HEARD & synced!`);
+                            }}
+                            className="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md active:scale-95"
+                          >
+                            ✔ HEARD
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setSelectedMatterId(h.matterId);
+                              setHearingOutcome('Adjourned to next date');
+                              setQuickActionModal('record_hearing');
+                            }}
+                            className="py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-xs shadow-md active:scale-95"
+                          >
+                            ⏳ ADJOURNED
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              if (m && onAddHearing) {
+                                onAddHearing({
+                                  matterId: m.id,
+                                  date: todayStr,
+                                  time: h.time,
+                                  courtName: m.court,
+                                  stage: 'Passed Over',
+                                  synopsis: 'Passed over on request of adversary counsel. Re-calling at 02:00 PM.',
+                                  outcome: 'Passed Over',
+                                  nextHearingDate: todayStr,
+                                  assignedLawyerId: currentUser.id,
+                                  assignedLawyerName: currentUser.name
+                                });
+                              }
+                              showToast(`⏭ Item #${idx + 14} PASSED OVER to 2 PM!`);
+                            }}
+                            className="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-md active:scale-95"
+                          >
+                            ⏭ PASSED OVER
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              if (m && onAddHearing) {
+                                onAddHearing({
+                                  matterId: m.id,
+                                  date: todayStr,
+                                  time: h.time,
+                                  courtName: m.court,
+                                  stage: 'Order Reserved',
+                                  synopsis: 'Arguments completed. Judgment / Order reserved.',
+                                  outcome: 'Order Reserved',
+                                  nextHearingDate: '2026-08-22',
+                                  assignedLawyerId: currentUser.id,
+                                  assignedLawyerName: currentUser.name
+                                });
+                              }
+                              showToast(`⚖ Order Reserved for ${m?.caseNumber}!`);
+                            }}
+                            className="py-2 rounded-xl bg-purple-700 hover:bg-purple-600 text-white font-bold text-xs active:scale-95"
+                          >
+                            ⚖ RESERVED
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              if (m && onAddHearing) {
+                                onAddHearing({
+                                  matterId: m.id,
+                                  date: todayStr,
+                                  time: h.time,
+                                  courtName: m.court,
+                                  stage: 'Disposed',
+                                  synopsis: 'Disposed of in terms of settlement agreement.',
+                                  outcome: 'Disposed',
+                                  nextHearingDate: 'N/A',
+                                  assignedLawyerId: currentUser.id,
+                                  assignedLawyerName: currentUser.name
+                                });
+                              }
+                              showToast(`🎉 Matter Disposed! Synced to ERP.`);
+                            }}
+                            className="py-2 rounded-xl bg-sky-700 hover:bg-sky-600 text-white font-bold text-xs active:scale-95"
+                          >
+                            🎉 DISPOSED
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setQuickActionModal('voice_dictate');
+                            }}
+                            className="py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 font-bold text-xs active:scale-95 flex items-center justify-center gap-1"
+                          >
+                            <Mic className="w-3.5 h-3.5" />
+                            <span>Voice Note</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* TAB 2: CASES LIST WITH PINNED & FILTER PILLS */}
             {activeTab === 'cases' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h2 className="font-extrabold text-sm text-white flex items-center gap-1.5">
                     <Folder className="w-4 h-4 text-indigo-400" />
-                    LawyerDesk Active Cases ({filteredMatters.length})
+                    Active Cases ({filteredMatters.length})
                   </h2>
                   <button
                     onClick={() => setQuickActionModal('new_case')}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[11px]"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[11px] shadow-sm active:scale-95"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>New Case</span>
                   </button>
                 </div>
 
-                <div className="space-y-2">
-                  {filteredMatters.map((m) => (
-                    <div
-                      key={m.id}
-                      className="p-3 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5 hover:border-slate-700 transition-colors"
+                {/* Filter Tabs Pills */}
+                <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none text-[10px] font-bold">
+                  {(['all', 'pinned', 'recent', 'favourite_clients', 'urgent'] as const).map((tabKey) => (
+                    <button
+                      key={tabKey}
+                      onClick={() => setCaseFilterTab(tabKey)}
+                      className={`px-3 py-1 rounded-full border whitespace-nowrap transition-all ${
+                        caseFilterTab === tabKey
+                          ? 'bg-indigo-600 text-white border-indigo-400 shadow-sm'
+                          : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
+                      }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-indigo-300 text-xs">{m.caseNumber}</span>
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
-                          {m.court}
-                        </span>
-                      </div>
-
-                      <div className="font-bold text-slate-100 text-xs leading-tight">{m.title}</div>
-
-                      <div className="text-[11px] text-slate-400 flex items-center justify-between">
-                        <span>Client: {m.clientName}</span>
-                        <span className="text-amber-400 font-semibold">Next: {m.nextHearingDate || 'TBD'}</span>
-                      </div>
-
-                      <div className="flex items-center justify-end gap-2 pt-1 border-t border-slate-900">
-                        <button
-                          onClick={() => {
-                            setSelectedMatterId(m.id);
-                            setQuickActionModal('record_hearing');
-                          }}
-                          className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-bold"
-                        >
-                          Record Outcome
-                        </button>
-                        <a
-                          href={`tel:${clients.find((c) => c.id === m.clientId)?.phone || ''}`}
-                          className="px-2 py-1 rounded-lg bg-emerald-600/20 text-emerald-400 text-[10px] font-bold flex items-center gap-1"
-                        >
-                          <Phone className="w-3 h-3" />
-                          <span>Call</span>
-                        </a>
-                      </div>
-                    </div>
+                      {tabKey === 'all' && 'All Cases'}
+                      {tabKey === 'pinned' && `📌 Pinned (${pinnedMatterIds.length})`}
+                      {tabKey === 'recent' && '🕒 Recent'}
+                      {tabKey === 'favourite_clients' && '⭐ Priority Clients'}
+                      {tabKey === 'urgent' && '🚨 Urgent Hearings'}
+                    </button>
                   ))}
+                </div>
+
+                <div className="space-y-2">
+                  {filteredMatters
+                    .filter((m) => {
+                      if (caseFilterTab === 'pinned') return pinnedMatterIds.includes(m.id);
+                      if (caseFilterTab === 'urgent') return m.nextHearingDate === todayStr || m.status.includes('Active');
+                      return true;
+                    })
+                    .map((m) => {
+                      const isPinned = pinnedMatterIds.includes(m.id);
+                      const isSyncing = ecourtsSyncingCaseId === m.id;
+                      return (
+                        <div
+                          key={m.id}
+                          className={`p-3 rounded-2xl bg-slate-950 border space-y-2 transition-all ${
+                            isPinned ? 'border-amber-500/60 bg-amber-950/10' : 'border-slate-800 hover:border-slate-700'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              {isPinned && <Pin className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />}
+                              <span className="font-bold text-indigo-300 text-xs">{m.caseNumber}</span>
+                            </div>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                              {m.court}
+                            </span>
+                          </div>
+
+                          <div className="font-bold text-slate-100 text-xs leading-tight">{m.title}</div>
+
+                          <div className="text-[11px] text-slate-400 flex items-center justify-between">
+                            <span>Client: {m.clientName}</span>
+                            <span className="text-amber-400 font-semibold">Next: {m.nextHearingDate || 'TBD'}</span>
+                          </div>
+
+                          {/* Quick Card & Action Toolbar */}
+                          <div className="flex items-center justify-between pt-1 border-t border-slate-900 gap-1">
+                            <div className="flex items-center gap-1">
+                              {/* Pin Toggle */}
+                              <button
+                                onClick={() => handleTogglePinMatter(m.id)}
+                                className={`p-1.5 rounded-lg border text-[10px] ${
+                                  isPinned ? 'bg-amber-500/20 border-amber-500/50 text-amber-300' : 'bg-slate-900 border-slate-800 text-slate-400'
+                                }`}
+                                title="Pin Case"
+                              >
+                                <Pin className="w-3 h-3" />
+                              </button>
+
+                              {/* Physical File QR Code */}
+                              <button
+                                onClick={() => setQrCodeMatter(m)}
+                                className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-[10px]"
+                                title="Physical File QR Code"
+                              >
+                                <QrCode className="w-3 h-3" />
+                              </button>
+
+                              {/* eCourts Refresh */}
+                              <button
+                                onClick={() => handleRefreshECourts(m.id)}
+                                className={`p-1.5 rounded-lg border text-[10px] ${
+                                  isSyncing ? 'bg-cyan-500/30 text-cyan-300 border-cyan-400' : 'bg-slate-900 border-slate-800 text-slate-400'
+                                }`}
+                                title="1-Tap eCourts Live Sync"
+                              >
+                                <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
+                              </button>
+                            </div>
+
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => {
+                                  setSelectedMatterId(m.id);
+                                  setQuickActionModal('record_hearing');
+                                }}
+                                className="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold shadow-xs"
+                              >
+                                Record Outcome
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             )}
@@ -1616,6 +2313,445 @@ Matches found across 3 uploaded case files for **${topCase}**:
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* FLOATING ASK AI BUTTON */}
+      <button
+        onClick={() => setIsAskAiOpen(true)}
+        className="fixed bottom-16 right-4 sm:bottom-6 sm:right-6 z-40 w-12 h-12 rounded-full bg-gradient-to-r from-indigo-600 to-amber-500 text-white font-black shadow-2xl flex items-center justify-center active:scale-95 hover:scale-105 transition-transform ring-4 ring-indigo-500/30"
+        title="Floating Ask AI Companion"
+      >
+        <Sparkles className="w-6 h-6 animate-pulse" />
+      </button>
+
+      {/* MODAL: FLOATING ASK AI DRAWER */}
+      {isAskAiOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-md p-4 sm:p-5 space-y-3 shadow-2xl text-xs max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <span>Ask AI Assistant (LawyerPocket GO)</span>
+              </div>
+              <button onClick={() => setIsAskAiOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-[11px] text-slate-300">Ask any question about cases, cause lists, client fees, or statutory sections.</p>
+
+            <div className="space-y-2 max-h-48 overflow-y-auto bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+              {aiChatLogs.map((log, idx) => (
+                <div key={idx} className={`p-2 rounded-lg text-[11px] ${log.sender === 'user' ? 'bg-indigo-600 text-white ml-6 text-right' : 'bg-slate-900 text-slate-200 mr-6'}`}>
+                  {log.text}
+                </div>
+              ))}
+            </div>
+
+            <form onSubmit={(e) => { handleSendAiChat(e); }} className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Ask AI e.g. What are today's hearings?"
+                value={aiQuery}
+                onChange={(e) => setAiQuery(e.target.value)}
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              />
+              <button type="submit" className="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold active:scale-95">
+                Send
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CLIENT QUICK CARD */}
+      {selectedClientForCard && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-md p-4 sm:p-5 space-y-3 shadow-2xl text-xs max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                <UserCheck className="w-4 h-4 text-emerald-400" />
+                <span>Client Quick Card</span>
+              </div>
+              <button onClick={() => setSelectedClientForCard(null)} className="p-1.5 rounded-lg text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-extrabold text-white text-sm">{selectedClientForCard.name}</div>
+                  <div className="text-[10px] text-slate-400">{(selectedClientForCard as any).category || 'Corporate Client'}</div>
+                </div>
+                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">Active Client</span>
+              </div>
+
+              {/* Instant Contact Group */}
+              <div className="flex items-center gap-2 pt-1">
+                <a
+                  href={`tel:${selectedClientForCard.phone}`}
+                  className="flex-1 py-2 rounded-xl bg-indigo-600 text-white font-bold text-center flex items-center justify-center gap-1.5 active:scale-95"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>Call Now</span>
+                </a>
+                <a
+                  href={`https://wa.me/${(selectedClientForCard.phone || '').replace(/[^0-9]/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 py-2 rounded-xl bg-emerald-600 text-white font-bold text-center flex items-center justify-center gap-1.5 active:scale-95"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Client Cases */}
+            <div className="space-y-1.5">
+              <div className="font-bold text-slate-300 text-[11px]">Active Cases with Firm:</div>
+              {matters.filter(m => m.clientName === selectedClientForCard.name || m.clientId === selectedClientForCard.id).map(m => (
+                <div key={m.id} className="p-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-indigo-300 text-xs">{m.caseNumber}</div>
+                    <div className="text-[10px] text-slate-400">{m.court} &bull; Next: {m.nextHearingDate}</div>
+                  </div>
+                  <button onClick={() => { setSelectedMatterId(m.id); setQuickActionModal('record_hearing'); }} className="px-2 py-1 rounded bg-indigo-600 text-white font-bold text-[10px]">
+                    Record
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Client Timeline History */}
+            <div className="space-y-1.5 pt-1">
+              <div className="font-bold text-slate-300 text-[11px]">Chronological Activity History:</div>
+              <div className="space-y-1.5 bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-[10px]">
+                <div className="flex items-center justify-between text-slate-300">
+                  <span>✓ Retainer Fee Paid ₹15,000 (UPI)</span>
+                  <span className="text-slate-500 font-mono">Yesterday</span>
+                </div>
+                <div className="flex items-center justify-between text-slate-300">
+                  <span>✓ Interim Order Uploaded (High Court)</span>
+                  <span className="text-slate-500 font-mono">3 days ago</span>
+                </div>
+                <div className="flex items-center justify-between text-slate-300">
+                  <span>✓ Vakalatnama Executed & Filed</span>
+                  <span className="text-slate-500 font-mono">1 week ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: SMART NOTIFICATIONS DRAWER */}
+      {isNotificationsOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-md p-4 sm:p-5 space-y-3 shadow-2xl text-xs max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                <Bell className="w-4 h-4 text-indigo-400" />
+                <span>Smart Legal Notifications & Alerts</span>
+              </div>
+              <button onClick={() => setIsNotificationsOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 space-y-1">
+                <div className="font-extrabold text-amber-300 text-xs flex items-center gap-1">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  Limitation Alert: Section 138 Notice
+                </div>
+                <p className="text-[10px] text-slate-300">
+                  30-day statutory notice period for Apex Tech Corp cheque dishonour expires in 3 days (Aug 5, 2026).
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/40 space-y-1">
+                <div className="font-extrabold text-indigo-300 text-xs flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5" />
+                  Today's Court Cause List Sync
+                </div>
+                <p className="text-[10px] text-slate-300">
+                  5 matters listed today in Calcutta High Court Court Room 4 before Hon'ble Division Bench.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 space-y-1">
+                <div className="font-extrabold text-emerald-300 text-xs flex items-center gap-1">
+                  <DollarSign className="w-3.5 h-3.5" />
+                  Fee Payment Reminder
+                </div>
+                <p className="text-[10px] text-slate-300">
+                  Outstanding fee balance of ₹35,000 for Invoice INV-8820 due today.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: PHYSICAL FILE QR CODE */}
+      {qrCodeMatter && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-sm p-4 sm:p-5 space-y-3 shadow-2xl text-xs text-center">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2 text-left">
+              <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                <QrCode className="w-4 h-4 text-indigo-400" />
+                <span>Physical File QR Tracker</span>
+              </div>
+              <button onClick={() => setQrCodeMatter(null)} className="p-1.5 rounded-lg text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="bg-white p-4 rounded-2xl w-44 h-44 mx-auto flex flex-col items-center justify-center shadow-lg border-4 border-indigo-600">
+              {/* Simulated QR Code Pattern */}
+              <div className="grid grid-cols-6 gap-1 w-full h-full p-2 bg-slate-100 rounded-lg">
+                {Array.from({ length: 36 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`rounded-xs ${i % 2 === 0 || i % 5 === 0 ? 'bg-slate-950' : 'bg-transparent'}`}
+                  ></div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="font-extrabold text-white text-sm">{qrCodeMatter.caseNumber}</div>
+              <div className="text-[11px] text-indigo-300 font-semibold">{qrCodeMatter.title}</div>
+              <div className="text-[10px] text-slate-400 mt-1 font-mono">
+                Chamber Location: Shelf B3 &bull; Rack 4 &bull; Box #102
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                showToast('🖨 Physical file QR Code label sent to Chamber printer!');
+                setQrCodeMatter(null);
+              }}
+              className="w-full py-2.5 rounded-xl bg-indigo-600 text-white font-extrabold flex items-center justify-center gap-2 active:scale-95"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Print Sticker Label</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: SIGNATURE "LEAVE COURT" BATCH SYNC */}
+      {isLeaveCourtModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-md p-4 sm:p-5 space-y-3 shadow-2xl text-xs max-h-[88vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="font-extrabold text-sm text-amber-300 flex items-center gap-1.5">
+                <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />
+                <span>15-Second "Leave Court" Batch Sync</span>
+              </div>
+              <button onClick={() => setIsLeaveCourtModalOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-[11px] text-slate-300">
+              One-click batch update for all today's court matters before leaving court premises.
+            </p>
+
+            <form onSubmit={handleExecuteLeaveCourt} className="space-y-3">
+              <div className="space-y-2 bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                <div className="font-bold text-white text-xs">Today's Matters Called ({todayHearings.length}):</div>
+                {todayHearings.map((h) => {
+                  const m = matters.find(item => item.id === h.matterId);
+                  return (
+                    <div key={h.id} className="p-2 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                      <div className="flex items-center justify-between font-bold text-indigo-300">
+                        <span>{m?.caseNumber}</span>
+                        <span className="text-[10px] text-amber-400">Next Hearing Date:</span>
+                      </div>
+                      <input
+                        type="date"
+                        defaultValue="2026-08-28"
+                        onChange={(e) => {
+                          setLeaveCourtNextDates(prev => ({ ...prev, [h.matterId]: e.target.value }));
+                        }}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">Total Daily Court Fee Collected (INR):</label>
+                <input
+                  type="number"
+                  value={leaveCourtFee}
+                  onChange={(e) => setLeaveCourtFee(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsLeaveCourtModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black shadow-lg active:scale-95 min-h-[44px]"
+                >
+                  🏃 Sync All & Leave Court
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: NEW CLIENT FORM */}
+      {quickActionModal === 'new_client' && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-sm p-4 sm:p-5 space-y-3 shadow-2xl text-xs">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                <UserPlus className="w-4 h-4 text-blue-400" />
+                <span>Add New Client (10-Sec)</span>
+              </div>
+              <button onClick={() => setQuickActionModal(null)} className="p-1.5 rounded-lg text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveQuickClient} className="space-y-3">
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">Full Client Name:</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Vikramaditya Sen"
+                  value={newClientName}
+                  onChange={(e) => setNewClientName(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">Mobile Phone Number:</label>
+                <input
+                  type="text"
+                  placeholder="+91 98301 99999"
+                  value={newClientPhone}
+                  onChange={(e) => setNewClientPhone(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">Email Address:</label>
+                <input
+                  type="email"
+                  placeholder="client@lawfirm.com"
+                  value={newClientEmail}
+                  onChange={(e) => setNewClientEmail(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setQuickActionModal(null)}
+                  className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold shadow-lg active:scale-95 min-h-[44px]"
+                >
+                  Create Client
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: NEW CASE FORM */}
+      {quickActionModal === 'new_case' && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-sm p-4 sm:p-5 space-y-3 shadow-2xl text-xs">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                <FilePlus className="w-4 h-4 text-teal-400" />
+                <span>Add New Case Matter</span>
+              </div>
+              <button onClick={() => setQuickActionModal(null)} className="p-1.5 rounded-lg text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveQuickCase} className="space-y-3">
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">Case Number / CNR:</label>
+                <input
+                  type="text"
+                  placeholder="e.g. W.P. 1820 / 2026"
+                  value={newCaseNumber}
+                  onChange={(e) => setNewCaseNumber(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">Case Title / Cause Title:</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Sen vs. State of West Bengal"
+                  value={newCaseTitle}
+                  onChange={(e) => setNewCaseTitle(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">Court Forum:</label>
+                <input
+                  type="text"
+                  placeholder="Calcutta High Court"
+                  value={newCaseCourt}
+                  onChange={(e) => setNewCaseCourt(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setQuickActionModal(null)}
+                  className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-extrabold shadow-lg active:scale-95 min-h-[44px]"
+                >
+                  Create Case Matter
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
