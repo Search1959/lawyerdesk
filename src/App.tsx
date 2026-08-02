@@ -131,7 +131,10 @@ export default function App() {
   const isDemoOrSystemAdmin =
     Boolean((currentUser as any)?.isDemoUser) ||
     currentUser.role === 'Demo User' ||
-    ((currentUser.role === 'System Administrator' || currentUser.role === 'System Owner' || currentUser.email === 'apex7tech@gmail.com') && currentUser.firmId === DEMO_FIRM_ID);
+    currentUser.role === 'System Administrator' ||
+    currentUser.role === 'System Owner' ||
+    currentUser.email === 'apex7tech@gmail.com' ||
+    currentUser.firmId === DEMO_FIRM_ID;
 
   // Active dataset: ONLY Demo User preset accounts OR System Admin in Benchmark mode see demo benchmark data.
   // Any other law firm account or user gets clean workspace filtered strictly by their dedicated firmId.
@@ -1126,6 +1129,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               clients={clients}
               tasks={mockTasks}
               invoices={invoices}
+              documents={documents}
               currentUser={currentUser}
               currentFirm={currentFirm}
               onAddHearing={(h) => {
@@ -1147,6 +1151,8 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
                 setAllHearings((prev) => [newH, ...prev]);
               }}
               onAddInvoice={handleAddNewInvoice}
+              onAddDocument={handleUploadDocument}
+              onAddMatter={handleCreateMatter}
               onUpdateMatter={(m) => {
                 setAllMatters((prev) => prev.map((x) => (x.id === m.id ? m : x)));
               }}
