@@ -436,38 +436,38 @@ Matches found across 3 uploaded case files for **${topCase}**:
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start p-2 sm:p-4 font-sans relative">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start p-1.5 sm:p-4 font-sans relative">
       {/* Toast Banner */}
       {toastMsg && (
-        <div className="fixed top-4 z-50 px-4 py-2.5 rounded-2xl bg-emerald-500 text-slate-950 font-bold text-xs shadow-2xl flex items-center gap-2 animate-bounce border border-emerald-300">
+        <div className="fixed top-3 sm:top-4 z-50 px-4 py-2.5 rounded-2xl bg-emerald-500 text-slate-950 font-bold text-xs shadow-2xl flex items-center gap-2 animate-bounce border border-emerald-300 max-w-[90vw]">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <span>{toastMsg}</span>
+          <span className="truncate">{toastMsg}</span>
         </div>
       )}
 
       {/* Top Application Header / Desktop Switcher */}
-      <div className="w-full max-w-4xl flex items-center justify-between mb-3 px-2">
+      <div className="w-full max-w-4xl flex flex-col sm:flex-row sm:items-center justify-between mb-2 sm:mb-3 px-1 gap-2">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-amber-500 flex items-center justify-center text-white font-black shadow-lg shadow-indigo-600/30">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-amber-500 flex items-center justify-center text-white font-black shadow-lg shadow-indigo-600/30 shrink-0">
             <Smartphone className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-black text-lg text-white tracking-tight">LAWYERPOCKET</span>
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-black text-base sm:text-lg text-white tracking-tight">LAWYERPOCKET</span>
+              <span className="text-[9px] sm:text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
                 10-Sec Companion
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">Your Chamber in Your Pocket &bull; LawyerDesk ERP Integration</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium">Your Chamber in Your Pocket &bull; LawyerDesk ERP Integration</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-between sm:justify-end w-full sm:w-auto">
           {/* Toggle Device Frame */}
           <button
             onClick={() => setIsMobileFrameMode(!isMobileFrameMode)}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 text-xs font-semibold transition-all"
-            title="Toggle between Smartphone Container and Expanded Desktop View"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 text-xs font-semibold transition-all active:scale-95"
+            title="Toggle between Smartphone Container and Expanded View"
           >
             {isMobileFrameMode ? <Laptop className="w-3.5 h-3.5 text-indigo-400" /> : <Smartphone className="w-3.5 h-3.5 text-amber-400" />}
             <span>{isMobileFrameMode ? 'Expanded View' : 'Phone Frame View'}</span>
@@ -477,9 +477,9 @@ Matches found across 3 uploaded case files for **${topCase}**:
           {onOpenLawyerDeskView && (
             <button
               onClick={() => onOpenLawyerDeskView('dashboard')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all active:scale-95"
             >
-              <span>Back to LawyerDesk ERP</span>
+              <span>Back to ERP</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           )}
@@ -487,27 +487,27 @@ Matches found across 3 uploaded case files for **${topCase}**:
       </div>
 
       {/* Single Database Sync Banner */}
-      <div className="w-full max-w-4xl bg-gradient-to-r from-indigo-950/80 via-slate-900 to-indigo-950/80 border border-indigo-800/40 rounded-xl px-3 py-2 flex items-center justify-between text-xs mb-3 shadow-inner">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span className="font-bold text-slate-200">{syncedStatus}</span>
+      <div className="w-full max-w-4xl bg-gradient-to-r from-indigo-950/80 via-slate-900 to-indigo-950/80 border border-indigo-800/40 rounded-xl px-2.5 sm:px-3 py-2 flex items-center justify-between text-xs mb-2 sm:mb-3 shadow-inner">
+        <div className="flex items-center gap-2 overflow-hidden">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
+          <span className="font-bold text-slate-200 text-[11px] sm:text-xs truncate">{syncedStatus}</span>
           <span className="hidden md:inline text-slate-400">&bull; Single PostgreSQL Database &bull; Zero Duplicate Records</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             onClick={() => setIsOfflineMode(!isOfflineMode)}
-            className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+            className={`text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded border transition-colors ${
               isOfflineMode ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
             }`}
           >
-            {isOfflineMode ? 'Offline Mode (Auto-Queue)' : 'Online Sync'}
+            {isOfflineMode ? 'Offline Queue' : 'Online Sync'}
           </button>
           <button
             onClick={() => {
               showToast('Refreshed connection to LawyerDesk PostgreSQL Database.');
               setSyncedStatus('Synced Just Now');
             }}
-            className="p-1 rounded text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white transition-colors active:scale-95"
             title="Sync Now"
           >
             <RefreshCw className="w-3.5 h-3.5" />
@@ -518,31 +518,31 @@ Matches found across 3 uploaded case files for **${topCase}**:
       {/* Smartphone Container View / Canvas */}
       <div
         className={`w-full transition-all duration-300 flex justify-center ${
-          isMobileFrameMode ? 'max-w-[420px]' : 'max-w-4xl'
+          isMobileFrameMode ? 'max-w-full sm:max-w-[420px]' : 'max-w-4xl'
         }`}
       >
-        <div className="w-full bg-slate-900 border border-slate-800 rounded-[28px] shadow-2xl overflow-hidden flex flex-col min-h-[680px] max-h-[820px] relative border-t-8 border-t-slate-800">
-          {/* Mobile Speaker & Camera Notch */}
-          <div className="w-full bg-slate-950 py-1.5 flex justify-center items-center shrink-0 border-b border-slate-800/60">
+        <div className="w-full bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-[28px] shadow-2xl overflow-hidden flex flex-col h-[calc(100vh-140px)] sm:h-[820px] sm:min-h-[680px] sm:max-h-[820px] relative sm:border-t-8 sm:border-t-slate-800">
+          {/* Desktop/Tablet Simulated Speaker & Camera Notch (Hidden on Mobile viewports) */}
+          <div className="hidden sm:flex w-full bg-slate-950 py-1.5 justify-center items-center shrink-0 border-b border-slate-800/60">
             <div className="w-16 h-1 bg-slate-700 rounded-full"></div>
           </div>
 
           {/* Header Mobile Toolbar */}
-          <div className="bg-slate-900/90 backdrop-blur-md px-4 py-3 border-b border-slate-800/80 flex items-center justify-between shrink-0 sticky top-0 z-20">
+          <div className="bg-slate-900/90 backdrop-blur-md px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-800/80 flex items-center justify-between shrink-0 sticky top-0 z-20">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white font-black flex items-center justify-center text-xs shadow-md">
+              <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white font-black flex items-center justify-center text-xs shadow-md shrink-0">
                 LP
               </div>
               <div>
                 <h1 className="text-sm font-black text-white leading-tight">LawyerPocket</h1>
-                <p className="text-[10px] text-amber-400 font-semibold truncate max-w-[160px]">{currentFirm.name}</p>
+                <p className="text-[10px] text-amber-400 font-semibold truncate max-w-[140px] sm:max-w-[180px]">{currentFirm.name}</p>
               </div>
             </div>
 
             {/* Quick 10-sec Voice Mic Button in Header */}
             <button
               onClick={() => setQuickActionModal('voice_dictate')}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500 text-slate-950 font-black text-[11px] shadow-lg shadow-amber-500/20 active:scale-95 transition-transform"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition-transform shrink-0 min-h-[36px]"
             >
               <Mic className="w-3.5 h-3.5 animate-pulse" />
               <span>Voice AI</span>
@@ -550,16 +550,16 @@ Matches found across 3 uploaded case files for **${topCase}**:
           </div>
 
           {/* Search Bar */}
-          <div className="px-4 py-2 bg-slate-950/60 border-b border-slate-800/50 shrink-0">
+          <div className="px-3 sm:px-4 py-2 bg-slate-950/60 border-b border-slate-800/50 shrink-0">
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search cases, clients, documents (min 10s)..."
+                placeholder="Search cases, clients, documents..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-sm sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
               />
-              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
+              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-3 sm:top-2.5" />
             </div>
           </div>
 
@@ -1172,55 +1172,55 @@ Matches found across 3 uploaded case files for **${topCase}**:
           </div>
 
           {/* BOTTOM MOBILE NAVIGATION BAR */}
-          <div className="bg-slate-950 border-t border-slate-800/80 px-2 py-2 flex items-center justify-around shrink-0 z-20">
+          <div className="bg-slate-950 border-t border-slate-800/80 px-1 sm:px-2 py-2 flex items-center justify-around shrink-0 z-20 pb-safe">
             <button
               onClick={() => setActiveTab('home')}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all ${
-                activeTab === 'home' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-500 hover:text-slate-300'
+              className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[56px] min-h-[48px] active:scale-95 ${
+                activeTab === 'home' ? 'text-indigo-400 font-extrabold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Smartphone className="w-4 h-4" />
-              <span className="text-[9px]">Home</span>
+              <span className="text-[10px]">Home</span>
             </button>
 
             <button
               onClick={() => setActiveTab('cases')}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all ${
-                activeTab === 'cases' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-500 hover:text-slate-300'
+              className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[56px] min-h-[48px] active:scale-95 ${
+                activeTab === 'cases' ? 'text-indigo-400 font-extrabold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Folder className="w-4 h-4" />
-              <span className="text-[9px]">Cases</span>
+              <span className="text-[10px]">Cases</span>
             </button>
 
             <button
               onClick={() => setActiveTab('camera')}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all ${
-                activeTab === 'camera' ? 'text-sky-400 font-bold scale-105' : 'text-slate-500 hover:text-slate-300'
+              className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[56px] min-h-[48px] active:scale-95 ${
+                activeTab === 'camera' ? 'text-sky-400 font-extrabold bg-sky-500/10' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Camera className="w-4 h-4" />
-              <span className="text-[9px]">Camera</span>
+              <span className="text-[10px]">Camera</span>
             </button>
 
             <button
               onClick={() => setActiveTab('voice')}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all ${
-                activeTab === 'voice' ? 'text-amber-400 font-bold scale-105' : 'text-slate-500 hover:text-slate-300'
+              className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[56px] min-h-[48px] active:scale-95 ${
+                activeTab === 'voice' ? 'text-amber-400 font-extrabold bg-amber-500/10' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Mic className="w-4 h-4" />
-              <span className="text-[9px]">Voice AI</span>
+              <span className="text-[10px]">Voice AI</span>
             </button>
 
             <button
               onClick={() => setActiveTab('profile')}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all ${
-                activeTab === 'profile' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-500 hover:text-slate-300'
+              className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[56px] min-h-[48px] active:scale-95 ${
+                activeTab === 'profile' ? 'text-indigo-400 font-extrabold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <UserCheck className="w-4 h-4" />
-              <span className="text-[9px]">Profile</span>
+              <span className="text-[10px]">Profile</span>
             </button>
           </div>
         </div>
@@ -1228,8 +1228,8 @@ Matches found across 3 uploaded case files for **${topCase}**:
 
       {/* MODAL: 10-SECOND QUICK RECORD HEARING OUTCOME */}
       {quickActionModal === 'record_hearing' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-3">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-4 space-y-3 shadow-2xl text-xs">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-sm p-4 sm:p-5 space-y-3 shadow-2xl text-xs max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-indigo-400" />
@@ -1237,9 +1237,9 @@ Matches found across 3 uploaded case files for **${topCase}**:
               </div>
               <button
                 onClick={() => setQuickActionModal(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white active:scale-95"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -1249,7 +1249,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                 <select
                   value={selectedMatterId}
                   onChange={(e) => setSelectedMatterId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
                 >
                   {matters.map((m) => (
                     <option key={m.id} value={m.id}>
@@ -1264,7 +1264,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                 <select
                   value={hearingOutcome}
                   onChange={(e) => setHearingOutcome(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
                 >
                   <option value="Adjourned to next date">Adjourned to next date</option>
                   <option value="Argued & Interim Stay Granted">Argued & Interim Stay Granted</option>
@@ -1282,7 +1282,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                   type="date"
                   value={nextHearingDate}
                   onChange={(e) => setNextHearingDate(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
                   required
                 />
               </div>
@@ -1294,7 +1294,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                   placeholder="e.g. 5000"
                   value={feeCollectedINR}
                   onChange={(e) => setFeeCollectedINR(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
                 />
               </div>
 
@@ -1302,13 +1302,13 @@ Matches found across 3 uploaded case files for **${topCase}**:
                 <button
                   type="button"
                   onClick={() => setQuickActionModal(null)}
-                  className="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 font-semibold"
+                  className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold active:scale-95 min-h-[44px]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold shadow-lg"
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold shadow-lg active:scale-95 min-h-[44px]"
                 >
                   Save & Sync ERP
                 </button>
@@ -1320,15 +1320,15 @@ Matches found across 3 uploaded case files for **${topCase}**:
 
       {/* MODAL: RECORD FEE */}
       {quickActionModal === 'record_fee' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-3">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-4 space-y-3 shadow-2xl text-xs">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-sm p-4 sm:p-5 space-y-3 shadow-2xl text-xs max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
                 <DollarSign className="w-4 h-4 text-emerald-400" />
                 Record Fee Payment
               </div>
-              <button onClick={() => setQuickActionModal(null)} className="p-1 rounded-lg text-slate-400 hover:text-white">
-                <X className="w-4 h-4" />
+              <button onClick={() => setQuickActionModal(null)} className="p-1.5 rounded-lg text-slate-400 hover:text-white active:scale-95">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -1338,7 +1338,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                 <select
                   value={feeClientId}
                   onChange={(e) => setFeeClientId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
                 >
                   {clients.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -1354,7 +1354,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                   type="number"
                   value={feeAmount}
                   onChange={(e) => setFeeAmount(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
                   required
                 />
               </div>
@@ -1364,7 +1364,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                 <select
                   value={feeMode}
                   onChange={(e) => setFeeMode(e.target.value as any)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
                 >
                   <option value="UPI">UPI (GPay/PhonePe/Paytm)</option>
                   <option value="Cash">Cash</option>
@@ -1379,7 +1379,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                   type="text"
                   value={feeNotes}
                   onChange={(e) => setFeeNotes(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
                 />
               </div>
 
@@ -1387,13 +1387,13 @@ Matches found across 3 uploaded case files for **${topCase}**:
                 <button
                   type="button"
                   onClick={() => setQuickActionModal(null)}
-                  className="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 font-semibold"
+                  className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold active:scale-95 min-h-[44px]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold shadow-lg"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold shadow-lg active:scale-95 min-h-[44px]"
                 >
                   Record Payment
                 </button>
@@ -1405,15 +1405,15 @@ Matches found across 3 uploaded case files for **${topCase}**:
 
       {/* MODAL: VOICE DICTATION STUDIO */}
       {quickActionModal === 'voice_dictate' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-4 space-y-3 shadow-2xl text-xs">
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-sm p-4 sm:p-5 space-y-3 shadow-2xl text-xs max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
                 <Mic className="w-4 h-4 text-amber-400" />
                 Instant Voice Dictation
               </div>
-              <button onClick={() => setQuickActionModal(null)} className="p-1 rounded-lg text-slate-400 hover:text-white">
-                <X className="w-4 h-4" />
+              <button onClick={() => setQuickActionModal(null)} className="p-1.5 rounded-lg text-slate-400 hover:text-white active:scale-95">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -1427,21 +1427,21 @@ Matches found across 3 uploaded case files for **${topCase}**:
                   'Execution Petition 458 of 2026. Matter called. Adjourned to 18 August. Client paid 5000. Upload today’s order.'
                 )
               }
-              className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-lg flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 min-h-[48px]"
             >
               <Mic className="w-4 h-4" />
               <span>Tap to Dictate (Demo Prompt)</span>
             </button>
 
             {extractedData && (
-              <div className="p-2.5 rounded-xl bg-slate-950 border border-amber-500/30 space-y-1.5">
+              <div className="p-3 rounded-xl bg-slate-950 border border-amber-500/30 space-y-2">
                 <div className="font-bold text-amber-300">Extracted Brief:</div>
                 <div className="text-[11px] text-slate-200">
                   Case: {extractedData.caseNumber} &bull; Date: {extractedData.nextDate} &bull; Paid: ₹{extractedData.feePaid}
                 </div>
                 <button
                   onClick={handleSyncVoiceToERP}
-                  className="w-full py-2 rounded-xl bg-indigo-600 text-white font-extrabold"
+                  className="w-full py-2.5 rounded-xl bg-indigo-600 text-white font-extrabold active:scale-95 min-h-[44px]"
                 >
                   Save to LawyerDesk ERP
                 </button>
@@ -1453,15 +1453,15 @@ Matches found across 3 uploaded case files for **${topCase}**:
 
       {/* MODAL: AI CASE DOCUMENT CONTENT SEARCH */}
       {quickActionModal === 'doc_search' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-4 space-y-3 shadow-2xl text-xs max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-3">
+          <div className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-full sm:max-w-md p-4 sm:p-5 space-y-3 shadow-2xl text-xs max-h-[88vh] sm:max-h-[90vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2 shrink-0">
               <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
                 <FileSearch className="w-4 h-4 text-purple-400" />
                 <span>Search Case Document Content AI</span>
               </div>
-              <button onClick={() => setQuickActionModal(null)} className="p-1 rounded-lg text-slate-400 hover:text-white">
-                <X className="w-4 h-4" />
+              <button onClick={() => setQuickActionModal(null)} className="p-1.5 rounded-lg text-slate-400 hover:text-white active:scale-95">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -1478,7 +1478,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                   setDocSearchMatterId(e.target.value);
                   handleExecuteDocSearch();
                 }}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white"
               >
                 <option value="all">📁 All Uploaded Case Files ({matters.length} Cases)</option>
                 {matters.map((m) => (
@@ -1495,17 +1495,17 @@ Matches found across 3 uploaded case files for **${topCase}**:
                 <div className="relative flex-1">
                   <input
                     type="text"
-                    placeholder="Search keywords e.g. stay, limitation, section 138..."
+                    placeholder="Search stay, limitation, section 138..."
                     value={docSearchQuery}
                     onChange={(e) => setDocSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleExecuteDocSearch()}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
                   />
-                  <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
+                  <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-3.5" />
                 </div>
                 <button
                   onClick={() => handleExecuteDocSearch()}
-                  className="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold flex items-center gap-1 text-xs shrink-0"
+                  className="px-3.5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold flex items-center gap-1 text-xs shrink-0 active:scale-95 min-h-[42px]"
                 >
                   {isSearchingDocs ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                   <span>Search</span>
@@ -1519,7 +1519,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                     setDocSearchQuery('interim stay');
                     handleExecuteDocSearch('interim stay');
                   }}
-                  className="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-purple-900/50 text-slate-300 text-[10px] whitespace-nowrap border border-slate-700"
+                  className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-purple-900/50 text-slate-300 text-[10px] whitespace-nowrap border border-slate-700 active:scale-95"
                 >
                   📄 Interim Stay Order
                 </button>
@@ -1528,7 +1528,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                     setDocSearchQuery('limitation');
                     handleExecuteDocSearch('limitation');
                   }}
-                  className="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-purple-900/50 text-slate-300 text-[10px] whitespace-nowrap border border-slate-700"
+                  className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-purple-900/50 text-slate-300 text-[10px] whitespace-nowrap border border-slate-700 active:scale-95"
                 >
                   ⚖️ Section 138 Limitation
                 </button>
@@ -1537,7 +1537,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                     setDocSearchQuery('arbitration clause');
                     handleExecuteDocSearch('arbitration clause');
                   }}
-                  className="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-purple-900/50 text-slate-300 text-[10px] whitespace-nowrap border border-slate-700"
+                  className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-purple-900/50 text-slate-300 text-[10px] whitespace-nowrap border border-slate-700 active:scale-95"
                 >
                   📜 Arbitration Clause
                 </button>
@@ -1588,7 +1588,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                             navigator.clipboard?.writeText(res.excerpt);
                             showToast('📋 Citation snippet copied to clipboard!');
                           }}
-                          className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold flex items-center gap-1"
+                          className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold flex items-center gap-1 active:scale-95"
                         >
                           <Copy className="w-3 h-3" />
                           <span>Copy Snippet</span>
@@ -1599,7 +1599,7 @@ Matches found across 3 uploaded case files for **${topCase}**:
                             setActiveTab('voice');
                             handleSendAiChat(undefined, `Tell me more about paragraph ${res.paraNo} in document ${res.docName}: "${res.excerpt.slice(0, 50)}..."`);
                           }}
-                          className="px-2.5 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-bold flex items-center gap-1"
+                          className="px-2.5 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-bold flex items-center gap-1 active:scale-95"
                         >
                           <Sparkles className="w-3 h-3" />
                           <span>Ask AI Chat</span>
