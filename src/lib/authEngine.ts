@@ -201,6 +201,12 @@ export const ROLE_PERMISSIONS_MAP: Record<UserRole, string[]> = {
     'draft_petitions',
     'view_hearings',
   ],
+  'Stenographer': [
+    'view_assigned_matters',
+    'ai_drafting',
+    'edit_drafts',
+    'submit_for_review',
+  ],
   'Accounts Staff': [
     'view_financials',
     'create_invoices',

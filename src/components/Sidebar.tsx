@@ -122,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'documents', label: 'Documents', icon: FileText, badge: pendingOCRCount > 0 ? `${pendingOCRCount} Pending` : 'AI' },
         { id: 'reports', label: 'Reports', icon: BarChart3 },
         { id: 'ai_chat', label: 'Knowledge Graph AI', icon: MessageSquareCode, isAi: true },
-        { id: 'ai_drafting', label: 'AI Drafting Studio', icon: PenTool, isAi: true },
+        { id: 'ai_drafting', label: 'AI Draft Chamber', icon: PenTool, isAi: true, badge: 'Chamber' },
         { id: 'client_portal', label: 'Client Portal', icon: UserIcon },
       ],
     },

@@ -11,6 +11,7 @@ export type UserRole =
   | 'Associate'
   | 'Junior Advocate'
   | 'Junior'
+  | 'Stenographer'
   | 'Accounts Staff'
   | 'Accounts'
   | 'Office Staff'
@@ -472,17 +473,61 @@ export interface AIChatMessage {
   isThinking?: boolean;
 }
 
+export interface DraftVersion {
+  id: string;
+  versionNumber: number;
+  content: string;
+  savedBy: string;
+  savedAt: string;
+  changeSummary: string;
+}
+
+export interface StenographerAssignment {
+  id: string;
+  draftId: string;
+  draftName: string;
+  matterId: string;
+  matterTitle: string;
+  assignedBy: string;
+  assignedTo: string;
+  instructions: string;
+  priority: 'Urgent' | 'High' | 'Normal';
+  deadline: string;
+  status: 'Assigned' | 'In Progress' | 'Submitted for Review' | 'Approved' | 'Changes Requested';
+  createdAt: string;
+}
+
+export interface EvidenceChecklistItem {
+  id: string;
+  title: string;
+  category: 'Mandatory' | 'Recommended' | 'Supporting';
+  status: 'Attached' | 'Missing' | 'To Be Obtained';
+  documentId?: string;
+  documentName?: string;
+  description: string;
+}
+
+export interface LegalDraftRecord {
+  id: string;
+  matterId: string;
+  caseNumber: string;
+  title: string;
+  draftType: string;
+  content: string;
+  court: string;
+  status: 'Drafting' | 'In Stenographer Review' | 'Lawyer Approved' | 'Final Filed';
+  assignedStenographer?: string;
+  qualityScore?: number;
+  versions: DraftVersion[];
+  evidenceChecklist: EvidenceChecklistItem[];
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+}
+
 export interface LegalDraftRequest {
   matterId: string;
-  draftType:
-    | 'Written Arguments'
-    | 'Synopsis & List of Dates'
-    | 'Appeal Draft'
-    | 'Reply to Interim Application'
-    | 'Affidavit in Evidence'
-    | 'Legal Notice'
-    | 'Client Update Letter'
-    | 'Bail Application';
+  draftType: string;
   specificInstructions?: string;
   targetCourt?: string;
 }

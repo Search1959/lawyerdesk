@@ -999,6 +999,11 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               matters={matters}
               selectedMatter={matters.find((m) => m.id === selectedMatter?.id) || matters[0] || selectedMatter}
               onSelectMatter={setSelectedMatter}
+              documents={documents}
+              onUploadDocument={handleUploadDocument}
+              currentUser={currentUser}
+              users={users}
+              clients={clients}
             />
           )}
 

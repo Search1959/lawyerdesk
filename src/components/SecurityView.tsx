@@ -143,6 +143,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
     Associate: ['matter_read', 'matter_write', 'ai_copilot', 'drafting'],
     'Junior Advocate': ['matter_read', 'ai_copilot'],
     Junior: ['matter_read', 'ai_copilot'],
+    Stenographer: ['matter_read', 'drafting'],
     'Accounts Staff': ['billing_view'],
     Accounts: ['billing_view'],
     'Office Staff': ['matter_read'],
