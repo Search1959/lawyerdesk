@@ -833,8 +833,9 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
     );
   }
 
-  // ── Mobile: Android-style home screen ──────────────────────────────────────
-  if (isMobile) {
+  // ── Mobile: Android-style home screen (dashboard only) ────────────────────
+  // When a card is tapped, activeTab changes — fall through to full layout below
+  if (isMobile && activeTab === 'dashboard') {
     return (
       <MobileHomeView
         currentUser={currentUser}
@@ -847,6 +848,100 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
         onNavigate={(tab) => setActiveTab(tab)}
         onLogout={() => setViewMode('login')}
       />
+    );
+  }
+
+  // ── Mobile: content view (after tapping a card) ────────────────────────────
+  if (isMobile) {
+    const TAB_LABELS: Partial<Record<NavTab, string>> = {
+      hearings: "Today's Hearings", matters: 'Cases', ecourt_tracker: 'eCourt Tracker',
+      ai_chat: 'AI Assistant', reminders: 'WhatsApp Alerts', tasks: 'Tasks',
+      invoices: 'Invoices', client_portal: 'Client Portal', clients: 'Clients',
+      hearing_calendar: 'Hearing Calendar', messages: 'Messages',
+      ai_drafting: 'AI Drafting', reports: 'Reports', settings: 'Settings',
+    };
+    return (
+      <div className="min-h-screen bg-[#080e1f] text-slate-100 flex flex-col">
+        {/* Mobile top bar with back button */}
+        <header className="sticky top-0 z-30 bg-[#080e1f]/95 backdrop-blur border-b border-slate-800 px-4 py-3 flex items-center gap-3">
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className="p-2 rounded-xl bg-slate-800 text-slate-300 flex items-center gap-1"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <p className="text-sm font-bold text-white">{TAB_LABELS[activeTab] ?? activeTab}</p>
+        </header>
+
+        {/* Render the actual tab content */}
+        <div className="flex-1 overflow-y-auto p-3 pb-24">
+          {activeTab === 'hearings' && (
+            <HearingsView hearings={hearings} matters={matters} onAddNewHearing={handleAddNewHearing} onDeleteHearing={handleDeleteHearing} />
+          )}
+          {activeTab === 'matters' && (
+            <MattersView matters={matters} documents={documents} hearings={hearings} courtOrders={mockCourtOrders} timeline={mockTimeline} witnesses={mockWitnesses} tasks={mockTasks} clients={clients} currentFirm={currentFirm} onSelectMatter={setSelectedMatter} onOpenNewMatter={() => setShowNewMatterModal(true)} onUploadDocToMatter={(mId) => { const m = matters.find((item) => item.id === mId); if (m) setSelectedMatter(m); setActiveTab('documents'); }} onOpenDraftingForMatter={(m) => { setSelectedMatter(m); setActiveTab('ai_drafting'); }} onOpenAIChatForMatter={(m) => { setSelectedMatter(m); setActiveTab('ai_chat'); }} onOpenCaseBrain={(m) => { setActiveCaseBrainMatter(m); setShowCaseBrainModal(true); }} onOpenHearingPrep={(m) => { setActiveCaseBrainMatter(m); setShowHearingPrepModal(true); }} onAddNewInvoice={handleAddNewInvoice} />
+          )}
+          {activeTab === 'ecourt_tracker' && (
+            <ECourtTrackerView matters={matters} onSelectMatter={(m) => { setSelectedMatter(m); setActiveTab('matters'); }} onUpdateMatter={(m) => { setAllMatters((prev) => prev.map((x) => (x.id === m.id ? m : x))); }} />
+          )}
+          {activeTab === 'ai_chat' && (
+            <AIChatView matters={matters} selectedMatter={matters.find((m) => m.id === selectedMatter?.id) || matters[0] || selectedMatter} onSelectMatter={setSelectedMatter} documents={documents} />
+          )}
+          {activeTab === 'reminders' && <RemindersView />}
+          {activeTab === 'tasks' && <TasksView tasks={tasks} matters={matters} users={users} />}
+          {activeTab === 'invoices' && (
+            <FinancialsView invoices={invoices} clients={clients} matters={matters} currentFirm={currentFirm} onAddNewInvoice={handleAddNewInvoice} onUpdateInvoice={handleUpdateInvoice} onDeleteInvoice={handleDeleteInvoice} />
+          )}
+          {activeTab === 'client_portal' && (
+            <ClientPortalView matters={matters} hearings={hearings} invoices={invoices} documents={documents} />
+          )}
+          {activeTab === 'clients' && (
+            <ClientsView clients={clients} onAddNewClient={handleAddNewClient} currentUser={currentUser} />
+          )}
+          {activeTab === 'hearing_calendar' && (
+            <HearingCalendarView hearings={hearings} matters={matters} onSelectMatter={(m) => { setSelectedMatter(m); setActiveTab('matters'); }} />
+          )}
+          {activeTab === 'messages' && (
+            <MessagesView matters={matters} currentUser={currentUser} messages={messages} onSendMessage={handleSendMessage} onDeleteMessage={handleDeleteMessage} onDeleteThread={handleDeleteThread} onNavigateToCases={() => setActiveTab('matters')} />
+          )}
+          {activeTab === 'ai_drafting' && (
+            <AIDraftingView matters={matters} selectedMatter={matters.find((m) => m.id === selectedMatter?.id) || matters[0] || selectedMatter} onSelectMatter={setSelectedMatter} documents={documents} onUploadDocument={handleUploadDocument} currentUser={currentUser} users={users} clients={clients} />
+          )}
+          {activeTab === 'reports' && <ReportsView />}
+          {activeTab === 'settings' && (
+            <SettingsView currentFirm={currentFirm} currentUser={currentUser} onUpdateFirm={handleUpdateFirm} onOpenChangePassword={() => setShowChangePasswordModal(true)} />
+          )}
+        </div>
+
+        {/* Mobile bottom nav */}
+        <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#080e1f]/95 backdrop-blur border-t border-slate-800 flex">
+          {[
+            { tab: 'dashboard' as NavTab,  label: 'Home',     icon: '🏠' },
+            { tab: 'matters'   as NavTab,  label: 'Cases',    icon: '⚖️' },
+            { tab: 'hearings'  as NavTab,  label: 'Calendar', icon: '📅' },
+            { tab: 'ai_chat'   as NavTab,  label: 'AI',       icon: '🤖' },
+          ].map((item) => (
+            <button
+              key={item.tab}
+              onClick={() => setActiveTab(item.tab)}
+              className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 text-[10px] font-medium transition-colors ${activeTab === item.tab ? 'text-amber-400' : 'text-slate-500'}`}
+            >
+              <span className="text-lg leading-none">{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Modals needed on mobile too */}
+        {showNewMatterModal && (
+          <AddMatterWizardModal clients={clients} onClose={() => setShowNewMatterModal(false)} onSave={handleCreateMatter} />
+        )}
+        {showCaseBrainModal && (
+          <CaseBrainModal isOpen={showCaseBrainModal} onClose={() => setShowCaseBrainModal(false)} matter={activeCaseBrainMatter || selectedMatter || matters[0]} documents={documents} />
+        )}
+      </div>
     );
   }
 
