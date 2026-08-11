@@ -576,6 +576,15 @@ export interface Invoice {
   notes?: string;
 }
 
+export interface FirmSubscription {
+  id: string;           // same as firmId
+  firmName: string;
+  monthlyFee: number;   // default 999
+  monthsBilled: number;
+  totalPaid: number;
+  updatedAt: string;
+}
+
 export interface FirmRegistration {
   id: string;
   firmName: string;

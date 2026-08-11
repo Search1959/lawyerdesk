@@ -4,8 +4,9 @@ import {
   Phone, Mail, MapPin, BadgeCheck, Filter, RefreshCw,
   Users, AlertCircle, Eye, ShieldCheck, Briefcase,
   UserCheck, Crown, ToggleLeft, ToggleRight,
+  Receipt, Pencil, MessageSquare, IndianRupee, TrendingDown,
 } from 'lucide-react';
-import { FirmRegistration, LawFirm, User } from '../types';
+import { FirmRegistration, FirmSubscription, LawFirm, User } from '../types';
 import { subscribeCollection, saveDocument } from '../lib/firebase';
 import { mockUsers } from '../data/mockData';
 
@@ -30,7 +31,7 @@ const PLAN_BADGE: Record<string, string> = {
   'Standard Firm':       'bg-emerald-900/60 text-emerald-300',
 };
 
-type ViewTab = 'all_firms' | 'all_users' | 'new_registrations';
+type ViewTab = 'all_firms' | 'all_users' | 'new_registrations' | 'subscription_ledger';
 
 export const FirmRegistryView: React.FC = () => {
   const [viewTab, setViewTab]               = useState<ViewTab>('all_firms');
@@ -40,18 +41,22 @@ export const FirmRegistryView: React.FC = () => {
   const [loading, setLoading]               = useState(true);
   const [search, setSearch]                 = useState('');
   const [filterStatus, setFilterStatus]     = useState<string>('all');
+  const [subscriptions, setSubscriptions]   = useState<FirmSubscription[]>([]);
   const [selectedReg, setSelectedReg]       = useState<FirmRegistration | null>(null);
   const [rejectReason, setRejectReason]     = useState('');
   const [actionMsg, setActionMsg]           = useState('');
+  const [editingFeeId, setEditingFeeId]     = useState<string | null>(null);
+  const [editingFeeVal, setEditingFeeVal]   = useState<number>(999);
+  const [recordPayId, setRecordPayId]       = useState<string | null>(null);
+  const [recordPayAmt, setRecordPayAmt]     = useState<number>(0);
 
   useEffect(() => {
     let loaded = 0;
-    const done = () => { loaded++; if (loaded >= 3) setLoading(false); };
+    const done = () => { loaded++; if (loaded >= 4) setLoading(false); };
 
     const u1 = subscribeCollection<FirmRegistration>('firm_registrations', (d) => { setRegistrations(d); done(); }, []);
     const u2 = subscribeCollection<LawFirm>('firms', (d) => { setFirms(d); done(); }, []);
     const u3 = subscribeCollection<User>('users', (d) => {
-      // Merge Firestore users with mockUsers, deduplicate by email
       const merged = [...d];
       mockUsers.forEach((mu) => {
         if (!merged.find((u) => u.email.toLowerCase() === mu.email.toLowerCase())) merged.push(mu);
@@ -59,8 +64,9 @@ export const FirmRegistryView: React.FC = () => {
       setUsers(merged);
       done();
     }, mockUsers);
+    const u4 = subscribeCollection<FirmSubscription>('firm_subscriptions', (d) => { setSubscriptions(d); done(); }, []);
 
-    return () => { u1(); u2(); u3(); };
+    return () => { u1(); u2(); u3(); u4(); };
   }, []);
 
   const pendingCount = registrations.filter((r) => r.status === 'pending').length;
@@ -106,6 +112,43 @@ export const FirmRegistryView: React.FC = () => {
     setTimeout(() => setActionMsg(''), 3000);
   };
 
+  // ── Subscription helpers ─────────────────────────────────────────
+  // Billable firms = Active, non-demo, not own system account
+  const EXCLUDED_CODES = ['APEX7', 'DEMO', 'SYSTEM'];
+  const billableFirms = firms.filter((f) =>
+    f.status !== 'Suspended' &&
+    !EXCLUDED_CODES.some((c) => (f.code || '').toUpperCase().includes(c)) &&
+    f.plan !== 'Enterprise Unlimited' // own account
+  );
+
+  const getSubForFirm = (firmId: string): FirmSubscription => {
+    const found = subscriptions.find((s) => s.id === firmId);
+    return found || { id: firmId, firmName: '', monthlyFee: 999, monthsBilled: 1, totalPaid: 0, updatedAt: new Date().toISOString() };
+  };
+
+  const saveFee = async (firmId: string, firmName: string) => {
+    const existing = getSubForFirm(firmId);
+    await saveDocument('firm_subscriptions', { ...existing, id: firmId, firmName, monthlyFee: editingFeeVal, updatedAt: new Date().toISOString() });
+    setEditingFeeId(null);
+    setActionMsg(`✅ Monthly fee updated for ${firmName}`);
+    setTimeout(() => setActionMsg(''), 3000);
+  };
+
+  const recordPayment = async (firmId: string, firmName: string) => {
+    const existing = getSubForFirm(firmId);
+    await saveDocument('firm_subscriptions', { ...existing, id: firmId, firmName, totalPaid: existing.totalPaid + recordPayAmt, updatedAt: new Date().toISOString() });
+    setRecordPayId(null);
+    setRecordPayAmt(0);
+    setActionMsg(`✅ ₹${recordPayAmt} payment recorded for ${firmName}`);
+    setTimeout(() => setActionMsg(''), 3000);
+  };
+
+  const subLedgerTotals = billableFirms.reduce((acc, f) => {
+    const sub = getSubForFirm(f.id);
+    const due = sub.monthlyFee * sub.monthsBilled;
+    return { billed: acc.billed + due, collected: acc.collected + sub.totalPaid, outstanding: acc.outstanding + Math.max(0, due - sub.totalPaid) };
+  }, { billed: 0, collected: 0, outstanding: 0 });
+
   // ── Filtered data per tab ────────────────────────────────────────
   const filteredFirms = firms.filter((f) => {
     const s = search.toLowerCase();
@@ -138,9 +181,10 @@ export const FirmRegistryView: React.FC = () => {
   };
 
   const viewTabs: { id: ViewTab; label: string; count: number }[] = [
-    { id: 'all_firms',         label: 'Registered Firms',   count: stats.firms },
-    { id: 'all_users',         label: 'All Users / Accounts', count: stats.users },
-    { id: 'new_registrations', label: 'New Registrations',  count: pendingCount },
+    { id: 'all_firms',          label: 'Registered Firms',     count: stats.firms },
+    { id: 'all_users',          label: 'All Users',            count: stats.users },
+    { id: 'new_registrations',  label: 'New Registrations',   count: pendingCount },
+    { id: 'subscription_ledger',label: 'Subscription Ledger', count: billableFirms.length },
   ];
 
   return (
@@ -444,6 +488,149 @@ export const FirmRegistryView: React.FC = () => {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* ── TAB: SUBSCRIPTION LEDGER ────────────────────────── */}
+      {viewTab === 'subscription_ledger' && (
+        <div className="space-y-5">
+          {/* Summary tiles */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: 'Billable Accounts', value: billableFirms.length, color: GOLD_LIGHT, icon: Building2 },
+              { label: 'Total Billed',      value: `₹${subLedgerTotals.billed.toLocaleString('en-IN')}`,      color: '#60a5fa', icon: IndianRupee },
+              { label: 'Total Collected',   value: `₹${subLedgerTotals.collected.toLocaleString('en-IN')}`,   color: '#34d399', icon: CheckCircle2 },
+              { label: 'Outstanding',       value: `₹${subLedgerTotals.outstanding.toLocaleString('en-IN')}`, color: '#f87171', icon: TrendingDown },
+            ].map(({ label, value, color, icon: Icon }) => (
+              <div key={label} className="p-4 rounded-2xl" style={{ background: 'rgba(17,37,73,0.5)', border: '1px solid rgba(184,136,26,0.15)' }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Icon className="w-4 h-4" style={{ color }} />
+                  <span className="text-xs text-slate-400 font-semibold">{label}</span>
+                </div>
+                <div className="text-2xl font-black" style={{ color }}>{value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Ledger table */}
+          <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(184,136,26,0.2)' }}>
+            {/* Table header */}
+            <div className="grid grid-cols-12 gap-2 px-4 py-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
+              style={{ background: 'rgba(17,37,73,0.7)', borderBottom: '1px solid rgba(184,136,26,0.15)' }}>
+              <div className="col-span-4">Account</div>
+              <div className="col-span-2 text-right">Monthly Fee</div>
+              <div className="col-span-1 text-center">Months</div>
+              <div className="col-span-1 text-right">Total Due</div>
+              <div className="col-span-1 text-right">Paid</div>
+              <div className="col-span-1 text-right">Balance</div>
+              <div className="col-span-2 text-center">Actions</div>
+            </div>
+
+            {loading ? <LoadingSpinner /> : billableFirms.length === 0 ? (
+              <EmptyState text="No billable accounts" sub="Active non-demo firms appear here" />
+            ) : (
+              billableFirms.map((firm, idx) => {
+                const sub = getSubForFirm(firm.id);
+                const totalDue = sub.monthlyFee * sub.monthsBilled;
+                const balance  = totalDue - sub.totalPaid;
+                const isEditingFee = editingFeeId === firm.id;
+                const isRecordingPay = recordPayId === firm.id;
+
+                return (
+                  <div key={firm.id}
+                    className="grid grid-cols-12 gap-2 px-4 py-3 items-center text-xs border-b last:border-b-0"
+                    style={{ background: idx % 2 === 0 ? 'rgba(17,37,73,0.3)' : 'rgba(11,19,43,0.4)', borderColor: 'rgba(184,136,26,0.08)' }}>
+
+                    {/* Account info */}
+                    <div className="col-span-4 min-w-0">
+                      <div className="font-bold text-white truncate">{firm.name}</div>
+                      <div className="text-[10px] text-slate-400 truncate">
+                        {firm.managingPartner && <span>{firm.managingPartner} • </span>}
+                        <span className="font-mono">{firm.code}</span>
+                      </div>
+                      <span className={`inline-block mt-1 text-[9px] font-bold px-1.5 py-0.5 rounded ${PLAN_BADGE[firm.plan] || 'bg-slate-700 text-slate-300'}`}>
+                        {firm.plan}
+                      </span>
+                    </div>
+
+                    {/* Monthly fee (editable) */}
+                    <div className="col-span-2 text-right">
+                      {isEditingFee ? (
+                        <div className="flex items-center gap-1 justify-end">
+                          <span className="text-slate-400">₹</span>
+                          <input type="number" value={editingFeeVal}
+                            onChange={(e) => setEditingFeeVal(Number(e.target.value))}
+                            className="w-16 px-2 py-1 rounded-lg text-xs text-white text-right focus:outline-none font-mono"
+                            style={{ background: 'rgba(0,0,0,0.5)', border: `1px solid ${GOLD}` }}
+                            autoFocus
+                            onBlur={() => saveFee(firm.id, firm.name)}
+                            onKeyDown={(e) => e.key === 'Enter' && saveFee(firm.id, firm.name)} />
+                        </div>
+                      ) : (
+                        <button onClick={() => { setEditingFeeId(firm.id); setEditingFeeVal(sub.monthlyFee); }}
+                          className="flex items-center gap-1 justify-end w-full group">
+                          <span className="font-bold text-white">₹{sub.monthlyFee.toLocaleString('en-IN')}</span>
+                          <Pencil className="w-3 h-3 text-slate-500 group-hover:text-amber-400 transition-colors" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Months billed */}
+                    <div className="col-span-1 text-center font-bold text-slate-300">{sub.monthsBilled}</div>
+
+                    {/* Total Due */}
+                    <div className="col-span-1 text-right font-bold text-slate-200">₹{totalDue.toLocaleString('en-IN')}</div>
+
+                    {/* Paid */}
+                    <div className="col-span-1 text-right font-bold text-emerald-400">₹{sub.totalPaid.toLocaleString('en-IN')}</div>
+
+                    {/* Balance */}
+                    <div className="col-span-1 text-right font-black" style={{ color: balance > 0 ? '#f87171' : '#34d399' }}>
+                      ₹{balance.toLocaleString('en-IN')}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="col-span-2 flex items-center justify-center gap-2">
+                      {isRecordingPay ? (
+                        <div className="flex items-center gap-1">
+                          <span className="text-slate-400 text-[10px]">₹</span>
+                          <input type="number" value={recordPayAmt}
+                            onChange={(e) => setRecordPayAmt(Number(e.target.value))}
+                            className="w-16 px-2 py-1 rounded-lg text-xs text-white text-right focus:outline-none font-mono"
+                            style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(5,150,105,0.5)' }}
+                            autoFocus
+                            onKeyDown={(e) => { if (e.key === 'Enter') recordPayment(firm.id, firm.name); if (e.key === 'Escape') setRecordPayId(null); }} />
+                          <button onClick={() => recordPayment(firm.id, firm.name)}
+                            className="text-[10px] font-bold px-1.5 py-1 rounded" style={{ background: '#059669', color: 'white' }}>✓</button>
+                          <button onClick={() => setRecordPayId(null)} className="text-slate-400 hover:text-white text-[10px]">✕</button>
+                        </div>
+                      ) : (
+                        <>
+                          <button onClick={() => { setRecordPayId(firm.id); setRecordPayAmt(balance > 0 ? balance : sub.monthlyFee); }}
+                            title="Record Payment"
+                            className="p-1.5 rounded-lg transition-all hover:scale-110"
+                            style={{ background: 'rgba(5,150,105,0.15)', border: '1px solid rgba(5,150,105,0.3)', color: '#34d399' }}>
+                            <Receipt className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            title="Send WhatsApp Reminder"
+                            onClick={() => window.open(`https://wa.me/${firm.managingPartner || ''}?text=${encodeURIComponent(`Dear ${firm.name} team,\n\nYour LawyerDesk AI subscription balance of ₹${balance} is due.\n\nKindly arrange payment at your earliest convenience.\n\nThank you,\nLawyerDesk AI Team`)}`, '_blank')}
+                            className="p-1.5 rounded-lg transition-all hover:scale-110"
+                            style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', color: '#4ade80' }}>
+                            <MessageSquare className="w-3.5 h-3.5" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          <p className="text-center text-[11px] text-slate-500">
+            ₹999/month default per firm • Demo & own system accounts auto-excluded • Click ✏ to edit monthly fee • Click <Receipt className="w-3 h-3 inline" /> to record payment
+          </p>
         </div>
       )}
     </div>
