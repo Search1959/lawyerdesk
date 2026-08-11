@@ -576,6 +576,22 @@ export interface Invoice {
   notes?: string;
 }
 
+export interface FirmRegistration {
+  id: string;
+  firmName: string;
+  barCouncilNo: string;
+  practiceState: string;
+  practiceType: 'Solo Advocate' | 'Law Firm' | 'Corporate Legal' | 'Legal Aid';
+  mobile: string;
+  email: string;
+  status: 'pending' | 'approved' | 'rejected';
+  plan: 'Free Trial' | 'Standard' | 'Pro';
+  createdAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  rejectReason?: string;
+}
+
 export type NavTab =
   | 'dashboard'
   | 'court_intelligence'
@@ -601,6 +617,7 @@ export type NavTab =
   | 'ai_drafting'
   | 'lawyerdesk_pocket'
   | 'lawyer_pocket'
+  | 'firm_registry'
   | 'west_bengal_suite'
   | 'knowledge_vault'
   | 'client_portal'

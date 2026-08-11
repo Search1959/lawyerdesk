@@ -30,6 +30,7 @@ import {
   HardDrive,
   Landmark,
   Lock,
+  Building2,
   User as UserIcon,
 } from 'lucide-react';
 import { User, NavTab } from '../types';
@@ -128,6 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       title: 'ADMIN',
       items: [
         { id: 'manage_team', label: 'Manage Team', icon: UserCheck },
+        { id: 'firm_registry', label: 'Chamber Registry', icon: Building2, isSystemOnly: true, badge: 'New Reg' },
         { id: 'reminders', label: 'Reminders', icon: Bell },
         { id: 'settings', label: 'Settings', icon: Settings },
         { id: 'database', label: 'PostgreSQL Schema', icon: Database, isSystemOnly: true },

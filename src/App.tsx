@@ -10,6 +10,7 @@ import { ClientsView } from './components/ClientsView';
 import { HearingsView } from './components/HearingsView';
 import { DatabaseSchemaView } from './components/DatabaseSchemaView';
 import { SecurityView } from './components/SecurityView';
+import { FirmRegistryView } from './components/FirmRegistryView';
 import { FinancialsView } from './components/FinancialsView';
 import { AddMatterWizardModal } from './components/AddMatterWizardModal';
 import { LandingPage } from './components/LandingPage';
@@ -1140,6 +1141,8 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           {activeTab === 'help' && <HelpCenterView />}
 
           {activeTab === 'database' && <DatabaseSchemaView />}
+
+          {activeTab === 'firm_registry' && <FirmRegistryView />}
 
           {activeTab === 'security' && (
             <SecurityView
