@@ -10,7 +10,6 @@ import {
   Menu,
   KeyRound,
   Mic,
-  Smartphone,
 } from 'lucide-react';
 import { LawFirm, User, UserRole } from '../types';
 
@@ -106,17 +105,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         )}
 
-        {/* LawyerDesk Pocket Button */}
-        {onOpenLawyerPocket && (
-          <button
-            onClick={onOpenLawyerPocket}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500/20 via-indigo-500/20 to-amber-500/20 border border-amber-500/40 text-amber-600 dark:text-amber-300 text-xs font-black hover:bg-amber-500/30 transition-all shadow-xs"
-            title="Open Mobile-First LawyerPocket Companion"
-          >
-            <Smartphone className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-            <span className="hidden sm:inline">LawyerDesk Pocket 📱</span>
-          </button>
-        )}
 
         {/* Account & Organization Manager Button */}
         {onOpenAccountManager && (isSystemAdmin || isFirmAdmin || isIndividualLawyer) && (
