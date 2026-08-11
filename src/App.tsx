@@ -40,6 +40,7 @@ import { VoiceAssistantModal } from './components/VoiceAssistantModal';
 import { ClientPortalView } from './components/ClientPortalView';
 import { LawyerPocketView } from './components/LawyerPocketView';
 import { Lock, AlertCircle, Database, RefreshCw, X, Sparkles, Plus } from 'lucide-react';
+import { MobileHomeView } from './components/MobileHomeView';
 import { subscribeCollection, saveDocument, removeDocument } from './lib/firebase';
 
 import {
@@ -84,6 +85,14 @@ export default function App() {
   const [activeCaseBrainMatter, setActiveCaseBrainMatter] = useState<Matter | null>(null);
   const [demoNoticeMessage, setDemoNoticeMessage] = useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Mobile detection — phones < 768px see the Android-style home screen
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   // State Stores
   const [allMatters, setAllMatters] = useState<Matter[]>(mockMatters);
@@ -824,6 +833,24 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
     );
   }
 
+  // ── Mobile: Android-style home screen ──────────────────────────────────────
+  if (isMobile) {
+    return (
+      <MobileHomeView
+        currentUser={currentUser}
+        currentFirm={currentFirm}
+        matters={matters}
+        hearings={hearings}
+        invoices={invoices}
+        tasks={tasks}
+        activeTab={activeTab}
+        onNavigate={(tab) => setActiveTab(tab)}
+        onLogout={() => setViewMode('login')}
+      />
+    );
+  }
+
+  // ── Desktop: Full app layout ────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-[#1A1C1E] transition-colors duration-150 flex flex-col font-sans">
       {/* Top Fixed Navbar */}
