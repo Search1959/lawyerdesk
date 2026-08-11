@@ -171,14 +171,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className={`flex items-center gap-2.5 ${onOpenLanding ? 'cursor-pointer group hover:opacity-90' : ''}`}
             title="Go to LawyerDesk Home Page"
           >
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 group-hover:bg-indigo-500 flex items-center justify-center text-white font-black text-sm shadow-md transition-all">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-md transition-all" style={{ background: '#B8881A' }}>
               <Scale className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="text-white font-bold text-sm tracking-tight flex items-center gap-1 group-hover:text-indigo-200 transition-colors">
+              <div className="text-white font-bold text-sm tracking-tight flex items-center gap-1 font-playfair transition-colors">
                 <span>Lawyer Desk</span>
               </div>
-              <div className="text-[9px] text-indigo-400 font-semibold uppercase tracking-widest mt-0.5">
+              <div className="text-[9px] font-semibold uppercase tracking-widest mt-0.5" style={{ color: '#B8881A' }}>
                 CASE MANAGEMENT
               </div>
             </div>
@@ -237,9 +237,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       }}
                       className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all group ${
                         isActive
-                          ? 'bg-indigo-600 text-white shadow-md font-semibold'
+                          ? 'text-white shadow-md font-semibold'
                           : 'text-slate-400 hover:text-white hover:bg-slate-800/70'
                       }`}
+                      style={isActive ? { background: '#B8881A' } : {}}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <Icon
@@ -263,7 +264,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             className={`ml-auto text-[9.5px] px-1.5 py-0.5 rounded font-bold ${
                               isActive
                                 ? 'bg-white/20 text-white'
-                                : 'bg-indigo-500/20 text-indigo-300'
+                                : 'bg-[#B8881A]/20 text-[#D4A82A]'
                             }`}
                           >
                             {item.badge}
@@ -283,15 +284,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold text-white shrink-0 border ${
-                  (currentUser as any)?.isDemoUser
-                    ? 'bg-amber-600 border-amber-400/40'
-                    : role === 'Super Admin'
-                    ? 'bg-rose-600 border-rose-400/40'
-                    : role === 'Firm Admin'
-                    ? 'bg-emerald-600 border-emerald-400/40'
-                    : 'bg-indigo-600 border-indigo-400/40'
-                }`}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold text-white shrink-0 border"
+                style={{
+                  background: (currentUser as any)?.isDemoUser ? '#d97706' : role === 'Super Admin' ? '#dc2626' : role === 'Firm Admin' ? '#059669' : '#B8881A',
+                  borderColor: (currentUser as any)?.isDemoUser ? 'rgba(251,191,36,0.4)' : role === 'Super Admin' ? 'rgba(248,113,113,0.4)' : role === 'Firm Admin' ? 'rgba(52,211,153,0.4)' : 'rgba(184,136,26,0.4)',
+                }}
               >
                 {userInitials}
               </div>
@@ -299,7 +296,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <div className="text-xs font-semibold text-white truncate">
                   {currentUser?.name || 'Adv. Amit Kumar'}
                 </div>
-                <div className="text-[10px] text-indigo-300 truncate font-mono">
+                <div className="text-[10px] truncate font-mono" style={{ color: '#D4A82A' }}>
                   {(currentUser as any)?.isDemoUser ? (
                     <span className="text-amber-300 font-bold">Demo User</span>
                   ) : role === 'Super Admin' ? (
@@ -326,7 +323,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <div className="text-[10px] bg-slate-900/80 p-2 rounded-lg text-slate-300 border border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-1.5 truncate">
-              <HardDrive className="w-3 h-3 text-indigo-400" />
+              <HardDrive className="w-3 h-3" style={{ color: '#B8881A' }} />
               <span className="truncate">Vault: 8.4 TB / 10 TB</span>
             </div>
             <span className="text-[9px] font-bold text-emerald-400">84%</span>

@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             title="Open Menu"
             aria-label="Open Navigation Menu"
           >
-            <Menu className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <Menu className="w-5 h-5" style={{ color: '#B8881A' }} />
           </button>
         )}
 
@@ -122,10 +122,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         {onOpenAccountManager && (isSystemAdmin || isFirmAdmin || isIndividualLawyer) && (
           <button
             onClick={onOpenAccountManager}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-800/80 text-indigo-700 dark:text-indigo-300 text-xs font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-all"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all"
+            style={{ background: 'rgba(184,136,26,0.1)', border: '1px solid rgba(184,136,26,0.3)', color: '#D4A82A' }}
             title="Manage Law Firm & Lawyer Accounts"
           >
-            <Users className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+            <Users className="w-3.5 h-3.5" style={{ color: '#B8881A' }} />
             <span className="hidden xl:inline">
               {isSystemAdmin ? 'Manage Firms & Users' : isFirmAdmin ? 'Manage Firm Team' : 'Manage Associates'}
             </span>
@@ -135,10 +136,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         {onOpenLanding && (
           <button
             onClick={onOpenLanding}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 text-xs font-bold text-indigo-700 dark:text-indigo-300 transition-all shadow-xs"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs"
+            style={{ background: 'rgba(184,136,26,0.1)', border: '1px solid rgba(184,136,26,0.3)', color: '#D4A82A' }}
             title="Return to Main Homepage"
           >
-            <Globe className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+            <Globe className="w-3.5 h-3.5" style={{ color: '#B8881A' }} />
             <span className="hidden xs:inline">Home Page</span>
           </button>
         )}
@@ -170,9 +172,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* AI Copilot Launcher */}
         <button
           onClick={onOpenAIChat}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-all shadow-sm active:scale-95"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-white text-xs font-semibold transition-all shadow-sm active:scale-95"
+          style={{ background: '#B8881A' }}
         >
-          <Sparkles className="w-3.5 h-3.5 text-indigo-200" />
+          <Sparkles className="w-3.5 h-3.5 text-white/80" />
           <span className="hidden sm:inline">AI Copilot</span>
         </button>
 
@@ -187,10 +190,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               <img
                 src={currentUser.avatarUrl}
                 alt={currentUser.name}
-                className="w-7 h-7 rounded-full object-cover ring-2 ring-indigo-500/30"
+                className="w-7 h-7 rounded-full object-cover ring-2 ring-[#B8881A]/40"
               />
             ) : (
-              <div className="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold ring-2 ring-indigo-500/30">
+              <div className="w-7 h-7 rounded-full text-white flex items-center justify-center text-xs font-bold ring-2 ring-[#B8881A]/40" style={{ background: '#B8881A' }}>
                 {currentUser.name ? currentUser.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'U'}
               </div>
             )}
@@ -204,7 +207,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {currentUser.name}
               </span>
             </div>
-            <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 leading-tight truncate max-w-[140px]">
+            <span className="text-[10px] font-bold leading-tight truncate max-w-[140px]" style={{ color: '#D4A82A' }}>
               {currentFirm?.name ? `${currentFirm.name.slice(0, 16)} • ${currentUser.role}` : currentUser.role}
             </span>
           </div>
@@ -229,7 +232,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 dark:bg-slate-800 text-white text-xs font-bold hover:bg-slate-800 dark:hover:bg-slate-700 transition-all border border-slate-700"
             title="Login Screen / Role Switcher"
           >
-            <LogIn className="w-3.5 h-3.5 text-indigo-400" />
+            <LogIn className="w-3.5 h-3.5" style={{ color: '#D4A82A' }} />
             <span className="hidden xl:inline">Portal Login</span>
           </button>
         )}

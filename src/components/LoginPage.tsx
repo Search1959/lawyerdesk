@@ -267,30 +267,33 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 font-sans relative overflow-hidden">
-      {/* Background Orbs */}
-      <div className="absolute top-10 left-10 w-96 h-96 bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+    <div className="min-h-screen bg-[#0d1829] text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 font-inter relative overflow-hidden">
+      {/* Background glow — gold tinted, not indigo */}
+      <div className="absolute top-10 left-10 w-96 h-96 rounded-full blur-[120px] pointer-events-none" style={{ background: 'rgba(184,136,26,0.08)' }}></div>
+      <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full blur-[120px] pointer-events-none" style={{ background: 'rgba(27,58,107,0.25)' }}></div>
+      {/* Subtle gold top border */}
+      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: 'linear-gradient(90deg, transparent, #B8881A, transparent)' }}></div>
 
       {/* Top Header Link */}
       <div className="absolute top-6 left-6 flex items-center gap-2">
         <button
           onClick={onBackToHome}
-          className="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800"
+          className="flex items-center gap-2 text-xs transition-colors px-3 py-1.5 rounded-lg border"
+          style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(184,136,26,0.3)', color: '#D4A82A' }}
         >
-          <Scale className="w-4 h-4 text-indigo-400" />
-          <span>← Back to LawyerDesk Home</span>
+          <Scale className="w-4 h-4" style={{ color: '#D4A82A' }} />
+          <span>← Back to LawyerDesk</span>
         </button>
       </div>
 
       <div className="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch my-auto pt-10 lg:pt-0">
         {/* Left Column: Quick Preset Roles */}
-        <div className="lg:col-span-5 space-y-4 flex flex-col justify-between bg-slate-900/90 border border-slate-800 p-6 rounded-3xl shadow-2xl">
+        <div className="lg:col-span-5 space-y-4 flex flex-col justify-between p-6 rounded-3xl shadow-2xl" style={{ background: 'rgba(17,37,73,0.6)', border: '1px solid rgba(184,136,26,0.2)' }}>
           <div>
-            <div className="flex items-center gap-2 text-indigo-400 font-extrabold text-xs uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 font-extrabold text-xs uppercase tracking-widest mb-1" style={{ color: '#D4A82A' }}>
               <Sparkles className="w-4 h-4" /> Role & Account Switcher
             </div>
-            <h2 className="text-xl font-black text-white">Select Access Persona</h2>
+            <h2 className="text-xl font-black text-white font-playfair">Select Access Persona</h2>
             <p className="text-xs text-slate-400 mt-1">
               Select an account to load ID (Password must be entered manually):
             </p>
@@ -342,14 +345,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   onClick={() => handleSelectPreset(acc)}
                   className={`w-full text-left p-3 rounded-2xl border transition-all flex items-start gap-3 group ${
                     isSelected
-                      ? 'bg-indigo-950/80 border-indigo-500 shadow-md shadow-indigo-500/20'
-                      : 'bg-slate-950/60 border-slate-800 hover:border-slate-700 hover:bg-slate-800/40'
+                      ? 'shadow-md border-[#B8881A]/50 bg-[#B8881A]/10'
+                      : 'border-slate-800 bg-slate-950/60 hover:border-slate-700 hover:bg-slate-800/40'
                   }`}
                 >
                   <div
-                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
-                      isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 group-hover:text-slate-200'
-                    }`}
+                    className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                    style={isSelected ? { background: '#B8881A', color: 'white' } : { background: 'rgb(30 41 59)', color: '#94a3b8' }}
                   >
                     <Icon className="w-4 h-4" />
                   </div>
@@ -380,18 +382,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         </div>
 
         {/* Right Column: Interactive Login Form */}
-        <div className="lg:col-span-7 bg-slate-900/90 border border-slate-800 p-8 rounded-3xl shadow-2xl flex flex-col justify-between space-y-6">
+        <div className="lg:col-span-7 p-8 rounded-3xl shadow-2xl flex flex-col justify-between space-y-6" style={{ background: 'rgba(13,24,41,0.95)', border: '1px solid rgba(184,136,26,0.25)' }}>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-extrabold shadow-md">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-extrabold shadow-md" style={{ background: '#B8881A' }}>
                   <Scale className="w-4 h-4" />
                 </div>
-                <span className="font-extrabold text-base text-white tracking-tight">
-                  LAWYERDESK <span className="text-indigo-400">AI</span>
+                <span className="font-extrabold text-base text-white tracking-tight font-playfair">
+                  LAWYERDESK <span style={{ color: '#D4A82A' }}>AI</span>
                 </span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded" style={{ background: 'rgba(184,136,26,0.1)', color: '#D4A82A', border: '1px solid rgba(184,136,26,0.3)' }}>
                 ENTERPRISE RBAC
               </span>
             </div>
@@ -436,7 +438,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-indigo-400" /> Email Address *
+                  <Mail className="w-3.5 h-3.5" style={{ color: '#D4A82A' }} /> Email Address *
                 </label>
                 {(email !== '' || password !== '') && (
                   <button
@@ -460,14 +462,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your advocate ID / email address"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#B8881A] font-mono transition-colors"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                  <Key className="w-3.5 h-3.5 text-indigo-400" /> Password *
+                  <Key className="w-3.5 h-3.5" style={{ color: '#D4A82A' }} /> Password *
                 </label>
                 <button
                   type="button"
@@ -475,7 +477,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     setResetEmail(email);
                     setShowResetModal(true);
                   }}
-                  className="text-[11px] text-indigo-400 hover:text-indigo-300 underline font-semibold"
+                  className="text-[11px] underline font-semibold" style={{ color: '#D4A82A' }}
                 >
                   Forgot Password?
                 </button>
@@ -490,7 +492,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono transition-colors pr-10"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#B8881A] font-mono transition-colors pr-10"
                 />
                 <button
                   type="button"
@@ -504,12 +506,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
             <div>
               <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-indigo-400" /> Assigned User Role
+                <UserCheck className="w-3.5 h-3.5" style={{ color: '#D4A82A' }} /> Assigned User Role
               </label>
               <select
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value as UserRole)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-[#B8881A] transition-colors"
               >
                 <option value="System Administrator">System Administrator (System Owner)</option>
                 <option value="Demo User">Demo User (Sandbox Benchmark Mode)</option>
@@ -527,7 +529,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+              className="w-full py-3.5 rounded-xl text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50" style={{ background: '#B8881A', boxShadow: '0 4px 24px rgba(184,136,26,0.3)' }} onMouseEnter={e => (e.currentTarget.style.background='#C89920')} onMouseLeave={e => (e.currentTarget.style.background='#B8881A')}
             >
               {isLoggingIn ? (
                 <>
@@ -552,7 +554,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       {/* Forgot Password Modal */}
       {showResetModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 relative">
+          <div className="rounded-2xl p-6 max-w-md w-full space-y-4 relative" style={{ background: 'rgba(13,24,41,0.98)', border: '1px solid rgba(184,136,26,0.3)' }}>
             <button
               onClick={() => setShowResetModal(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-white"
@@ -560,7 +562,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+            <div className="flex items-center gap-2 font-bold text-sm" style={{ color: '#D4A82A' }}>
               <RefreshCw className="w-4 h-4" /> Reset Account Password
             </div>
 
@@ -591,7 +593,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   value={resetEmail}
                   onChange={(e) => setResetEmail(e.target.value)}
                   placeholder="advocate@lawyerdesk.in"
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#B8881A] font-mono"
                 />
               </div>
 
@@ -605,7 +607,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500"
+                  className="px-4 py-2 rounded-xl text-white text-xs font-bold" style={{ background: '#B8881A' }}
                 >
                   Send Reset Link
                 </button>
