@@ -218,7 +218,7 @@ export const FirmRegistryView: React.FC = () => {
           { label: 'Approved Signups', value: stats.approved, icon: CheckCircle2,color: '#34d399' },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="p-4 rounded-2xl"
-            style={{ background: 'rgba(17,37,73,0.5)', border: '1px solid rgba(184,136,26,0.15)' }}>
+            style={{ background: '#112549', border: '1px solid rgba(184,136,26,0.25)' }}>
             <div className="flex items-center gap-2 mb-2">
               <Icon className="w-4 h-4" style={{ color }} />
               <span className="text-xs text-slate-400 font-semibold">{label}</span>
@@ -229,7 +229,7 @@ export const FirmRegistryView: React.FC = () => {
       </div>
 
       {/* View tabs */}
-      <div className="flex gap-1 p-1 rounded-xl" style={{ background: 'rgba(17,37,73,0.5)', border: '1px solid rgba(184,136,26,0.15)' }}>
+      <div className="flex gap-1 p-1 rounded-xl" style={{ background: '#112549', border: '1px solid rgba(184,136,26,0.25)' }}>
         {viewTabs.map((t) => (
           <button key={t.id} onClick={() => { setViewTab(t.id); setSearch(''); setFilterStatus('all'); }}
             className="flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5"
@@ -284,7 +284,7 @@ export const FirmRegistryView: React.FC = () => {
               const s = STATUS_STYLES[status as keyof typeof STATUS_STYLES] || STATUS_STYLES['Active'];
               return (
                 <div key={firm.id} className="p-4 rounded-2xl"
-                  style={{ background: 'rgba(17,37,73,0.45)', border: '1px solid rgba(184,136,26,0.12)' }}>
+                  style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.25)' }}>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -330,7 +330,7 @@ export const FirmRegistryView: React.FC = () => {
               const s = STATUS_STYLES[statusKey as keyof typeof STATUS_STYLES];
               return (
                 <div key={user.id} className="p-3.5 rounded-2xl"
-                  style={{ background: 'rgba(17,37,73,0.4)', border: '1px solid rgba(184,136,26,0.1)' }}>
+                  style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.2)' }}>
                   <div className="flex items-center gap-3">
                     {/* Avatar */}
                     <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black text-white shrink-0"
@@ -376,7 +376,7 @@ export const FirmRegistryView: React.FC = () => {
               const s = STATUS_STYLES[reg.status];
               return (
                 <div key={reg.id} className="p-4 rounded-2xl"
-                  style={{ background: 'rgba(17,37,73,0.45)', border: '1px solid rgba(184,136,26,0.12)' }}>
+                  style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.25)' }}>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -502,7 +502,7 @@ export const FirmRegistryView: React.FC = () => {
               { label: 'Total Collected',   value: `₹${subLedgerTotals.collected.toLocaleString('en-IN')}`,   color: '#34d399', icon: CheckCircle2 },
               { label: 'Outstanding',       value: `₹${subLedgerTotals.outstanding.toLocaleString('en-IN')}`, color: '#f87171', icon: TrendingDown },
             ].map(({ label, value, color, icon: Icon }) => (
-              <div key={label} className="p-4 rounded-2xl" style={{ background: 'rgba(17,37,73,0.5)', border: '1px solid rgba(184,136,26,0.15)' }}>
+              <div key={label} className="p-4 rounded-2xl" style={{ background: '#112549', border: '1px solid rgba(184,136,26,0.25)' }}>
                 <div className="flex items-center gap-2 mb-2">
                   <Icon className="w-4 h-4" style={{ color }} />
                   <span className="text-xs text-slate-400 font-semibold">{label}</span>
@@ -516,7 +516,7 @@ export const FirmRegistryView: React.FC = () => {
           <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(184,136,26,0.2)' }}>
             {/* Table header */}
             <div className="grid grid-cols-12 gap-2 px-4 py-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
-              style={{ background: 'rgba(17,37,73,0.7)', borderBottom: '1px solid rgba(184,136,26,0.15)' }}>
+              style={{ background: '#0a1628', borderBottom: '1px solid rgba(184,136,26,0.25)' }}>
               <div className="col-span-4">Account</div>
               <div className="col-span-2 text-right">Monthly Fee</div>
               <div className="col-span-1 text-center">Months</div>
@@ -539,7 +539,7 @@ export const FirmRegistryView: React.FC = () => {
                 return (
                   <div key={firm.id}
                     className="grid grid-cols-12 gap-2 px-4 py-3 items-center text-xs border-b last:border-b-0"
-                    style={{ background: idx % 2 === 0 ? 'rgba(17,37,73,0.3)' : 'rgba(11,19,43,0.4)', borderColor: 'rgba(184,136,26,0.08)' }}>
+                    style={{ background: idx % 2 === 0 ? '#0f1e38' : '#0a1628', borderColor: 'rgba(184,136,26,0.15)' }}>
 
                     {/* Account info */}
                     <div className="col-span-4 min-w-0">
@@ -646,7 +646,7 @@ const LoadingSpinner = () => (
 );
 
 const EmptyState = ({ text, sub }: { text: string; sub: string }) => (
-  <div className="text-center py-16 rounded-2xl" style={{ background: 'rgba(17,37,73,0.3)', border: '1px solid rgba(184,136,26,0.1)' }}>
+  <div className="text-center py-16 rounded-2xl" style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.2)' }}>
     <Users className="w-12 h-12 mx-auto mb-3 text-slate-600" />
     <p className="text-slate-400 font-semibold">{text}</p>
     <p className="text-slate-500 text-sm mt-1">{sub}</p>
