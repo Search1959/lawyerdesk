@@ -1039,6 +1039,8 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
               hearings={hearings}
               documents={documents}
               auditLogs={auditLogs}
+              invoices={invoices}
+              tasks={tasks}
               onSelectMatter={(m) => {
                 setSelectedMatter(m);
                 setActiveTab('matters');

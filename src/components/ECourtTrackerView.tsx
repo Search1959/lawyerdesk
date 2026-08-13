@@ -338,8 +338,8 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
     <div className="space-y-6 pb-12 animate-in fade-in duration-200">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-indigo-500/40 flex items-center gap-3 text-xs font-semibold animate-in slide-in-from-top-2">
-          <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
+        <div className="fixed top-20 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-[#B8881A]/50 flex items-center gap-3 text-xs font-semibold animate-in slide-in-from-top-2">
+          <Sparkles className="w-4 h-4 shrink-0" style={{ color: '#D4A82A' }} />
           <span>{toastMessage}</span>
           <button onClick={() => setToastMessage(null)} className="ml-2 text-slate-400 hover:text-white">
             <X className="w-4 h-4" />
@@ -348,20 +348,22 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
       )}
 
       {/* Top Banner Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white border border-slate-800 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="rounded-3xl p-6 text-white border shadow-2xl relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, rgba(17,37,73,0.97) 0%, rgba(11,15,30,0.98) 100%)', borderColor: 'rgba(184,136,26,0.3)' }}>
+        <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: 'linear-gradient(90deg, transparent, #B8881A, transparent)' }} />
+        <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl pointer-events-none" style={{ background: 'rgba(184,136,26,0.06)' }} />
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-[11px] font-bold tracking-wider uppercase border border-indigo-500/30 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5" style={{ background: 'rgba(184,136,26,0.2)', border: '1px solid rgba(184,136,26,0.4)', color: '#D4A82A' }}>
+                <ShieldCheck className="w-3.5 h-3.5" style={{ color: '#D4A82A' }} />
                 Live eCourts India Gateway
               </span>
               <span className="text-xs text-slate-400">Synced via services.ecourts.gov.in</span>
             </div>
             <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
-              <Gavel className="w-7 h-7 text-indigo-400" />
+              <Gavel className="w-7 h-7" style={{ color: '#B8881A' }} />
               ECOURT / NJDG TRACKER
             </h1>
             <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
@@ -373,7 +375,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
             <button
               onClick={handleSyncAllCases}
               disabled={isBulkSyncing}
-              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 flex items-center gap-2 transition-all disabled:opacity-50"
+              className="px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all disabled:opacity-50 text-white" style={{ background: 'rgba(184,136,26,0.2)', border: '1px solid rgba(184,136,26,0.4)' }}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isBulkSyncing ? 'animate-spin' : ''}`} />
               <span>{isBulkSyncing ? 'Syncing...' : 'Sync All'}</span>
@@ -498,7 +500,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
               Litigation matters in firm
             </p>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold" style={{ background: 'rgba(184,136,26,0.12)', color: '#B8881A' }}>
             <Scale className="w-6 h-6" />
           </div>
         </div>
@@ -548,7 +550,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
             <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1">
               {hearingsOnSelectedDate.length}
             </h3>
-            <p className="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">
+            <p className="text-[11px] font-semibold mt-0.5" style={{ color: '#D4A82A' }}>
               On Cause List for {selectedDate}
             </p>
           </div>
@@ -601,9 +603,10 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setSelectedDate(todayDateStr)}
+                style={selectedDate === todayDateStr ? { background: '#B8881A' } : {}}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   selectedDate === todayDateStr
-                    ? 'bg-indigo-600 text-white shadow-sm'
+                    ? 'text-white shadow-sm'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
                 }`}
               >
@@ -614,9 +617,10 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                   const tm = new Date(Date.now() + 86400000).toISOString().split('T')[0];
                   setSelectedDate(tm);
                 }}
+                style={selectedDate === new Date(Date.now() + 86400000).toISOString().split('T')[0] ? { background: '#B8881A' } : {}}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   selectedDate === new Date(Date.now() + 86400000).toISOString().split('T')[0]
-                    ? 'bg-indigo-600 text-white shadow-sm'
+                    ? 'text-white shadow-sm'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
                 }`}
               >
@@ -658,7 +662,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Gavel className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <Gavel className="w-5 h-5" style={{ color: '#B8881A' }} />
             Daily Cause List Board ({selectedDate})
           </h2>
           <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
@@ -686,7 +690,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
               </button>
               <button
                 onClick={handleSyncAllCases}
-                className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500"
+                className="px-4 py-2 rounded-xl text-white text-xs font-bold" style={{ background: '#B8881A' }}
               >
                 Sync Active Cases
               </button>
@@ -697,7 +701,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
             <div key={courtName} className="space-y-3">
               {/* Court Header */}
               <div className="flex items-center gap-2.5 pb-2 border-b border-slate-200 dark:border-slate-800">
-                <Building2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <Building2 className="w-4 h-4" style={{ color: '#B8881A' }} />
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">
                   {courtName} ({courtGroupedCauseList[courtName].length})
                 </h3>
@@ -717,7 +721,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                       <div>
                         {/* Header Badge Line */}
                         <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-xs font-black border border-indigo-200 dark:border-indigo-800/60 flex items-center gap-1">
+                          <span className="px-2.5 py-1 rounded-lg text-xs font-black flex items-center gap-1" style={{ background: 'rgba(184,136,26,0.12)', color: '#D4A82A', border: '1px solid rgba(184,136,26,0.25)' }}>
                             {c.itemNumber || 'Item #01'}
                           </span>
 
@@ -750,7 +754,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
 
                         {/* Title & Case No */}
                         <div>
-                          <div className="text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                          <div className="text-[11px] font-mono font-bold" style={{ color: '#D4A82A' }}>
                             {c.caseNumber}
                           </div>
                           <h4 className="text-sm font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-2 leading-snug">
@@ -788,7 +792,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                           <button
                             onClick={() => handleSyncCase(c)}
                             disabled={isSyncingThis}
-                            className="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 text-xs font-bold flex items-center gap-1.5 transition-all disabled:opacity-50"
+                            className="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all disabled:opacity-50" style={{ background: 'rgba(184,136,26,0.12)', color: '#D4A82A', border: '1px solid rgba(184,136,26,0.25)' }}
                           >
                             <RefreshCw className={`w-3.5 h-3.5 ${isSyncingThis ? 'animate-spin' : ''}`} />
                             <span>{isSyncingThis ? 'Syncing...' : 'Sync Now'}</span>
@@ -937,7 +941,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                 onClick={() => {
                   if (syncLogCase) handleSyncCase(syncLogCase);
                 }}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2"
+                className="px-4 py-2 rounded-xl text-white text-xs font-bold flex items-center gap-2" style={{ background: '#B8881A' }}
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Sync Case Now
@@ -1003,7 +1007,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
               </button>
               <button
                 onClick={handleSaveCnr}
-                className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md"
+                className="px-5 py-2 rounded-xl text-white text-xs font-bold shadow-md" style={{ background: '#B8881A' }}
               >
                 Save & Enable Sync
               </button>
@@ -1054,7 +1058,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                       setCnrInput('');
                       setShowMissingCnrModal(false);
                     }}
-                    className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shrink-0 flex items-center gap-1.5"
+                    className="px-3.5 py-2 rounded-xl text-white text-xs font-bold shrink-0 flex items-center gap-1.5" style={{ background: '#B8881A' }}
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                     Add CNR Number
@@ -1109,7 +1113,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
 
             <button
               onClick={() => setBulkSummaryModal(null)}
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg"
+              className="w-full py-2.5 rounded-xl text-white font-bold text-xs shadow-lg" style={{ background: '#B8881A' }}
             >
               Done & Refresh Board
             </button>
@@ -1124,8 +1128,8 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
             {/* Modal Header */}
             <div className="p-6 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-indigo-600/30 border border-indigo-500/40 text-indigo-400">
-                  <ShieldCheck className="w-6 h-6 text-indigo-400" />
+                <div className="p-2.5 rounded-2xl" style={{ background: 'rgba(184,136,26,0.2)', border: '1px solid rgba(184,136,26,0.4)' }}>
+                  <ShieldCheck className="w-6 h-6" style={{ color: '#D4A82A' }} />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -1153,41 +1157,15 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
             {/* Modal Navigation Tabs */}
             <div className="flex flex-wrap items-center justify-between px-6 py-3 bg-slate-100 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 gap-2">
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setGatewayTab('search')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                    gatewayTab === 'search'
-                      ? 'bg-indigo-600 text-white shadow-md'
-                      : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  <Search className="w-3.5 h-3.5" />
-                  <span>Real-Time CNR Lookup</span>
-                </button>
-
-                <button
-                  onClick={() => setGatewayTab('terminal')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                    gatewayTab === 'terminal'
-                      ? 'bg-indigo-600 text-white shadow-md'
-                      : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  <Building2 className="w-3.5 h-3.5" />
-                  <span>Embedded Portal Sandbox</span>
-                </button>
-
-                <button
-                  onClick={() => setGatewayTab('cron')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                    gatewayTab === 'cron'
-                      ? 'bg-indigo-600 text-white shadow-md'
-                      : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>7 AM Auto-Sync Status</span>
-                </button>
+                {(['search','terminal','cron'] as const).map((t) => (
+                  <button key={t} onClick={() => setGatewayTab(t)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+                    style={gatewayTab === t ? { background: '#B8881A', color: 'white' } : {}}>
+                    {t === 'search' && <><Search className="w-3.5 h-3.5" /><span>Real-Time CNR Lookup</span></>}
+                    {t === 'terminal' && <><Building2 className="w-3.5 h-3.5" /><span>Embedded Portal Sandbox</span></>}
+                    {t === 'cron' && <><Clock className="w-3.5 h-3.5" /><span>7 AM Auto-Sync Status</span></>}
+                  </button>
+                ))}
               </div>
 
               {gatewayTab === 'terminal' && (
@@ -1227,7 +1205,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                     <button
                       onClick={() => executeLiveSearch(liveSearchQuery)}
                       disabled={isSearchingLive}
-                      className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2 shrink-0 transition-all disabled:opacity-50 cursor-pointer"
+                      className="px-5 py-2.5 text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2 shrink-0 transition-all disabled:opacity-50 cursor-pointer" style={{ background: '#B8881A' }}
                     >
                       {isSearchingLive ? (
                         <RefreshCw className="w-4 h-4 animate-spin" />

@@ -121,7 +121,7 @@ export const RemindersView: React.FC = () => {
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
+          className="inline-flex items-center gap-2 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0" style={{ background: '#B8881A' }}
         >
           <Plus className="w-4 h-4" /> Add Statutory Deadline
         </button>
@@ -233,6 +233,68 @@ export const RemindersView: React.FC = () => {
         )}
       </div>
 
+      {/* ── Auto-Detected Upcoming Hearings Strip ───────────────── */}
+      {(() => {
+        const today = new Date().toISOString().split('T')[0];
+        const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+        const dayAfter = new Date(Date.now() + 172800000).toISOString().split('T')[0];
+        const urgent = mockMatters.filter(
+          (m) => m.nextHearingDate === today || m.nextHearingDate === tomorrow || m.nextHearingDate === dayAfter
+        );
+        if (urgent.length === 0) return null;
+        return (
+          <div className="p-4 rounded-2xl space-y-3" style={{ background: 'rgba(184,136,26,0.08)', border: '1px solid rgba(184,136,26,0.3)' }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bell className="w-4 h-4 animate-bounce" style={{ color: '#D4A82A' }} />
+                <span className="text-xs font-black uppercase tracking-widest" style={{ color: '#D4A82A' }}>
+                  Auto-Detected: {urgent.length} hearing{urgent.length > 1 ? 's' : ''} in next 48 hours
+                </span>
+              </div>
+              <button
+                onClick={async () => {
+                  for (const m of urgent) {
+                    const url = `https://wa.me/${(m.clientPhone || '919876543210').replace(/\D/g,'')}?text=${encodeURIComponent(`🏛️ *Hearing Reminder*\nCase: ${m.caseNumber}\nCourt: ${m.court}\nDate: ${m.nextHearingDate}\nJudge: ${m.judgeName}\n\n_LawyerDesk AI Auto-Alert_`)}`;
+                    window.open(url, '_blank');
+                  }
+                }}
+                className="text-xs font-black px-3 py-1.5 rounded-xl text-white flex items-center gap-1.5"
+                style={{ background: '#B8881A' }}>
+                <MessageCircle className="w-3.5 h-3.5" /> Bulk WhatsApp All ({urgent.length})
+              </button>
+            </div>
+            <div className="space-y-2">
+              {urgent.map((m) => {
+                const isToday = m.nextHearingDate === today;
+                const isTomorrow = m.nextHearingDate === tomorrow;
+                return (
+                  <div key={m.id} className="flex items-center justify-between gap-3 p-3 rounded-xl"
+                    style={{ background: isToday ? 'rgba(239,68,68,0.08)' : 'rgba(0,0,0,0.15)', border: `1px solid ${isToday ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.08)'}` }}>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-bold text-white">{m.caseNumber}</span>
+                        {isToday && <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">TODAY</span>}
+                        {isTomorrow && <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30">TOMORROW</span>}
+                      </div>
+                      <div className="text-[10px] text-slate-400 truncate">{m.court} • {m.clientName}</div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const url = `https://wa.me/${(m.clientPhone||'919876543210').replace(/\D/g,'')}?text=${encodeURIComponent(`🏛️ *Hearing Reminder* — ${m.caseNumber}\nCourt: ${m.court}\nDate: ${m.nextHearingDate}\nPlease attend at 10:30 AM.\n\n_LawyerDesk AI_`)}`;
+                        window.open(url, '_blank');
+                      }}
+                      className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1 shrink-0"
+                      style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80' }}>
+                      <MessageCircle className="w-3 h-3" /> Send
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Controls */}
       <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="relative w-full md:w-96">
@@ -255,7 +317,7 @@ export const RemindersView: React.FC = () => {
             className={`p-5 rounded-xl border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all ${
               r.status === 'Completed'
                 ? 'opacity-60 bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800'
-                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700'
+                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-yellow-600/50'
             }`}
           >
             <div className="space-y-1.5 flex-1">
@@ -266,7 +328,7 @@ export const RemindersView: React.FC = () => {
                       ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300'
                       : r.priority === 'High'
                       ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
-                      : 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300'
+                      : 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-300'
                   }`}
                 >
                   {r.priority} Priority
@@ -279,7 +341,7 @@ export const RemindersView: React.FC = () => {
               <h3 className={`font-bold text-base text-slate-900 dark:text-white ${r.status === 'Completed' ? 'line-through' : ''}`}>
                 {r.title}
               </h3>
-              <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">{r.matterTitle}</p>
+              <p className="text-xs font-semibold" style={{ color: '#D4A82A' }}>{r.matterTitle}</p>
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
@@ -310,10 +372,11 @@ export const RemindersView: React.FC = () => {
 
               <button
                 onClick={() => toggleStatus(r.id)}
+                style={r.status !== 'Completed' ? { background: '#B8881A' } : {}}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   r.status === 'Completed'
                     ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm'
+                    : 'text-white shadow-sm'
                 }`}
               >
                 {r.status === 'Completed' ? 'Mark Pending' : 'Mark Done'}
@@ -422,7 +485,7 @@ export const RemindersView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-semibold text-white rounded-lg shadow-sm" style={{ background: '#B8881A' }}
                 >
                   Save Deadline
                 </button>
