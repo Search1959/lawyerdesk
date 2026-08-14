@@ -160,7 +160,9 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
               <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black"
                 style={activeTab === t.id
                   ? { background: 'rgba(255,255,255,0.25)' }
-                  : { background: t.alert ? 'rgba(248,113,113,0.2)', color: '#f87171', border: '1px solid rgba(248,113,113,0.3)' } || { background: 'rgba(184,136,26,0.2)', color: GOLD_LIGHT }}>
+                  : t.alert
+                    ? { background: 'rgba(248,113,113,0.2)', color: '#f87171', border: '1px solid rgba(248,113,113,0.3)' }
+                    : { background: 'rgba(184,136,26,0.2)', color: GOLD_LIGHT }}>
                 {t.badge}
               </span>
             )}
