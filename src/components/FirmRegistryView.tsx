@@ -375,17 +375,21 @@ export const FirmRegistryView: React.FC = () => {
                   <div className="col-span-2 min-w-0 flex items-center gap-1.5">
                     <span className="font-mono text-[11px] truncate flex-1"
                       style={{ color: rawPassword ? (isPasswordVisible ? '#4ade80' : '#D4A82A') : '#475569' }}>
-                      {userPassword}
+                      {rawPassword
+                        ? (isPasswordVisible ? rawPassword : '••••••••')
+                        : (isPasswordVisible ? 'Not stored' : '••••••••')}
                     </span>
-                    {rawPassword && (
-                      <button
-                        onClick={() => togglePasswordVisible(user.id)}
-                        title={isPasswordVisible ? 'Hide password' : 'View password'}
-                        className="shrink-0 p-1 rounded-md transition-all hover:scale-110"
-                        style={{ background: isPasswordVisible ? 'rgba(74,222,128,0.15)' : 'rgba(184,136,26,0.15)', color: isPasswordVisible ? '#4ade80' : GOLD }}>
-                        {isPasswordVisible ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                      </button>
-                    )}
+                    <button
+                      onClick={() => togglePasswordVisible(user.id)}
+                      title={isPasswordVisible ? 'Hide password' : 'View password'}
+                      className="shrink-0 p-1 rounded-md transition-all hover:scale-110"
+                      style={{
+                        background: isPasswordVisible ? 'rgba(74,222,128,0.15)' : 'rgba(184,136,26,0.15)',
+                        color: isPasswordVisible ? '#4ade80' : GOLD,
+                        opacity: rawPassword ? 1 : 0.5,
+                      }}>
+                      {isPasswordVisible ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                    </button>
                   </div>
                   {/* Phone */}
                   <div className="col-span-1 text-[11px] text-slate-400 truncate">
