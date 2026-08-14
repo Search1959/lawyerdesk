@@ -80,7 +80,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
 
       {/* ── Header ──────────────────────────────────────────────── */}
       <div className="p-6 rounded-3xl relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, rgba(17,37,73,0.95) 0%, rgba(11,15,30,0.98) 100%)', border: `1px solid rgba(184,136,26,0.35)` }}>
+        style={{ background: 'linear-gradient(135deg, #112549 0%, #080e1f 100%)', border: `1px solid rgba(184,136,26,0.35)` }}>
         <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)` }} />
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-2">
@@ -116,7 +116,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
           { label: 'Outstanding Fees',   value: totalOutstanding > 0 ? fmtINR(totalOutstanding) : '₹0', color: totalOutstanding > 0 ? '#f87171' : '#34d399', icon: IndianRupee },
         ].map(({ label, value, color, icon: Icon }) => (
           <div key={label} className="p-4 rounded-2xl"
-            style={{ background: 'rgba(17,37,73,0.5)', border: '1px solid rgba(184,136,26,0.12)' }}>
+            style={{ background: '#112549', border: '1px solid rgba(184,136,26,0.2)' }}>
             <Icon className="w-4 h-4 mb-2" style={{ color }} />
             <div className="text-2xl font-black text-white">{value}</div>
             <div className="text-[10px] text-slate-400 font-semibold mt-0.5 uppercase tracking-wide">{label}</div>
@@ -149,7 +149,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
       </div>
 
       {/* ── Tabs ────────────────────────────────────────────────── */}
-      <div className="flex gap-1 p-1 rounded-xl" style={{ background: 'rgba(17,37,73,0.5)', border: '1px solid rgba(184,136,26,0.15)' }}>
+      <div className="flex gap-1 p-1 rounded-xl" style={{ background: '#112549', border: '1px solid rgba(184,136,26,0.2)' }}>
         {tabs.map((t) => (
           <button key={t.id} onClick={() => setActiveTab(t.id)}
             className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-bold transition-all"
@@ -177,7 +177,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
             <EmptyState icon={Scale} text="No active cases linked" sub="Your advocate will link your matters to this portal" />
           ) : matters.map((m) => (
             <div key={m.id} className="p-5 rounded-2xl space-y-3"
-              style={{ background: 'rgba(17,37,73,0.45)', border: '1px solid rgba(184,136,26,0.15)' }}>
+              style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.2)' }}>
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <div className="text-[10px] font-black font-mono mb-1" style={{ color: GOLD_LIGHT }}>{m.caseNumber}</div>
@@ -220,7 +220,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
             const isToday = h.date === today;
             return (
               <div key={h.id} className="p-4 rounded-2xl flex items-center gap-4"
-                style={{ background: isToday ? 'rgba(249,115,22,0.08)' : 'rgba(17,37,73,0.45)', border: `1px solid ${isToday ? 'rgba(249,115,22,0.3)' : 'rgba(184,136,26,0.12)'}` }}>
+                style={{ background: isToday ? 'rgba(249,115,22,0.15)' : '#0f1e38', border: `1px solid ${isToday ? 'rgba(249,115,22,0.4)' : 'rgba(184,136,26,0.2)'}` }}>
                 <div className="w-12 h-12 rounded-xl flex flex-col items-center justify-center shrink-0"
                   style={{ background: isToday ? 'rgba(249,115,22,0.2)' : 'rgba(184,136,26,0.15)', border: `1px solid ${isToday ? 'rgba(249,115,22,0.4)' : 'rgba(184,136,26,0.3)'}` }}>
                   <span className="text-base font-black leading-tight" style={{ color: isToday ? '#fb923c' : GOLD_LIGHT }}>
@@ -293,7 +293,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
               { label: 'Paid',         value: fmtINR(invoices.filter((i) => i.status === 'Paid').reduce((s, i) => s + (i.totalINR || 0), 0)), color: '#34d399' },
               { label: 'Outstanding',  value: fmtINR(totalOutstanding), color: totalOutstanding > 0 ? '#f87171' : '#34d399' },
             ].map(({ label, value, color }) => (
-              <div key={label} className="p-3 rounded-xl text-center" style={{ background: 'rgba(17,37,73,0.5)', border: '1px solid rgba(184,136,26,0.12)' }}>
+              <div key={label} className="p-3 rounded-xl text-center" style={{ background: '#112549', border: '1px solid rgba(184,136,26,0.2)' }}>
                 <div className="text-lg font-black" style={{ color }}>{value}</div>
                 <div className="text-[10px] text-slate-400 font-semibold mt-0.5 uppercase tracking-wide">{label}</div>
               </div>
@@ -304,7 +304,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
             <EmptyState icon={CreditCard} text="No invoices yet" sub="Fee statements from your advocate will appear here" />
           ) : invoices.map((inv) => (
             <div key={inv.id} className="p-4 rounded-2xl"
-              style={{ background: 'rgba(17,37,73,0.45)', border: `1px solid ${inv.status === 'Overdue' ? 'rgba(248,113,113,0.3)' : 'rgba(184,136,26,0.12)'}` }}>
+              style={{ background: '#0f1e38', border: `1px solid ${inv.status === 'Overdue' ? 'rgba(248,113,113,0.4)' : 'rgba(184,136,26,0.2)'}` }}>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -354,7 +354,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
 };
 
 const EmptyState = ({ icon: Icon, text, sub }: { icon: React.ElementType; text: string; sub: string }) => (
-  <div className="py-16 text-center rounded-2xl" style={{ background: 'rgba(17,37,73,0.3)', border: '1px solid rgba(184,136,26,0.1)' }}>
+  <div className="py-16 text-center rounded-2xl" style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.15)' }}>
     <Icon className="w-12 h-12 mx-auto mb-3 text-slate-600" />
     <p className="text-slate-400 font-semibold">{text}</p>
     <p className="text-slate-500 text-sm mt-1">{sub}</p>

@@ -1004,32 +1004,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
             </div>
           )}
 
-          {/* System Admin / Demo Evaluator Mode Bar */}
-          {isDemoOrSystemAdmin && (
-            <div className="mb-4 p-3 rounded-2xl bg-slate-900 border border-slate-800 text-white text-xs flex flex-wrap items-center justify-between gap-3 shadow-sm">
-              <div className="flex items-center gap-2">
-                <Database className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>
-                  <strong>{(currentUser as any)?.isDemoUser ? 'Demo Evaluator Sandbox' : 'System Administrator Mode'}:</strong>{' '}
-                  {isZeroDemoDataMode ? (
-                    <span className="text-emerald-300 font-semibold">Active Zero Demo Data Mode ({matters.length} custom cases)</span>
-                  ) : (
-                    <span className="text-amber-300">Viewing Benchmark Demo Dataset ({matters.length} cases pre-populated)</span>
-                  )}
-                </span>
-              </div>
-
-              {currentUser.role === 'Super Admin' && (
-                <button
-                  onClick={() => setIsZeroDemoDataMode((prev) => !prev)}
-                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 flex items-center gap-1.5 border border-slate-700 transition-all"
-                >
-                  <RefreshCw className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>{isZeroDemoDataMode ? 'Show Benchmark Sample Data' : 'Preview ZERO Demo Data Mode'}</span>
-                </button>
-              )}
-            </div>
-          )}
+          {/* System Admin mode bar removed — not needed in UI */}
 
 
 

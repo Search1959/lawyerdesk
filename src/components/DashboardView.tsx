@@ -74,7 +74,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl"
-        style={{ background: 'rgba(17,37,73,0.5)', border: `1px solid rgba(184,136,26,0.25)` }}>
+        style={{ background: '#112549', border: `1px solid rgba(184,136,26,0.35)` }}>
         <div>
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-1" style={{ color: GOLD }}>
             <Scale className="w-4 h-4" /> Practice Intelligence Dashboard
@@ -135,7 +135,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {statTiles.map(({ label, value, sub, icon: Icon, color, nav }) => (
           <button key={label} onClick={() => onNavigateTab(nav)}
             className="p-4 rounded-2xl text-left transition-all hover:scale-[1.03] active:scale-95"
-            style={{ background: 'rgba(17,37,73,0.45)', border: '1px solid rgba(184,136,26,0.12)' }}>
+            style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.2)' }}>
             <Icon className="w-4 h-4 mb-2" style={{ color }} />
             <div className="text-2xl font-black text-white">{value}</div>
             <div className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase tracking-wide">{label}</div>
@@ -153,7 +153,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           {/* Priority Cases Table */}
           <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(184,136,26,0.15)' }}>
             <div className="flex items-center justify-between px-4 py-3"
-              style={{ background: 'rgba(17,37,73,0.6)', borderBottom: '1px solid rgba(184,136,26,0.1)' }}>
+              style={{ background: '#0a1628', borderBottom: '1px solid rgba(184,136,26,0.2)' }}>
               <h3 className="text-xs font-bold uppercase tracking-widest text-slate-300 flex items-center gap-2">
                 <Scale className="w-4 h-4" style={{ color: GOLD }} /> Priority Cases
               </h3>
@@ -177,7 +177,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   {matters.slice(0, 6).map((m, idx) => (
                     <tr key={m.id} onClick={() => onSelectMatter(m)}
                       className="text-xs transition-all cursor-pointer hover:bg-white/5"
-                      style={{ background: idx % 2 === 0 ? 'rgba(17,37,73,0.3)' : 'rgba(11,19,43,0.4)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                      style={{ background: idx % 2 === 0 ? '#0f1e38' : '#0a1628', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                       <td className="px-4 py-3">
                         <div className="font-bold text-white font-mono text-[11px]">{m.caseNumber}</div>
                         <div className="text-slate-400 truncate max-w-[180px] text-[11px]">{m.title}</div>
@@ -215,7 +215,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           {/* Upcoming Hearings List */}
           <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(184,136,26,0.15)' }}>
             <div className="flex items-center justify-between px-4 py-3"
-              style={{ background: 'rgba(17,37,73,0.6)', borderBottom: '1px solid rgba(184,136,26,0.1)' }}>
+              style={{ background: '#0a1628', borderBottom: '1px solid rgba(184,136,26,0.2)' }}>
               <h3 className="text-xs font-bold uppercase tracking-widest text-slate-300 flex items-center gap-2">
                 <CalendarDays className="w-4 h-4" style={{ color: GOLD }} /> Upcoming Hearings
               </h3>
@@ -232,7 +232,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 return (
                   <div key={h.id} onClick={() => matter && onSelectMatter(matter)}
                     className="flex items-center gap-3 px-4 py-3 cursor-pointer transition-all hover:bg-white/5"
-                    style={{ background: idx % 2 === 0 ? 'rgba(17,37,73,0.3)' : 'rgba(11,19,43,0.4)' }}>
+                    style={{ background: idx % 2 === 0 ? '#0f1e38' : '#0a1628' }}>
                     <div className="w-10 h-10 rounded-xl flex flex-col items-center justify-center shrink-0 text-center"
                       style={{ background: isUrgent ? 'rgba(249,115,22,0.2)' : 'rgba(184,136,26,0.15)', border: `1px solid ${isUrgent ? 'rgba(249,115,22,0.4)' : 'rgba(184,136,26,0.3)'}` }}>
                       <span className="text-[10px] font-black leading-tight" style={{ color: isUrgent ? '#fb923c' : GOLD_LIGHT }}>
@@ -265,7 +265,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* AI Copilot Box */}
           <div className="p-5 rounded-2xl space-y-4"
-            style={{ background: 'linear-gradient(135deg, rgba(17,37,73,0.9) 0%, rgba(11,15,30,0.95) 100%)', border: `1px solid rgba(184,136,26,0.3)` }}>
+            style={{ background: 'linear-gradient(135deg, #112549 0%, #080e1f 100%)', border: `1px solid rgba(184,136,26,0.3)` }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4" style={{ color: GOLD_LIGHT }} />
@@ -301,7 +301,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           {/* Case Status Chart */}
-          <div className="p-5 rounded-2xl" style={{ background: 'rgba(17,37,73,0.45)', border: '1px solid rgba(184,136,26,0.15)' }}>
+          <div className="p-5 rounded-2xl" style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.2)' }}>
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 className="w-4 h-4" style={{ color: GOLD }} />
               <h3 className="text-xs font-bold uppercase tracking-widest text-slate-300">Case Distribution</h3>
@@ -327,7 +327,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           {/* Quick Actions */}
-          <div className="p-4 rounded-2xl space-y-2" style={{ background: 'rgba(17,37,73,0.45)', border: '1px solid rgba(184,136,26,0.15)' }}>
+          <div className="p-4 rounded-2xl space-y-2" style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.2)' }}>
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Quick Actions</h3>
             {[
               { label: 'View Cause List',        icon: Gavel,        nav: 'ecourt_tracker',   color: '#60a5fa' },
