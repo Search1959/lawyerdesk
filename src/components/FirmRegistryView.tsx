@@ -188,7 +188,7 @@ export const FirmRegistryView: React.FC = () => {
   ];
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-6 space-y-6 max-w-6xl mx-auto" style={{ background: '#080e1f', minHeight: '100vh', borderRadius: '1rem' }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
@@ -323,40 +323,75 @@ export const FirmRegistryView: React.FC = () => {
       {/* ── TABLE: ALL USERS ────────────────────────────────── */}
       {viewTab === 'all_users' && (
         loading ? <LoadingSpinner /> : filteredUsers.length === 0 ? <EmptyState text="No users found" sub="All provisioned accounts appear here" /> : (
-          <div className="space-y-2">
-            {filteredUsers.map((user) => {
+          <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(184,136,26,0.2)' }}>
+            {/* Table header */}
+            <div className="grid grid-cols-12 gap-2 px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
+              style={{ background: '#0a1628', borderBottom: '1px solid rgba(184,136,26,0.2)' }}>
+              <div className="col-span-1">Avatar</div>
+              <div className="col-span-2">Name / Role</div>
+              <div className="col-span-3">Email</div>
+              <div className="col-span-2">Password</div>
+              <div className="col-span-1">Phone</div>
+              <div className="col-span-1">Firm</div>
+              <div className="col-span-1">Status</div>
+              <div className="col-span-1 text-center">Action</div>
+            </div>
+            {filteredUsers.map((user, idx) => {
               const isActive = user.is_active !== false && user.status !== 'Inactive' && user.status !== 'Suspended';
               const statusKey = isActive ? 'Active' : 'Inactive';
               const s = STATUS_STYLES[statusKey as keyof typeof STATUS_STYLES];
+              const userPassword = (user as any).password || '••••••••';
               return (
-                <div key={user.id} className="p-3.5 rounded-2xl"
-                  style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.2)' }}>
-                  <div className="flex items-center gap-3">
-                    {/* Avatar */}
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black text-white shrink-0"
+                <div key={user.id}
+                  className="grid grid-cols-12 gap-2 px-4 py-3 items-center text-xs border-b last:border-b-0"
+                  style={{ background: idx % 2 === 0 ? '#0f1e38' : '#0a1628', borderColor: 'rgba(184,136,26,0.1)' }}>
+                  {/* Avatar */}
+                  <div className="col-span-1">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black text-white shrink-0"
                       style={{ background: user.role === 'System Administrator' || user.role === 'Super Admin' ? '#dc2626' : user.role === 'Law Firm' ? '#059669' : GOLD }}>
-                      {user.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
+                      {user.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {ROLE_ICON[user.role] || <UserCheck className="w-3.5 h-3.5 text-slate-400" />}
-                        <span className="font-bold text-white text-xs">{user.name}</span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                          style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.text }}>{statusKey}</span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/80 text-slate-300">{user.role}</span>
-                      </div>
-                      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-slate-400">
-                        <span className="font-mono">{user.email}</span>
-                        {(user as any).phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{(user as any).phone}</span>}
-                        {user.firmId && <span>Firm: {user.firmId}</span>}
-                      </div>
+                  </div>
+                  {/* Name + Role */}
+                  <div className="col-span-2 min-w-0">
+                    <div className="font-bold text-white text-[11px] truncate flex items-center gap-1">
+                      {ROLE_ICON[user.role] || <UserCheck className="w-3 h-3 text-slate-400 shrink-0" />}
+                      <span className="truncate">{user.name}</span>
                     </div>
+                    <div className="text-[10px] text-slate-400 truncate mt-0.5">{user.role}</div>
+                  </div>
+                  {/* Email */}
+                  <div className="col-span-3 min-w-0">
+                    <span className="font-mono text-[11px] text-slate-300 truncate block">{user.email}</span>
+                  </div>
+                  {/* Password */}
+                  <div className="col-span-2 min-w-0">
+                    <span className="font-mono text-[11px] truncate block"
+                      style={{ color: (user as any).password ? '#D4A82A' : '#475569' }}>
+                      {userPassword}
+                    </span>
+                  </div>
+                  {/* Phone */}
+                  <div className="col-span-1 text-[11px] text-slate-400 truncate">
+                    {(user as any).phone || '—'}
+                  </div>
+                  {/* Firm */}
+                  <div className="col-span-1 text-[11px] text-slate-400 font-mono truncate">
+                    {user.firmId ? user.firmId.replace('firm-', 'F') : '—'}
+                  </div>
+                  {/* Status badge */}
+                  <div className="col-span-1">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                      style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.text }}>{statusKey}</span>
+                  </div>
+                  {/* Action */}
+                  <div className="col-span-1 flex justify-center">
                     <button onClick={() => handleToggleUserStatus(user)}
-                      className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all"
+                      className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold transition-all"
                       style={isActive
                         ? { background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.25)', color: '#f87171' }
                         : { background: 'rgba(5,150,105,0.12)', border: '1px solid rgba(5,150,105,0.25)', color: '#34d399' }}>
-                      {isActive ? <><ToggleRight className="w-3.5 h-3.5" /> Deactivate</> : <><ToggleLeft className="w-3.5 h-3.5" /> Activate</>}
+                      {isActive ? <><ToggleRight className="w-3 h-3" /> Off</> : <><ToggleLeft className="w-3 h-3" /> On</>}
                     </button>
                   </div>
                 </div>

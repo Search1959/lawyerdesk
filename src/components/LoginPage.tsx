@@ -138,8 +138,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     practiceType: 'Solo Advocate' as FirmRegistration['practiceType'],
     mobile: '',
     email: '',
+    password: '',
     plan: 'Free Trial' as FirmRegistration['plan'],
   });
+  const [showRegPassword, setShowRegPassword] = useState(false);
   const [regSubmitting, setRegSubmitting] = useState(false);
   const [regSuccess, setRegSuccess] = useState(false);
   const [regError, setRegError] = useState('');
@@ -157,8 +159,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegError('');
-    if (!reg.firmName.trim() || !reg.email.trim() || !reg.mobile.trim()) {
-      setRegError('Please fill all required fields.');
+    if (!reg.firmName.trim() || !reg.email.trim() || !reg.mobile.trim() || !reg.password.trim()) {
+      setRegError('Please fill all required fields including password.');
+      return;
+    }
+    if (reg.password.trim().length < 8) {
+      setRegError('Password must be at least 8 characters.');
       return;
     }
     setRegSubmitting(true);
@@ -172,6 +178,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         practiceType: reg.practiceType,
         mobile: reg.mobile.trim(),
         email: reg.email.trim().toLowerCase(),
+        password: reg.password.trim(),
         status: 'pending',
         plan: reg.plan,
         createdAt: new Date().toISOString(),
@@ -425,6 +432,27 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                         onFocus={e => e.currentTarget.style.borderColor = GOLD}
                         onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'} />
                     </div>
+                  </div>
+
+                  {/* Password */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                      <Lock className="w-3.5 h-3.5" style={{ color: GOLD_LIGHT }} /> Create Password *
+                    </label>
+                    <div className="relative">
+                      <input type={showRegPassword ? 'text' : 'password'} value={reg.password}
+                        onChange={(e) => setReg({ ...reg, password: e.target.value })} required
+                        placeholder="Min. 8 characters"
+                        className="w-full px-3 py-2.5 pr-10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none font-mono"
+                        style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        onFocus={e => e.currentTarget.style.borderColor = GOLD}
+                        onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                      <button type="button" onClick={() => setShowRegPassword(!showRegPassword)}
+                        className="absolute right-3 top-2.5 text-slate-400 hover:text-white">
+                        {showRegPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mt-1">Choose a strong password — min 8 chars, one uppercase, one number.</p>
                   </div>
 
                   {/* Plan */}
