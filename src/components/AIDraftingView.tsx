@@ -274,8 +274,9 @@ export const AIDraftingView: React.FC<AIDraftingViewProps> = ({
     return () => clearInterval(timer);
   }, [generatedDraft]);
 
-  // 26 Comprehensive Indian Legal Document Templates
+  // 34 Comprehensive Indian Legal Document Templates (incl. WB / Calcutta HC specific)
   const ALL_DRAFT_TYPES = [
+    { category: 'WB & Calcutta HC', items: ['Writ Petition (Art. 226 / Calcutta HC)', 'MACC Petition (Motor Accident Claims)', 'Stay Application (WB District Court)', 'Contempt Petition (Calcutta HC)', 'Vakalatnama (Calcutta HC Format)', 'Application for Certified Copy', 'Thika Tenancy Application (WB Act 2001)', 'BL&LRO Land Record Correction Petition'], wb: true },
     { category: 'Litigation Pleadings', items: ['Civil Plaint', 'Written Statement', 'Rejoinder / Reply', 'Affidavit', 'Execution Petition', 'High Court Appeal', 'Revision Petition'] },
     { category: 'Criminal & Bail', items: ['Bail Application', 'Anticipatory Bail', 'Cheque Bounce Complaint (Sec 138 NI Act)', 'FIR Quashing Petition'] },
     { category: 'Notices & Letters', items: ['Legal Notice', 'Reply Notice', 'RTI Application', 'Representation', 'General Legal Letter'] },
@@ -908,9 +909,10 @@ DEPONENT / PLAINTIFF`;
                 onClick={() => setUserRoleMode('Stenographer')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
                   userRoleMode === 'Stenographer'
-                    ? 'bg-indigo-600 text-white shadow-md'
+                    ? 'text-slate-950 shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
+                style={userRoleMode === 'Stenographer' ? { background: '#B8881A' } : {}}
               >
                 <UserCheck className="w-3.5 h-3.5" />
                 <span>Stenographer Mode</span>
@@ -1087,7 +1089,7 @@ DEPONENT / PLAINTIFF`;
                   <span>Select Draft Type</span>
                 </span>
                 <span className="text-[10px] bg-slate-800 text-amber-300 px-1.5 py-0.5 rounded font-mono font-bold">
-                  26 Templates
+                  34 Templates
                 </span>
               </div>
 

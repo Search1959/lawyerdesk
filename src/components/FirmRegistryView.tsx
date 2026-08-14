@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Building2, CheckCircle2, XCircle, Clock, Search,
   Phone, Mail, MapPin, BadgeCheck, Filter, RefreshCw,
-  Users, AlertCircle, Eye, ShieldCheck, Briefcase,
+  Users, AlertCircle, Eye, EyeOff, ShieldCheck, Briefcase,
   UserCheck, Crown, ToggleLeft, ToggleRight,
   Receipt, Pencil, MessageSquare, IndianRupee, TrendingDown,
 } from 'lucide-react';
@@ -35,6 +35,9 @@ type ViewTab = 'all_firms' | 'all_users' | 'new_registrations' | 'subscription_l
 
 export const FirmRegistryView: React.FC = () => {
   const [viewTab, setViewTab]               = useState<ViewTab>('all_firms');
+  const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set());
+  const togglePasswordVisible = (userId: string) =>
+    setVisiblePasswords((prev) => { const n = new Set(prev); n.has(userId) ? n.delete(userId) : n.add(userId); return n; });
   const [registrations, setRegistrations]   = useState<FirmRegistration[]>([]);
   const [firms, setFirms]                   = useState<LawFirm[]>([]);
   const [users, setUsers]                   = useState<User[]>([]);
@@ -340,7 +343,11 @@ export const FirmRegistryView: React.FC = () => {
               const isActive = user.is_active !== false && user.status !== 'Inactive' && user.status !== 'Suspended';
               const statusKey = isActive ? 'Active' : 'Inactive';
               const s = STATUS_STYLES[statusKey as keyof typeof STATUS_STYLES];
-              const userPassword = (user as any).password || '••••••••';
+              const rawPassword = (user as any).password;
+              const isPasswordVisible = visiblePasswords.has(user.id);
+              const userPassword = rawPassword
+                ? (isPasswordVisible ? rawPassword : '••••••••')
+                : '—';
               return (
                 <div key={user.id}
                   className="grid grid-cols-12 gap-2 px-4 py-3 items-center text-xs border-b last:border-b-0"
@@ -365,11 +372,20 @@ export const FirmRegistryView: React.FC = () => {
                     <span className="font-mono text-[11px] text-slate-300 truncate block">{user.email}</span>
                   </div>
                   {/* Password */}
-                  <div className="col-span-2 min-w-0">
-                    <span className="font-mono text-[11px] truncate block"
-                      style={{ color: (user as any).password ? '#D4A82A' : '#475569' }}>
+                  <div className="col-span-2 min-w-0 flex items-center gap-1.5">
+                    <span className="font-mono text-[11px] truncate flex-1"
+                      style={{ color: rawPassword ? (isPasswordVisible ? '#4ade80' : '#D4A82A') : '#475569' }}>
                       {userPassword}
                     </span>
+                    {rawPassword && (
+                      <button
+                        onClick={() => togglePasswordVisible(user.id)}
+                        title={isPasswordVisible ? 'Hide password' : 'View password'}
+                        className="shrink-0 p-1 rounded-md transition-all hover:scale-110"
+                        style={{ background: isPasswordVisible ? 'rgba(74,222,128,0.15)' : 'rgba(184,136,26,0.15)', color: isPasswordVisible ? '#4ade80' : GOLD }}>
+                        {isPasswordVisible ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                      </button>
+                    )}
                   </div>
                   {/* Phone */}
                   <div className="col-span-1 text-[11px] text-slate-400 truncate">

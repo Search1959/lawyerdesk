@@ -3,7 +3,8 @@ import {
   Scale, CalendarDays, FileText, AlertTriangle, Sparkles,
   ArrowUpRight, Clock, Plus, Send, Gavel, TrendingUp,
   IndianRupee, Users, CheckSquare, Bell, MessageSquare,
-  ChevronRight, BarChart3, CircleDot,
+  ChevronRight, BarChart3, CircleDot, Landmark, Building2,
+  Activity, Timer,
 } from 'lucide-react';
 import { Matter, Hearing, Document, Invoice, Task, AuditLog } from '../types';
 
@@ -97,6 +98,33 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* ── Next Hearing Countdown (shown when no hearings today) ── */}
+      {todayHearings.length === 0 && upcomingHearings.length > 0 && (() => {
+        const next = upcomingHearings[0];
+        const matter = matters.find((m) => m.id === next.matterId);
+        const daysUntil = Math.ceil((new Date(next.date + 'T00:00:00').getTime() - new Date(today + 'T00:00:00').getTime()) / 86400000);
+        return (
+          <div className="flex items-center justify-between p-4 rounded-2xl"
+            style={{ background: 'rgba(184,136,26,0.08)', border: '1px solid rgba(184,136,26,0.3)' }}>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl" style={{ background: 'rgba(184,136,26,0.15)' }}>
+                <Timer className="w-5 h-5" style={{ color: GOLD_LIGHT }} />
+              </div>
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: GOLD }}>Next Hearing</div>
+                <div className="text-sm font-black text-white">{matter?.title || (next as any).caseTitle || 'Upcoming Hearing'}</div>
+                <div className="text-[11px] text-slate-400">{next.courtName} • {next.stage}</div>
+              </div>
+            </div>
+            <div className="text-right shrink-0">
+              <div className="text-3xl font-black" style={{ color: GOLD_LIGHT }}>{daysUntil}</div>
+              <div className="text-[10px] font-bold text-slate-400">{daysUntil === 1 ? 'DAY' : 'DAYS'} AWAY</div>
+              <div className="text-[10px] font-mono text-slate-500">{fmtDate(next.date)}</div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Today's Hearings Strip ──────────────────────────────── */}
       {todayHearings.length > 0 && (
@@ -330,12 +358,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="p-4 rounded-2xl space-y-2" style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.2)' }}>
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Quick Actions</h3>
             {[
-              { label: 'View Cause List',        icon: Gavel,        nav: 'ecourt_tracker',   color: '#60a5fa' },
-              { label: 'Send WhatsApp Reminder', icon: MessageSquare, nav: 'reminders',        color: '#4ade80' },
-              { label: 'Create Invoice',          icon: FileText,     nav: 'invoices',         color: GOLD_LIGHT },
-              { label: 'AI Draft Chamber',        icon: Sparkles,     nav: 'ai_drafting',      color: '#a78bfa' },
-              { label: 'Client Portal',           icon: Users,        nav: 'client_portal',    color: '#fb923c' },
-              { label: 'Reports & Analytics',     icon: TrendingUp,   nav: 'reports',          color: '#34d399' },
+              { label: 'View Cause List',         icon: Gavel,         nav: 'ecourt_tracker',      color: '#60a5fa' },
+              { label: 'Send WhatsApp Reminder',  icon: MessageSquare, nav: 'reminders',           color: '#4ade80' },
+              { label: 'Create Invoice',          icon: FileText,      nav: 'invoices',            color: GOLD_LIGHT },
+              { label: 'AI Draft Chamber',        icon: Sparkles,      nav: 'ai_drafting',         color: '#a78bfa' },
+              { label: 'Litigation Command',      icon: Building2,     nav: 'court_intelligence',  color: '#f97316' },
+              { label: 'WB & Kolkata Suite',      icon: Landmark,      nav: 'west_bengal_suite',   color: '#34d399' },
+              { label: 'Client Portal',           icon: Users,         nav: 'client_portal',       color: '#fb923c' },
+              { label: 'Reports & Analytics',     icon: TrendingUp,    nav: 'reports',             color: '#94a3b8' },
             ].map(({ label, icon: Icon, nav, color }) => (
               <button key={nav} onClick={() => onNavigateTab(nav)}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 transition-all hover:bg-white/10 text-left"
@@ -347,7 +377,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             ))}
           </div>
 
-          {/* Urgent Deadlines */}
+          {/* High Risk Matters */}
           {highRiskMatters.length > 0 && (
             <div className="p-4 rounded-2xl" style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)' }}>
               <h3 className="text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2 text-rose-300">
@@ -362,6 +392,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       <div className="text-[10px] text-slate-400 truncate">{m.title}</div>
                     </div>
                     <span className="text-[10px] font-black text-rose-400 shrink-0">{m.riskScore}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recent Activity Feed */}
+          {auditLogs.length > 0 && (
+            <div className="p-4 rounded-2xl" style={{ background: '#0f1e38', border: '1px solid rgba(184,136,26,0.15)' }}>
+              <h3 className="text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2 text-slate-300">
+                <Activity className="w-4 h-4" style={{ color: GOLD }} /> Recent Activity
+              </h3>
+              <div className="space-y-2.5">
+                {auditLogs.slice(0, 5).map((log, idx) => (
+                  <div key={(log as any).id || idx} className="flex items-start gap-2.5">
+                    <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: GOLD }} />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[11px] text-slate-300 leading-snug truncate">{(log as any).action || (log as any).description || 'Activity'}</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">{(log as any).user || (log as any).performedBy || 'System'} • {(log as any).timestamp ? new Date((log as any).timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}</div>
+                    </div>
                   </div>
                 ))}
               </div>
