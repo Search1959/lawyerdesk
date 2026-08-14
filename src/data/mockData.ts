@@ -26,6 +26,8 @@ export const mockFirms: LawFirm[] = [
     name: 'M/s Banerjee, Roy & Legal Associates Advocates',
     code: 'BRL-KOL',
     plan: 'Enterprise Unlimited',
+    loginId: 'brl-kol@lawyerdesk.in',
+    password: 'BRL@Kol#2021',
     storageQuotaGB: 500,
     storageUsedGB: 142.8,
     branches: [

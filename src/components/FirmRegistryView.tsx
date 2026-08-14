@@ -305,6 +305,34 @@ export const FirmRegistryView: React.FC = () => {
                         <span>Storage: {firm.storageUsedGB}GB / {firm.storageQuotaGB}GB</span>
                         <span>Since: {fmt(firm.createdAt)}</span>
                       </div>
+                      {/* Login credentials row — always shown; loginId derived from firm.code if not stored */}
+                      {(() => {
+                        const firmLoginVisible = visiblePasswords.has(firm.id + '_firm');
+                        const loginId = (firm as any).loginId || `${(firm.code || firm.id).toLowerCase()}@lawyerdesk.in`;
+                        const firmPwd = (firm as any).password;
+                        return (
+                          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+                            <span className="flex items-center gap-1.5 text-slate-400">
+                              <Mail className="w-3 h-3" />
+                              Login ID:&nbsp;
+                              <span className="font-mono text-slate-200">{loginId}</span>
+                            </span>
+                            <span className="flex items-center gap-1.5 text-slate-400">
+                              Password:&nbsp;
+                              <span className="font-mono" style={{ color: firmLoginVisible ? '#4ade80' : '#D4A82A' }}>
+                                {firmLoginVisible ? (firmPwd || 'Not stored') : '••••••••'}
+                              </span>
+                              <button
+                                onClick={() => togglePasswordVisible(firm.id + '_firm')}
+                                title={firmLoginVisible ? 'Hide password' : 'View password'}
+                                className="p-0.5 rounded transition-all hover:scale-110"
+                                style={{ background: firmLoginVisible ? 'rgba(74,222,128,0.15)' : 'rgba(184,136,26,0.15)', color: firmLoginVisible ? '#4ade80' : GOLD }}>
+                                {firmLoginVisible ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                              </button>
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <button onClick={() => handleToggleFirmStatus(firm)}
