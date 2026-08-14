@@ -276,16 +276,19 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
   // CNR Search Result State
   const [fetchedCnrResult, setFetchedCnrResult] = useState<CauseListItem | null>(null);
   const [cnrNotFoundMsg, setCnrNotFoundMsg] = useState(false);
+  const [cnrSearched, setCnrSearched] = useState(false);
 
   const handleFetchCnr = () => {
     setCnrNotFoundMsg(false);
+    setCnrSearched(true);
     if (!cnrSearchQuery.trim()) {
       setFetchedCnrResult(null);
+      setCnrSearched(false);
       return;
     }
     const q = cnrSearchQuery.toLowerCase().trim();
 
-    // 1. Search in activeMattersList
+    // 1. Search in activeMattersList (firm's own cases)
     const matchedMatter = activeMattersList.find(
       (m) =>
         (m.cnrNumber && m.cnrNumber.toLowerCase().includes(q)) ||
@@ -301,10 +304,10 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
         id: matchedMatter.id,
         itemNo: matchedMatter.itemNumber || '01',
         caseNumber: matchedMatter.caseNumber,
-        cnrNumber: matchedMatter.cnrNumber || matchedMatter.cnr || `WBHC0100${Math.floor(100000 + Math.random() * 900000)}2026`,
+        cnrNumber: matchedMatter.cnrNumber || matchedMatter.cnr || '',
         matterTitle: matchedMatter.title,
         courtName: matchedMatter.court,
-        courtRoomNo: matchedMatter.courtRoomNo || 'Court Room No. 2',
+        courtRoomNo: matchedMatter.courtRoomNo || 'Court Room',
         judgeName: matchedMatter.judgeName || 'Hon\'ble Presiding Officer',
         stage: matchedMatter.status || 'Active Litigation',
         priority: 'High',
@@ -316,7 +319,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
       return;
     }
 
-    // 2. Search in mockCauseListItems
+    // 2. Search in mockCauseListItems (today's cause list)
     const found = mockCauseListItems.find(
       (c) =>
         c.cnrNumber.toLowerCase().includes(q) ||
@@ -327,50 +330,12 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
 
     if (found) {
       setFetchedCnrResult(found);
-    } else {
-      // 3. Dynamic eCourts Live Sync synthesis for searched CNR or keyword
-      const cleanUpperCnr = cnrSearchQuery.trim().toUpperCase();
-      const isWbnpCnr = cleanUpperCnr.includes('WBNP010042182026') || q.includes('42182026') || q.includes('wbnp010042182026');
-
-      if (isWbnpCnr) {
-        setFetchedCnrResult({
-          id: 'ecourts-wbnp-42182026',
-          itemNo: '08',
-          caseNumber: 'M A C C 458/2026 (Filing No: 2935/2026)',
-          cnrNumber: 'WBNP010042182026',
-          matterTitle: 'M A C C - M A C C Claim Petition (Reg No: 458/2026)',
-          courtName: 'District & Sessions Judge, Barasat, North 24 Parganas',
-          courtRoomNo: 'Court Room No. 1, Barasat Court Complex',
-          judgeName: 'Hon\'ble District & Sessions Judge, Barasat',
-          stage: 'Appearance & Notice (Filing: 07-05-2026, Reg: 08-05-2026)',
-          priority: 'High',
-          timeSlot: '10:30 AM',
-          clientName: 'Motor Accident Claimant',
-          opposingAdvocate: 'Standing Counsel / Insurance Adv.',
-          actsAndSections: 'Motor Vehicles Act 1988 (Sec 166/140)',
-        });
-      } else {
-        const isBelghoriaQuery = q.includes('belghoria') || q.includes('subhashish');
-        setFetchedCnrResult({
-          id: 'ecourts-dyn-' + Date.now(),
-          itemNo: '04',
-          caseNumber: isBelghoriaQuery ? 'TS 214/2026' : `CS/COMM/${Math.floor(100 + Math.random() * 900)}/2026`,
-          cnrNumber: cleanUpperCnr.length >= 8 ? cleanUpperCnr : `WBHC0100${Math.floor(100000 + Math.random() * 900000)}2026`,
-          matterTitle: isBelghoriaQuery 
-            ? 'Belghoria Property Dispute: Sri Subhashish Mukherjee & Ors vs State of West Bengal & Belghoria P.S.'
-            : `Live eCourts Record [${cleanUpperCnr}]: Petitioner vs Respondent & Ors`,
-          courtName: isBelghoriaQuery ? 'District Court' : 'Calcutta High Court',
-          courtRoomNo: isBelghoriaQuery ? 'Court Room No. 2 (Barrackpore)' : 'Court Room No. 4',
-          judgeName: isBelghoriaQuery ? 'Hon\'ble Ld. Additional District Judge, Barrackpore 1st Court' : 'Hon\'ble Presiding Judge',
-          stage: 'eCourts Live Synced - Pending Injunction Hearing',
-          priority: 'High',
-          timeSlot: '11:00 AM',
-          clientName: isBelghoriaQuery ? 'Sri Subhashish Mukherjee (Landowner)' : 'Litigant Client',
-          opposingAdvocate: 'State / Govt Pleader Counsel',
-          actsAndSections: isBelghoriaQuery ? 'WB Municipal Act 1993, Sec 144 CrPC, Belghoria P.S. Report' : 'Code of Civil Procedure 1908, Art 226',
-        });
-      }
+      return;
     }
+
+    // 3. Not in firm records — show portal links, no fake synthesis
+    setFetchedCnrResult(null);
+    setCnrNotFoundMsg(true);
   };
 
   // Pagination States
@@ -1651,37 +1616,110 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
             </div>
           </div>
 
-          {cnrNotFoundMsg && (
-            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs font-bold flex items-center justify-between">
-              <span>⚠️ No direct matching record found for "{cnrSearchQuery}". Showing default featured case record below or try searching "DLCT010008772024".</span>
-              <button onClick={() => setCnrNotFoundMsg(false)} className="text-amber-700 underline text-[11px]">Dismiss</button>
+          {/* Empty state — no search yet */}
+          {!cnrSearched && !fetchedCnrResult && (
+            <div className="p-12 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-center space-y-3">
+              <Search className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-700" />
+              <p className="font-black text-slate-700 dark:text-slate-300 text-base">Enter a CNR Number to Track Case Status</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
+                Type a CNR (e.g. <span className="font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded">WBNP010042182026</span> or <span className="font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded">WBHC010045212024</span>) and click <strong>Fetch CNR</strong>. Cases registered in this firm will show details here. Others will open the official eCourts portal.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                {['WBHC — Calcutta High Court', 'WBNP — North 24 Parganas', 'WBSP — South 24 Parganas', 'WBHW — Howrah', 'WBMD — Murshidabad', 'WBBR — Bardhaman'].map(hint => (
+                  <span key={hint} className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[11px] font-mono font-bold">{hint}</span>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Fetched Case Details View */}
+          {/* CNR not in firm records — show live portal links */}
+          {cnrNotFoundMsg && !fetchedCnrResult && (
+            <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+              <div className="flex items-start gap-3">
+                <span className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 shrink-0"><AlertCircle className="w-5 h-5" /></span>
+                <div>
+                  <h3 className="font-black text-sm text-slate-900 dark:text-white">Not found in firm case records</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    "<span className="font-mono font-bold text-slate-700 dark:text-slate-300">{cnrSearchQuery}</span>" is not registered in this firm's database. Open the case directly on official court portals to see live status:
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <a
+                  href={`https://services.ecourts.gov.in/ecourtindia_v6/?p=casestatus/getCaseStatus&CNR_number=${encodeURIComponent(cnrSearchQuery.trim().toUpperCase())}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="p-4 rounded-2xl flex flex-col gap-2 hover:opacity-90 transition-opacity no-underline"
+                  style={{ background: '#112549' }}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-white">eCourts India</span>
+                    <ExternalLink className="w-4 h-4 text-white/60 shrink-0" />
+                  </div>
+                  <p className="text-[10px] text-white/60">All District Courts — WBNP, WBSP, WBHW & other state CNRs</p>
+                </a>
+
+                <a
+                  href="https://hcservices.ecourts.gov.in/hcservices/"
+                  target="_blank" rel="noopener noreferrer"
+                  className="p-4 rounded-2xl flex flex-col gap-2 hover:opacity-90 transition-opacity no-underline"
+                  style={{ background: '#B8881A' }}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-white">Calcutta High Court</span>
+                    <ExternalLink className="w-4 h-4 text-white/60 shrink-0" />
+                  </div>
+                  <p className="text-[10px] text-white/60">For WBHC prefix CNRs — Appellate & Original Side</p>
+                </a>
+
+                <a
+                  href="https://njdg.ecourts.gov.in/njdgnew/"
+                  target="_blank" rel="noopener noreferrer"
+                  className="p-4 rounded-2xl flex flex-col gap-2 hover:opacity-90 transition-opacity no-underline"
+                  style={{ background: '#0a6e35' }}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-white">NJDG Dashboard</span>
+                    <ExternalLink className="w-4 h-4 text-white/60 shrink-0" />
+                  </div>
+                  <p className="text-[10px] text-white/60">National Judicial Data Grid — pending & disposed cases across all courts</p>
+                </a>
+              </div>
+
+              <p className="text-[10px] text-slate-400 italic border-t border-slate-100 dark:border-slate-800 pt-3">
+                💡 Tip: Add this case to firm matters via <strong>Matter Management</strong> to track it inside LawyerDesk with hearing alerts and AI prep notes.
+              </p>
+            </div>
+          )}
+
+          {/* Fetched Case Details — shown only when a real match is found */}
+          {fetchedCnrResult && (
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-mono text-[10px] font-bold">
-                    LIVE SYNCED WITH eCOURTS
+                    FOUND IN FIRM RECORDS
                   </span>
-                  <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                    CNR: {fetchedCnrResult?.cnrNumber || 'WBNP010042182026'}
-                  </span>
+                  {fetchedCnrResult.cnrNumber && (
+                    <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                      CNR: {fetchedCnrResult.cnrNumber}
+                    </span>
+                  )}
                 </div>
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1">
-                  {fetchedCnrResult?.matterTitle || 'Belghoria Property Dispute: Sri Subhashish Mukherjee & Ors vs State of West Bengal & Belghoria P.S.'} [{fetchedCnrResult?.caseNumber || 'TS 214/2026'}]
+                  {fetchedCnrResult.matterTitle} [{fetchedCnrResult.caseNumber}]
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {fetchedCnrResult?.courtName || 'District Court Barrackpore'} | {fetchedCnrResult?.courtRoomNo || 'Court Room No. 2'} | Presided by {fetchedCnrResult?.judgeName || 'Hon\'ble Ld. Additional District Judge'}
+                  {fetchedCnrResult.courtName} | {fetchedCnrResult.courtRoomNo} | Presided by {fetchedCnrResult.judgeName}
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('ai_assistant')}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-sm cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-white font-bold text-xs flex items-center gap-2 shadow-sm cursor-pointer"
+                  style={{ background: '#B8881A' }}
                 >
                   <Bot className="w-4 h-4" />
                   <span>AI Pre-Hearing Brief</span>
@@ -1692,30 +1730,23 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
                 <span className="text-slate-500 font-bold uppercase text-[10px]">Current Stage</span>
-                <div className="font-black text-sm text-slate-900 dark:text-white">
-                  {fetchedCnrResult?.stage || 'Pleadings & Interim Injunction Application'}
-                </div>
+                <div className="font-black text-sm text-slate-900 dark:text-white">{fetchedCnrResult.stage}</div>
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
-                <span className="text-slate-500 font-bold uppercase text-[10px]">Next Hearing Date</span>
-                <div className="font-black text-sm text-indigo-600 dark:text-indigo-400">
-                  2026-08-28 (Item #{fetchedCnrResult?.itemNo || '04'})
-                </div>
+                <span className="text-slate-500 font-bold uppercase text-[10px]">Item No. in Cause List</span>
+                <div className="font-black text-sm text-indigo-600 dark:text-indigo-400">Item #{fetchedCnrResult.itemNo}</div>
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
                 <span className="text-slate-500 font-bold uppercase text-[10px]">Acts & Sections</span>
-                <div className="font-bold text-xs text-slate-800 dark:text-slate-200">
-                  {fetchedCnrResult?.actsAndSections || 'WB Municipal Act 1993, Sec 144 CrPC, Transfer of Property Act Sec 54'}
-                </div>
+                <div className="font-bold text-xs text-slate-800 dark:text-slate-200">{fetchedCnrResult.actsAndSections}</div>
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
                 <span className="text-slate-500 font-bold uppercase text-[10px]">Litigant Client</span>
-                <div className="font-bold text-xs text-slate-800 dark:text-slate-200">
-                  {fetchedCnrResult?.clientName || 'Sri Subhashish Mukherjee'}
-                </div>
+                <div className="font-bold text-xs text-slate-800 dark:text-slate-200">{fetchedCnrResult.clientName}</div>
               </div>
             </div>
           </div>
+          )}
         </div>
       )}
 
