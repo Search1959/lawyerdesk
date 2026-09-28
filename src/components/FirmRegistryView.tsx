@@ -71,7 +71,11 @@ export const FirmRegistryView: React.FC = () => {
     const u1 = subscribeCollection<FirmRegistration>('firm_registrations', (d) => { setRegistrations(d); done(); }, []);
     const u2 = subscribeCollection<LawFirm>('firms', (d) => { setFirms(d); done(); }, []);
     const u3 = subscribeCollection<User>('users', (d) => {
-      const merged = [...d];
+      const merged = d.map((u) => {
+        const mock = mockUsers.find((mu) => mu.email.toLowerCase() === u.email.toLowerCase());
+        // Overlay password (and any other mock fields) if not stored in Firestore
+        return mock && !(u as any).password ? { ...u, password: (mock as any).password } : u;
+      });
       mockUsers.forEach((mu) => {
         if (!merged.find((u) => u.email.toLowerCase() === mu.email.toLowerCase())) merged.push(mu);
       });
