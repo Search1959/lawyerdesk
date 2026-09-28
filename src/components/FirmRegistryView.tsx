@@ -5,6 +5,7 @@ import {
   Users, AlertCircle, Eye, EyeOff, ShieldCheck, Briefcase,
   UserCheck, Crown, ToggleLeft, ToggleRight,
   Receipt, Pencil, MessageSquare, IndianRupee, TrendingDown,
+  Plus, Trash2, Edit2, Copy, Check, X, Key,
 } from 'lucide-react';
 import { FirmRegistration, FirmSubscription, LawFirm, User } from '../types';
 import { subscribeCollection, saveDocument } from '../lib/firebase';
@@ -52,6 +53,16 @@ export const FirmRegistryView: React.FC = () => {
   const [editingFeeVal, setEditingFeeVal]   = useState<number>(999);
   const [recordPayId, setRecordPayId]       = useState<string | null>(null);
   const [recordPayAmt, setRecordPayAmt]     = useState<number>(0);
+
+  // ── User modals ──────────────────────────────────────────────────
+  const [viewingUser,     setViewingUser]   = useState<User | null>(null);
+  const [editingUser,     setEditingUser]   = useState<User | null>(null);
+  const [deletingUser,    setDeletingUser]  = useState<User | null>(null);
+  const [isCreateUserOpen,setIsCreateUserOpen] = useState(false);
+  const [editUserForm,    setEditUserForm]  = useState({ name:'', email:'', password:'', phone:'', role:'', firmId:'', barCouncilNo:'', is_active:true });
+  const [createUserForm,  setCreateUserForm]= useState({ name:'', email:'', password:'', phone:'', role:'Associate Advocate', firmId:'', barCouncilNo:'' });
+  const [actionLoading,   setActionLoading] = useState(false);
+  const [toastMsg,        setToastMsg]      = useState('');
 
   useEffect(() => {
     let loaded = 0;
@@ -113,6 +124,48 @@ export const FirmRegistryView: React.FC = () => {
     await saveDocument('users', { ...user, is_active: !isActive, status: !isActive ? 'Active' : 'Inactive' });
     setActionMsg(`${!isActive ? '✅' : '⏸'} ${user.name} ${!isActive ? 'activated' : 'deactivated'}.`);
     setTimeout(() => setActionMsg(''), 3000);
+  };
+
+  const showToast = (msg: string) => { setToastMsg(msg); setTimeout(() => setToastMsg(''), 4000); };
+
+  const openEditUser = (user: User) => {
+    setEditUserForm({ name: user.name, email: user.email, password: (user as any).password || '', phone: (user as any).phone || '', role: user.role, firmId: user.firmId || '', barCouncilNo: (user as any).barCouncilNo || '', is_active: user.is_active !== false });
+    setEditingUser(user);
+  };
+
+  const handleSaveEditUser = async () => {
+    if (!editingUser) return;
+    setActionLoading(true);
+    try {
+      await saveDocument('users', { ...editingUser, ...editUserForm });
+      showToast(`✅ ${editUserForm.name} updated.`);
+      setEditingUser(null);
+    } catch { showToast('❌ Failed to save changes.'); }
+    setActionLoading(false);
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deletingUser) return;
+    setActionLoading(true);
+    try {
+      await saveDocument('users', { ...deletingUser, is_active: false, status: 'Inactive', deletedAt: new Date().toISOString() });
+      showToast(`🗑 ${deletingUser.name} deactivated.`);
+      setDeletingUser(null);
+    } catch { showToast('❌ Failed to deactivate user.'); }
+    setActionLoading(false);
+  };
+
+  const handleCreateUser = async () => {
+    if (!createUserForm.name.trim() || !createUserForm.email.trim()) return;
+    setActionLoading(true);
+    try {
+      const newId = `usr-${Date.now()}`;
+      await saveDocument('users', { id: newId, ...createUserForm, is_active: true, status: 'Active', createdAt: new Date().toISOString() } as any);
+      showToast(`✅ ${createUserForm.name} provisioned.`);
+      setIsCreateUserOpen(false);
+      setCreateUserForm({ name:'', email:'', password:'', phone:'', role:'Associate Advocate', firmId:'', barCouncilNo:'' });
+    } catch { showToast('❌ Failed to create user.'); }
+    setActionLoading(false);
   };
 
   // ── Subscription helpers ─────────────────────────────────────────
@@ -209,6 +262,14 @@ export const FirmRegistryView: React.FC = () => {
         <div className="p-3.5 rounded-xl text-sm font-semibold text-white"
           style={{ background: 'rgba(184,136,26,0.15)', border: `1px solid rgba(184,136,26,0.4)` }}>
           {actionMsg}
+        </div>
+      )}
+
+      {/* Toast */}
+      {toastMsg && (
+        <div className="fixed bottom-5 right-5 z-50 px-4 py-3 rounded-xl text-sm font-semibold text-white shadow-xl"
+          style={{ background: '#0b132b', border: `1px solid rgba(184,136,26,0.5)` }}>
+          {toastMsg}
         </div>
       )}
 
@@ -354,18 +415,27 @@ export const FirmRegistryView: React.FC = () => {
       {/* ── TABLE: ALL USERS ────────────────────────────────── */}
       {viewTab === 'all_users' && (
         loading ? <LoadingSpinner /> : filteredUsers.length === 0 ? <EmptyState text="No users found" sub="All provisioned accounts appear here" /> : (
+          <div className="space-y-3">
+            {/* Create User button */}
+            <div className="flex justify-end">
+              <button onClick={() => setIsCreateUserOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90"
+                style={{ background: GOLD }}>
+                <Plus className="w-4 h-4" /> Provision New User
+              </button>
+            </div>
           <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(184,136,26,0.2)' }}>
             {/* Table header */}
             <div className="grid grid-cols-12 gap-2 px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
               style={{ background: '#0a1628', borderBottom: '1px solid rgba(184,136,26,0.2)' }}>
-              <div className="col-span-1">Avatar</div>
+              <div className="col-span-1">Av.</div>
               <div className="col-span-2">Name / Role</div>
-              <div className="col-span-3">Email</div>
+              <div className="col-span-2">Email</div>
               <div className="col-span-2">Password</div>
               <div className="col-span-1">Phone</div>
               <div className="col-span-1">Firm</div>
               <div className="col-span-1">Status</div>
-              <div className="col-span-1 text-center">Action</div>
+              <div className="col-span-2 text-center">Actions</div>
             </div>
             {filteredUsers.map((user, idx) => {
               const isActive = user.is_active !== false && user.status !== 'Inactive' && user.status !== 'Suspended';
@@ -396,7 +466,7 @@ export const FirmRegistryView: React.FC = () => {
                     <div className="text-[10px] text-slate-400 truncate mt-0.5">{user.role}</div>
                   </div>
                   {/* Email */}
-                  <div className="col-span-3 min-w-0">
+                  <div className="col-span-2 min-w-0">
                     <span className="font-mono text-[11px] text-slate-300 truncate block">{user.email}</span>
                   </div>
                   {/* Password */}
@@ -432,19 +502,28 @@ export const FirmRegistryView: React.FC = () => {
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                       style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.text }}>{statusKey}</span>
                   </div>
-                  {/* Action */}
-                  <div className="col-span-1 flex justify-center">
-                    <button onClick={() => handleToggleUserStatus(user)}
-                      className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold transition-all"
-                      style={isActive
-                        ? { background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.25)', color: '#f87171' }
-                        : { background: 'rgba(5,150,105,0.12)', border: '1px solid rgba(5,150,105,0.25)', color: '#34d399' }}>
-                      {isActive ? <><ToggleRight className="w-3 h-3" /> Off</> : <><ToggleLeft className="w-3 h-3" /> On</>}
+                  {/* Actions */}
+                  <div className="col-span-2 flex items-center justify-center gap-1">
+                    <button onClick={() => setViewingUser(user)} title="View"
+                      className="p-1.5 rounded-lg transition-all hover:scale-110"
+                      style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa' }}>
+                      <Eye className="w-3 h-3" />
+                    </button>
+                    <button onClick={() => openEditUser(user)} title="Edit"
+                      className="p-1.5 rounded-lg transition-all hover:scale-110"
+                      style={{ background: 'rgba(217,119,6,0.15)', border: '1px solid rgba(217,119,6,0.3)', color: '#fbbf24' }}>
+                      <Edit2 className="w-3 h-3" />
+                    </button>
+                    <button onClick={() => setDeletingUser(user)} title="Deactivate"
+                      className="p-1.5 rounded-lg transition-all hover:scale-110"
+                      style={{ background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.25)', color: '#f87171' }}>
+                      <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
               );
             })}
+          </div>
           </div>
         )
       )}
@@ -510,6 +589,233 @@ export const FirmRegistryView: React.FC = () => {
             })}
           </div>
         )
+      )}
+
+      {/* ── MODAL: VIEW USER ────────────────────────────────── */}
+      {viewingUser && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="rounded-2xl p-6 w-full max-w-md space-y-4 relative"
+            style={{ background: 'rgba(11,19,43,0.98)', border: `1px solid rgba(184,136,26,0.35)` }}>
+            <button onClick={() => setViewingUser(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+            {/* Avatar + name */}
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center text-xl font-black text-white"
+                style={{ background: viewingUser.role === 'System Administrator' || viewingUser.role === 'Super Admin' ? '#dc2626' : viewingUser.role === 'Law Firm' ? '#059669' : GOLD }}>
+                {viewingUser.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-white">{viewingUser.name}</h3>
+                <p className="text-xs text-slate-400">{viewingUser.role}</p>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                  style={viewingUser.is_active !== false ? { background: 'rgba(5,150,105,0.15)', border: '1px solid rgba(5,150,105,0.4)', color: '#34d399' } : { background: 'rgba(100,116,139,0.15)', border: '1px solid rgba(100,116,139,0.4)', color: '#94a3b8' }}>
+                  {viewingUser.is_active !== false ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+            </div>
+            {/* Info grid */}
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              {[
+                ['Login ID', viewingUser.email],
+                ['Password', (viewingUser as any).password || 'Not stored'],
+                ['Phone', (viewingUser as any).phone || '—'],
+                ['Firm', viewingUser.firmId ? firms.find(f => f.id === viewingUser.firmId)?.name || viewingUser.firmId : '—'],
+                ['Bar Council No.', (viewingUser as any).barCouncilNo || '—'],
+                ['Member Since', viewingUser.createdAt ? new Date(viewingUser.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—'],
+              ].map(([label, val]) => (
+                <div key={label} className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                  <div className="text-slate-500 mb-0.5">{label}</div>
+                  <div className="font-mono text-white font-semibold truncate">{val}</div>
+                </div>
+              ))}
+            </div>
+            {/* Copy credentials */}
+            <button
+              onClick={() => { navigator.clipboard.writeText(`Login: ${viewingUser.email}\nPassword: ${(viewingUser as any).password || 'Not stored'}`); showToast('📋 Credentials copied!'); }}
+              className="w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:opacity-90"
+              style={{ background: 'rgba(184,136,26,0.15)', border: `1px solid rgba(184,136,26,0.35)`, color: GOLD_LIGHT }}>
+              <Copy className="w-4 h-4" /> Copy Login Pair
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: EDIT USER ────────────────────────────────── */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="rounded-2xl p-6 w-full max-w-md space-y-4 relative"
+            style={{ background: 'rgba(11,19,43,0.98)', border: `1px solid rgba(184,136,26,0.35)` }}>
+            <button onClick={() => setEditingUser(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="text-base font-black text-white flex items-center gap-2">
+              <Edit2 className="w-4 h-4" style={{ color: GOLD }} /> Edit User Account
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: 'Full Name', key: 'name', type: 'text' },
+                { label: 'Email / Login ID', key: 'email', type: 'email' },
+                { label: 'Password', key: 'password', type: 'text' },
+                { label: 'Phone', key: 'phone', type: 'text' },
+                { label: 'Bar Council No.', key: 'barCouncilNo', type: 'text' },
+              ].map(({ label, key, type }) => (
+                <div key={key} className={key === 'name' || key === 'email' ? 'col-span-2' : ''}>
+                  <label className="block text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wide">{label}</label>
+                  <input type={type} value={(editUserForm as any)[key]}
+                    onChange={(e) => setEditUserForm(prev => ({ ...prev, [key]: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-xl text-xs text-white focus:outline-none"
+                    style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    onFocus={e => e.currentTarget.style.borderColor = GOLD}
+                    onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                </div>
+              ))}
+              <div className="col-span-2">
+                <label className="block text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wide">Role</label>
+                <select value={editUserForm.role}
+                  onChange={(e) => setEditUserForm(prev => ({ ...prev, role: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl text-xs text-white focus:outline-none"
+                  style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  {['System Administrator','Super Admin','Law Firm','Senior Advocate','Associate Advocate','Stenographer','Paralegal','Accountant'].map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wide">Firm</label>
+                <select value={editUserForm.firmId}
+                  onChange={(e) => setEditUserForm(prev => ({ ...prev, firmId: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl text-xs text-white focus:outline-none"
+                  style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <option value="">— No firm —</option>
+                  {firms.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                </select>
+              </div>
+              <div className="col-span-2 flex items-center gap-2">
+                <input type="checkbox" id="edit_active" checked={editUserForm.is_active}
+                  onChange={(e) => setEditUserForm(prev => ({ ...prev, is_active: e.target.checked }))}
+                  className="w-4 h-4 rounded" />
+                <label htmlFor="edit_active" className="text-xs text-slate-300">Account Active</label>
+              </div>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button onClick={() => setEditingUser(null)}
+                className="flex-1 py-2.5 rounded-xl text-xs font-bold text-slate-400"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                Cancel
+              </button>
+              <button onClick={handleSaveEditUser} disabled={actionLoading}
+                className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: GOLD }}>
+                {actionLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: CREATE USER ──────────────────────────────── */}
+      {isCreateUserOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="rounded-2xl p-6 w-full max-w-md space-y-4 relative"
+            style={{ background: 'rgba(11,19,43,0.98)', border: `1px solid rgba(184,136,26,0.35)` }}>
+            <button onClick={() => setIsCreateUserOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="text-base font-black text-white flex items-center gap-2">
+              <Plus className="w-4 h-4" style={{ color: GOLD }} /> Provision New User
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: 'Full Name *', key: 'name', type: 'text' },
+                { label: 'Email / Login ID *', key: 'email', type: 'email' },
+                { label: 'Password', key: 'password', type: 'text' },
+                { label: 'Phone', key: 'phone', type: 'text' },
+                { label: 'Bar Council No.', key: 'barCouncilNo', type: 'text' },
+              ].map(({ label, key, type }) => (
+                <div key={key} className={key === 'name' || key === 'email' ? 'col-span-2' : ''}>
+                  <label className="block text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wide">{label}</label>
+                  <input type={type} value={(createUserForm as any)[key]}
+                    onChange={(e) => setCreateUserForm(prev => ({ ...prev, [key]: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-xl text-xs text-white focus:outline-none"
+                    style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    onFocus={e => e.currentTarget.style.borderColor = GOLD}
+                    onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                </div>
+              ))}
+              <div className="col-span-2">
+                <label className="block text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wide">Role</label>
+                <select value={createUserForm.role}
+                  onChange={(e) => setCreateUserForm(prev => ({ ...prev, role: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl text-xs text-white focus:outline-none"
+                  style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  {['Associate Advocate','Senior Advocate','Paralegal','Stenographer','Accountant','Law Firm','System Administrator'].map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wide">Assign to Firm</label>
+                <select value={createUserForm.firmId}
+                  onChange={(e) => setCreateUserForm(prev => ({ ...prev, firmId: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl text-xs text-white focus:outline-none"
+                  style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <option value="">— No firm —</option>
+                  {firms.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button onClick={() => setIsCreateUserOpen(false)}
+                className="flex-1 py-2.5 rounded-xl text-xs font-bold text-slate-400"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                Cancel
+              </button>
+              <button onClick={handleCreateUser} disabled={actionLoading || !createUserForm.name.trim() || !createUserForm.email.trim()}
+                className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: '#059669' }}>
+                {actionLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} Provision User
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: DELETE / DEACTIVATE USER ─────────────────── */}
+      {deletingUser && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="rounded-2xl p-6 w-full max-w-sm space-y-5 relative"
+            style={{ background: 'rgba(11,19,43,0.98)', border: '1px solid rgba(220,38,38,0.4)' }}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(220,38,38,0.2)' }}>
+                <Trash2 className="w-5 h-5 text-rose-400" />
+              </div>
+              <div>
+                <h3 className="font-black text-white">Deactivate Account</h3>
+                <p className="text-xs text-slate-400">This action can be reversed.</p>
+              </div>
+            </div>
+            <div className="p-4 rounded-xl" style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)' }}>
+              <p className="text-sm text-rose-300 font-semibold">{deletingUser.name}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{deletingUser.email} · {deletingUser.role}</p>
+            </div>
+            <p className="text-xs text-slate-400">
+              The account will be marked Inactive and locked out of the system. All case data is preserved.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeletingUser(null)}
+                className="flex-1 py-2.5 rounded-xl text-xs font-bold text-slate-400"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                Cancel
+              </button>
+              <button onClick={handleDeleteUser} disabled={actionLoading}
+                className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: '#dc2626' }}>
+                {actionLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />} Deactivate
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Detail / Reject Modal */}
