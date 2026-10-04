@@ -48,10 +48,10 @@ export const WalkthroughTour: React.FC<WalkthroughTourProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
-      <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl border border-indigo-500/80 shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6">
+      <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl border border-[#B8881A]/80 shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6">
         {/* Top Progress Bar */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold text-indigo-600 dark:text-indigo-400">
+          <div className="flex items-center justify-between text-xs font-bold text-[#B8881A]">
             <span className="flex items-center gap-1.5 uppercase tracking-wider">
               <Sparkles className="w-4 h-4" />
               <span>LawyerDesk AI Interactive Tour</span>
@@ -71,7 +71,7 @@ export const WalkthroughTour: React.FC<WalkthroughTourProps> = ({
 
         {/* Content Box */}
         <div className="p-6 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/60 space-y-3">
-          <div className="inline-flex px-2.5 py-0.5 rounded-full bg-indigo-600 text-white font-mono text-[10px] font-bold">
+          <div className="inline-flex px-2.5 py-0.5 rounded-full bg-[#B8881A] text-white font-mono text-[10px] font-bold">
             {activeStep.badgeText || `Step ${activeStep.stepId}`}
           </div>
 
@@ -111,7 +111,7 @@ export const WalkthroughTour: React.FC<WalkthroughTourProps> = ({
 
             <button
               onClick={handleNext}
-              className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black flex items-center gap-1.5 shadow-md transition-all"
+              className="px-5 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-black flex items-center gap-1.5 shadow-md transition-all"
             >
               <span>{isLastStep ? 'Finish Tour' : 'Next'}</span>
               {isLastStep ? <CheckCircle2 className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}

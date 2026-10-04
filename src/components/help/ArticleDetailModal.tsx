@@ -73,7 +73,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({
         <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border-b border-slate-800 flex items-start justify-between gap-4 shrink-0">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#B8881A]/20 text-indigo-300 font-bold border border-[#B8881A]/30">
                 {article.categoryName}
               </span>
               <span className="flex items-center gap-1 text-slate-300">
@@ -122,7 +122,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({
             </button>
             <button
               onClick={handleShare}
-              className="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-1.5 transition-all"
+              className="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-[#B8881A] font-bold flex items-center gap-1.5 transition-all"
             >
               <Share2 className="w-3.5 h-3.5" />
               <span>{copiedShareLink ? 'Link Copied!' : 'Share'}</span>
@@ -133,7 +133,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({
                 e.preventDefault();
                 alert(`Downloading PDF document for: ${titleText}`);
               }}
-              className="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold flex items-center gap-1.5 transition-all"
+              className="px-2.5 py-1.5 rounded-lg bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold flex items-center gap-1.5 transition-all"
             >
               <Download className="w-3.5 h-3.5" />
               <span>PDF Manual</span>
@@ -146,7 +146,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({
           {/* Summary Callout Box */}
           <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/60 space-y-1">
             <div className="flex items-center gap-2 text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase">
-              <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <Sparkles className="w-4 h-4 text-[#B8881A]" />
               <span>Executive Guide Overview</span>
             </div>
             <p className="text-xs text-indigo-950 dark:text-indigo-200 font-medium leading-relaxed">{descText}</p>
@@ -172,7 +172,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({
                     className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-3"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-[#B8881A] text-white font-black text-xs flex items-center justify-center shrink-0">
                         {step.stepNumber}
                       </div>
                       <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">

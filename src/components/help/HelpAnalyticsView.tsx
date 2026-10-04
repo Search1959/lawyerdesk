@@ -39,7 +39,7 @@ export const HelpAnalyticsView: React.FC<HelpAnalyticsViewProps> = ({ articles, 
     <div className="space-y-6">
       {/* Header Banner */}
       <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl border border-slate-800 shadow-md space-y-1">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/30">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B8881A]/20 text-indigo-300 text-xs font-bold border border-[#B8881A]/30">
           <BarChart3 className="w-3.5 h-3.5" /> Real-time System Metrics
         </div>
         <h2 className="text-xl font-black">Help Center & Knowledge Base Analytics</h2>
@@ -75,7 +75,7 @@ export const HelpAnalyticsView: React.FC<HelpAnalyticsViewProps> = ({ articles, 
             <LifeBuoy className="w-4 h-4 text-amber-500" />
           </div>
           <div className="text-2xl font-black text-slate-900 dark:text-white">{tickets.length}</div>
-          <div className="text-[11px] text-indigo-600 font-bold">{ticketsOpen} Open • {ticketsProgress} In Progress • {ticketsResolved} Resolved</div>
+          <div className="text-[11px] text-[#B8881A] font-bold">{ticketsOpen} Open • {ticketsProgress} In Progress • {ticketsResolved} Resolved</div>
         </div>
 
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
@@ -93,7 +93,7 @@ export const HelpAnalyticsView: React.FC<HelpAnalyticsViewProps> = ({ articles, 
         {/* Most Viewed Articles */}
         <div className="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <div className="flex items-center gap-2 font-black text-sm text-slate-900 dark:text-white">
-            <Eye className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <Eye className="w-4 h-4 text-[#B8881A]" />
             <span>Top 5 Most Viewed Help Articles</span>
           </div>
 
@@ -101,12 +101,12 @@ export const HelpAnalyticsView: React.FC<HelpAnalyticsViewProps> = ({ articles, 
             {mostViewed.map((art, idx) => (
               <div key={art.id} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-3 truncate pr-2">
-                  <span className="w-6 h-6 rounded-lg bg-indigo-100 dark:bg-indigo-950 font-black text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <span className="w-6 h-6 rounded-lg bg-indigo-100 dark:bg-indigo-950 font-black text-[#B8881A] flex items-center justify-center shrink-0">
                     {idx + 1}
                   </span>
                   <span className="font-bold text-slate-900 dark:text-white truncate">{art.title.en}</span>
                 </div>
-                <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 shrink-0">{art.viewsCount} views</span>
+                <span className="font-mono font-bold text-[#B8881A] shrink-0">{art.viewsCount} views</span>
               </div>
             ))}
           </div>
@@ -116,7 +116,7 @@ export const HelpAnalyticsView: React.FC<HelpAnalyticsViewProps> = ({ articles, 
         <div className="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-sm text-slate-900 dark:text-white">
-              <Search className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <Search className="w-4 h-4 text-[#B8881A]" />
               <span>Top Searched Keywords</span>
             </div>
 

@@ -103,7 +103,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
       {/* Top Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <CheckSquare className="w-4 h-4" /> Legal Action Items & Task Tracker
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Lawyer Task Management</h1>
@@ -113,7 +113,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
+          className="inline-flex items-center gap-2 bg-[#B8881A] hover:bg-[#D4A82A] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
         >
           <Plus className="w-4 h-4" /> Create Case Task
         </button>
@@ -159,7 +159,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
             placeholder="Search task title, matter, or lawyer..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
           />
         </div>
 
@@ -183,7 +183,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
           <select
             value={selectedPriority}
             onChange={(e) => setSelectedPriority(e.target.value)}
-            className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-indigo-500 shadow-xs"
+            className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-[#B8881A] shadow-xs"
           >
             <option value="All">All Priorities</option>
             <option value="High">High Priority</option>
@@ -228,7 +228,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                         type="checkbox"
                         checked={task.completed}
                         onChange={() => toggleTaskCompleted(task.id)}
-                        className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                        className="w-4 h-4 rounded text-[#B8881A] focus:ring-[#B8881A] cursor-pointer"
                       />
                     </td>
                     <td className="p-4 font-semibold text-slate-900 dark:text-white">
@@ -321,7 +321,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                 <select
                   value={newTask.matterId}
                   onChange={(e) => setNewTask({ ...newTask, matterId: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 >
                   {matters.map((m) => (
                     <option key={m.id} value={m.id}>
@@ -339,7 +339,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                   value={newTask.title}
                   onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
                   placeholder="e.g. Draft Written Statement / Serve Annexure"
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -349,7 +349,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                   <select
                     value={newTask.priority}
                     onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as any })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
@@ -363,7 +363,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                     required
                     value={newTask.dueDate}
                     onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -373,7 +373,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                 <select
                   value={newTask.assignedTo}
                   onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 >
                   {users.map((u) => (
                     <option key={u.id} value={u.name}>
@@ -393,7 +393,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-[#B8881A] hover:bg-[#D4A82A] rounded-lg shadow-sm"
                 >
                   Save Task
                 </button>
@@ -433,7 +433,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                   required
                   value={editingTask.title}
                   onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -443,7 +443,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                   <select
                     value={editingTask.priority}
                     onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value as any })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
@@ -457,7 +457,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                     required
                     value={editingTask.dueDate}
                     onChange={(e) => setEditingTask({ ...editingTask, dueDate: e.target.value })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -467,7 +467,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                 <select
                   value={editingTask.assignedTo}
                   onChange={(e) => setEditingTask({ ...editingTask, assignedTo: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 >
                   {users.map((u) => (
                     <option key={u.id} value={u.name}>
@@ -487,7 +487,7 @@ export const TasksView: React.FC<TasksViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-[#B8881A] hover:bg-[#D4A82A] rounded-lg shadow-sm"
                 >
                   Update Task
                 </button>

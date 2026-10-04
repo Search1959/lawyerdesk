@@ -105,12 +105,12 @@ export const HelpAdminPanel: React.FC<HelpAdminPanelProps> = ({
             onClick={() => setShowCatModal(true)}
             className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1.5 border border-slate-700"
           >
-            <FolderPlus className="w-4 h-4 text-indigo-400" />
+            <FolderPlus className="w-4 h-4 text-[#D4A82A]" />
             <span>+ Add Category</span>
           </button>
           <button
             onClick={handleCreateNewArticle}
-            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md"
+            className="px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md"
           >
             <Plus className="w-4 h-4" />
             <span>+ Create Article</span>
@@ -124,7 +124,7 @@ export const HelpAdminPanel: React.FC<HelpAdminPanelProps> = ({
           onClick={() => setActiveTab('articles')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'articles'
-              ? 'bg-indigo-600 text-white shadow-sm'
+              ? 'bg-[#B8881A] text-white shadow-sm'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
           }`}
         >
@@ -134,7 +134,7 @@ export const HelpAdminPanel: React.FC<HelpAdminPanelProps> = ({
           onClick={() => setActiveTab('categories')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'categories'
-              ? 'bg-indigo-600 text-white shadow-sm'
+              ? 'bg-[#B8881A] text-white shadow-sm'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
           }`}
         >
@@ -172,7 +172,7 @@ export const HelpAdminPanel: React.FC<HelpAdminPanelProps> = ({
                   <tr key={art.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="p-3.5 font-bold text-slate-900 dark:text-white">{art.title.en}</td>
                     <td className="p-3.5 text-slate-500">{art.categoryName}</td>
-                    <td className="p-3.5 font-mono text-indigo-600 dark:text-indigo-400 font-bold">{art.version}</td>
+                    <td className="p-3.5 font-mono text-[#B8881A] font-bold">{art.version}</td>
                     <td className="p-3.5">
                       <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">
                         {art.status}
@@ -183,7 +183,7 @@ export const HelpAdminPanel: React.FC<HelpAdminPanelProps> = ({
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setEditingArticle(art)}
-                          className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100"
+                          className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-[#B8881A] hover:bg-indigo-100"
                         >
                           <Edit className="w-3.5 h-3.5" />
                         </button>
@@ -210,7 +210,7 @@ export const HelpAdminPanel: React.FC<HelpAdminPanelProps> = ({
             >
               <div className="flex items-center justify-between font-bold text-slate-900 dark:text-white text-sm">
                 <span>{cat.name.en}</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 rounded">
+                <span className="text-[10px] font-mono px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950 text-[#B8881A] rounded">
                   {cat.code}
                 </span>
               </div>
@@ -325,7 +325,7 @@ export const HelpAdminPanel: React.FC<HelpAdminPanelProps> = ({
                 >
                   Cancel
                 </button>
-                <button type="submit" className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-black shadow-md">
+                <button type="submit" className="px-5 py-2 rounded-xl bg-[#B8881A] text-white font-black shadow-md">
                   Save & Publish Article
                 </button>
               </div>
@@ -368,7 +368,7 @@ export const HelpAdminPanel: React.FC<HelpAdminPanelProps> = ({
                 >
                   Cancel
                 </button>
-                <button type="submit" className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-black shadow-md">
+                <button type="submit" className="px-5 py-2 rounded-xl bg-[#B8881A] text-white font-black shadow-md">
                   Create Category
                 </button>
               </div>

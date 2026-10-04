@@ -98,10 +98,10 @@ export const OutstandingBillingView: React.FC<OutstandingBillingViewProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
           <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">0 - 30 Days Due</div>
-          <div className="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1">
+          <div className="text-2xl font-black text-[#B8881A] mt-1">
             ₹{pendingInvoices.filter(i => i.status === 'Pending').reduce((a, b) => a + b.totalINR, 0).toLocaleString()}
           </div>
-          <div className="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-1">Normal billing period</div>
+          <div className="text-xs text-[#B8881A] font-medium mt-1">Normal billing period</div>
         </div>
         <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
           <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">31 - 60 Days Overdue</div>
@@ -238,7 +238,7 @@ export const OutstandingBillingView: React.FC<OutstandingBillingViewProps> = ({
 
               <div className="p-3 bg-indigo-50 dark:bg-indigo-950/50 rounded-xl flex justify-between items-center border border-indigo-100 dark:border-indigo-900">
                 <span className="font-bold text-indigo-900 dark:text-indigo-200">Total Payable (Incl. GST)</span>
-                <span className="text-lg font-black text-indigo-600 dark:text-indigo-400">₹{viewingInvoice.totalINR.toLocaleString()}</span>
+                <span className="text-lg font-black text-[#B8881A]">₹{viewingInvoice.totalINR.toLocaleString()}</span>
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
@@ -340,7 +340,7 @@ export const OutstandingBillingView: React.FC<OutstandingBillingViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-xs font-bold text-white bg-[#B8881A] hover:bg-[#D4A82A] rounded-lg shadow-sm"
                 >
                   Save Changes
                 </button>

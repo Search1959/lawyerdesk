@@ -242,7 +242,7 @@ export const WestBengalSuite: React.FC = () => {
           onClick={() => setActiveTab('limitation')}
           className={`px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
             activeTab === 'limitation'
-              ? 'bg-indigo-600 text-white shadow-sm'
+              ? 'bg-[#B8881A] text-white shadow-sm'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -254,7 +254,7 @@ export const WestBengalSuite: React.FC = () => {
           onClick={() => setActiveTab('courts')}
           className={`px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
             activeTab === 'courts'
-              ? 'bg-indigo-600 text-white shadow-sm'
+              ? 'bg-[#B8881A] text-white shadow-sm'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -266,7 +266,7 @@ export const WestBengalSuite: React.FC = () => {
           onClick={() => setActiveTab('kmc')}
           className={`px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
             activeTab === 'kmc'
-              ? 'bg-indigo-600 text-white shadow-sm'
+              ? 'bg-[#B8881A] text-white shadow-sm'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -278,7 +278,7 @@ export const WestBengalSuite: React.FC = () => {
           onClick={() => setActiveTab('ocr')}
           className={`px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
             activeTab === 'ocr'
-              ? 'bg-indigo-600 text-white shadow-sm'
+              ? 'bg-[#B8881A] text-white shadow-sm'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -366,7 +366,7 @@ export const WestBengalSuite: React.FC = () => {
                       {cnrFirmMatch.cnrNumber || cnrFirmMatch.cnr}
                     </span>
                   )}
-                  <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">{cnrFirmMatch.caseNumber}</span>
+                  <span className="font-mono text-xs font-bold text-[#B8881A]">{cnrFirmMatch.caseNumber}</span>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 font-semibold text-slate-600 dark:text-slate-400">{cnrFirmMatch.status}</span>
                 </div>
                 <h4 className="font-black text-base text-slate-900 dark:text-white">{cnrFirmMatch.title}</h4>
@@ -490,7 +490,7 @@ export const WestBengalSuite: React.FC = () => {
       {activeTab === 'limitation' && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6 shadow-sm">
           <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500 font-bold">
+            <div className="w-10 h-10 rounded-xl bg-[#B8881A]/10 border border-[#B8881A]/20 flex items-center justify-center text-indigo-500 font-bold">
               <Calculator className="w-5 h-5" />
             </div>
             <div>
@@ -537,7 +537,7 @@ export const WestBengalSuite: React.FC = () => {
           <div className="flex justify-end">
             <button
               onClick={handleCalculateLimitation}
-              className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
+              className="px-5 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
             >
               <Zap className="w-4 h-4 fill-current" />
               <span>Calculate Expiry Deadline</span>
@@ -545,9 +545,9 @@ export const WestBengalSuite: React.FC = () => {
           </div>
 
           {calculatedLimitation && (
-            <div className="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl border border-indigo-500/30 space-y-3 shadow-lg">
+            <div className="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl border border-[#B8881A]/30 space-y-3 shadow-lg">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#D4A82A]">
                   Limitation Audit Result
                 </span>
                 <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
@@ -584,7 +584,7 @@ export const WestBengalSuite: React.FC = () => {
       {activeTab === 'courts' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           {sampleWestBengalCourts.map((court, idx) => (
-            <div key={idx} className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3 shadow-sm hover:border-indigo-500 transition-all">
+            <div key={idx} className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3 shadow-sm hover:border-[#B8881A] transition-all">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm">{court.name}</h4>
@@ -605,7 +605,7 @@ export const WestBengalSuite: React.FC = () => {
 
               <div className="flex flex-wrap gap-1">
                 {court.activeBenches.map((b, bIdx) => (
-                  <span key={bIdx} className="px-2 py-0.5 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 rounded font-semibold text-[10px]">
+                  <span key={bIdx} className="px-2 py-0.5 bg-[#B8881A]/10 text-indigo-700 dark:text-indigo-300 rounded font-semibold text-[10px]">
                     {b}
                   </span>
                 ))}
@@ -656,7 +656,7 @@ export const WestBengalSuite: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4 text-xs shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500 font-bold">
+              <div className="w-10 h-10 rounded-xl bg-[#B8881A]/10 border border-[#B8881A]/20 flex items-center justify-center text-indigo-500 font-bold">
                 <Languages className="w-5 h-5" />
               </div>
               <div>
@@ -672,7 +672,7 @@ export const WestBengalSuite: React.FC = () => {
             <button
               onClick={handleSimulateBengaliOcr}
               disabled={isOcrProcessing}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
             >
               <Sparkles className="w-4 h-4" />
               <span>{isOcrProcessing ? 'Extracting Bengali OCR...' : 'Run Sample Bengali OCR'}</span>

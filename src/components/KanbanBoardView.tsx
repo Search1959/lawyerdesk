@@ -7,7 +7,7 @@ const KANBAN_STAGES = [
   { id: 'Consultation', label: '2. Consultation', color: 'bg-cyan-500', desc: 'Initial Client Legal Briefing' },
   { id: 'Retainer Signed', label: '3. Retainer Signed', color: 'bg-teal-500', desc: 'Vakalatnama & Engagement' },
   { id: 'Research', label: '4. Research', color: 'bg-sky-500', desc: 'Precedents & Statutory Analysis' },
-  { id: 'Drafting', label: '5. Drafting', color: 'bg-indigo-500', desc: 'Pleadings & Annexures Drafted' },
+  { id: 'Drafting', label: '5. Drafting', color: 'bg-[#B8881A]', desc: 'Pleadings & Annexures Drafted' },
   { id: 'Filed', label: '6. Filed', color: 'bg-blue-600', desc: 'Registry Verification & CNR' },
   { id: 'Notice Stage', label: '7. Notice Issued', color: 'bg-amber-500', desc: 'Summons & Notice Returnable' },
   { id: 'Active Litigation', label: '8. Hearing', color: 'bg-violet-500', desc: 'Interim Injunctions & Pleadings' },
@@ -93,13 +93,13 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <FolderKanban className="w-4 h-4" /> Litigation Stage Pipeline
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Case Progression Kanban</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5">
             <span>Visual pipeline tracking court cases across Notice, Pleadings, Evidence, and Judgment stages.</span>
-            <span className="hidden sm:inline-block bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 px-2 py-0.5 rounded text-xs font-bold border border-indigo-100 dark:border-indigo-900/40">
+            <span className="hidden sm:inline-block bg-indigo-50 dark:bg-indigo-950/60 text-[#B8881A] dark:text-indigo-300 px-2 py-0.5 rounded text-xs font-bold border border-indigo-100 dark:border-indigo-900/40">
               💡 Drag & Drop cards to move cases
             </span>
           </p>
@@ -110,7 +110,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 shadow-xs"
+            className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-[#B8881A] shadow-xs"
           >
             <option value="All">All Categories</option>
             <option value="Civil">Civil</option>
@@ -143,7 +143,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
               onDrop={(e) => handleDrop(e, stage.id)}
               className={`rounded-xl p-3 border transition-all flex flex-col min-h-[520px] ${
                 isDropTarget
-                  ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-400 dark:border-indigo-600 ring-2 ring-indigo-500/30 scale-[1.01]'
+                  ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-400 dark:border-indigo-600 ring-2 ring-[#B8881A]/30 scale-[1.01]'
                   : 'bg-slate-100/80 dark:bg-slate-900/80 border-slate-200/80 dark:border-slate-800'
               }`}
             >
@@ -165,7 +165,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                 {stageMatters.length === 0 ? (
                   <div className={`text-center py-12 text-xs font-semibold rounded-xl border border-dashed transition-colors ${
                     isDropTarget
-                      ? 'border-indigo-400 dark:border-indigo-500 text-indigo-600 dark:text-indigo-300 bg-indigo-100/40 dark:bg-indigo-900/30'
+                      ? 'border-indigo-400 dark:border-[#B8881A] text-[#B8881A] dark:text-indigo-300 bg-indigo-100/40 dark:bg-indigo-900/30'
                       : 'border-slate-300 dark:border-slate-800 text-slate-400 dark:text-slate-500'
                   }`}>
                     {isDropTarget ? '✨ Drop case here' : 'No cases in this stage'}
@@ -181,13 +181,13 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                         onDragStart={(e) => handleDragStart(e, m.id)}
                         onDragEnd={handleDragEnd}
                         className={`bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all space-y-3 cursor-grab active:cursor-grabbing group relative select-none ${
-                          isDragging ? 'opacity-40 scale-95 border-indigo-500 shadow-lg' : ''
+                          isDragging ? 'opacity-40 scale-95 border-[#B8881A] shadow-lg' : ''
                         }`}
                       >
                         <div className="flex items-start justify-between gap-1">
                           <div className="flex items-center gap-1.5">
                             <GripVertical className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 dark:text-slate-600 dark:group-hover:text-slate-400 shrink-0 cursor-grab" />
-                            <span className="font-mono text-[11px] font-extrabold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-100 dark:border-indigo-900/60">
+                            <span className="font-mono text-[11px] font-extrabold text-[#B8881A] bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-100 dark:border-indigo-900/60">
                               {m.caseNumber}
                             </span>
                           </div>
@@ -215,7 +215,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                           <div className="truncate">
                             👤 Client: <strong className="text-slate-800 dark:text-slate-200">{m.clientName}</strong>
                           </div>
-                          <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-mono font-semibold">
+                          <div className="text-[10px] text-[#B8881A] font-mono font-semibold">
                             📅 Next Hearing: {m.nextHearingDate}
                           </div>
                         </div>

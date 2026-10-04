@@ -82,7 +82,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
           <div>
-            <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
               <MessageSquare className="w-4 h-4" /> Client Portal Direct Communications
             </div>
             <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Case Communications & Messages</h1>
@@ -93,7 +93,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
         </div>
 
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 text-center max-w-2xl mx-auto shadow-sm my-8">
-          <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-indigo-100 dark:border-indigo-900">
+          <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-950/60 text-[#B8881A] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-indigo-100 dark:border-indigo-900">
             <MessageSquare className="w-8 h-8" />
           </div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">No Case Message Threads Yet</h3>
@@ -103,7 +103,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           {onNavigateToCases && (
             <button
               onClick={onNavigateToCases}
-              className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition-all shadow-md"
+              className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-sm rounded-xl transition-all shadow-md"
             >
               <Plus className="w-4 h-4" /> Register New Court Case
             </button>
@@ -118,7 +118,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <MessageSquare className="w-4 h-4" /> Client Portal Direct Communications
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Case Communications & Messages</h1>
@@ -145,7 +145,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search case or client..."
-              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#B8881A]"
             />
           </div>
 
@@ -166,7 +166,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   }`}
                 >
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{matter.caseNumber}</span>
+                    <span className="font-mono font-bold text-[#B8881A]">{matter.caseNumber}</span>
                     <div className="flex items-center gap-1.5">
                       <span className="text-[10px] text-slate-400 dark:text-slate-500">{lastMsg?.timestamp || ''}</span>
                       <button
@@ -197,7 +197,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             {/* Chat Header */}
             <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
               <div className="min-w-0 flex-1 pr-2">
-                <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">{activeMatter.caseNumber}</span>
+                <span className="font-mono text-xs font-bold text-[#B8881A]">{activeMatter.caseNumber}</span>
                 <h3 className="font-black text-slate-900 dark:text-white text-sm truncate">{activeMatter.title}</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Client: {activeMatter.clientName}</p>
               </div>
@@ -291,7 +291,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                         className={`p-3.5 rounded-2xl text-xs font-medium leading-relaxed shadow-sm ${
                           msg.isClientMessage
                             ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-tl-none order-1'
-                            : 'bg-indigo-600 text-white rounded-tr-none'
+                            : 'bg-[#B8881A] text-white rounded-tr-none'
                         }`}
                       >
                         {msg.text}
@@ -317,7 +317,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             <form onSubmit={handleSend} className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center gap-2">
               <button
                 type="button"
-                className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-2 text-slate-400 hover:text-[#B8881A] dark:hover:text-[#D4A82A] rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <Paperclip className="w-4 h-4" />
               </button>
@@ -326,12 +326,12 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder={`Send message regarding ${activeMatter.caseNumber}...`}
-                className="flex-1 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim()}
-                className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white p-2.5 rounded-xl transition-all shadow-sm"
+                className="bg-[#B8881A] hover:bg-[#D4A82A] disabled:opacity-50 text-white p-2.5 rounded-xl transition-all shadow-sm"
               >
                 <Send className="w-4 h-4" />
               </button>

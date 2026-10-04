@@ -862,22 +862,25 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       ai_drafting: 'AI Drafting', reports: 'Reports', settings: 'Settings',
     };
     return (
-      <div className="min-h-screen bg-[#080e1f] text-slate-100 flex flex-col">
+      <div className="min-h-screen flex flex-col" style={{ background: '#f1f5f9', color: '#1e293b' }}>
         {/* Mobile top bar with back button */}
-        <header className="sticky top-0 z-30 bg-[#080e1f]/95 backdrop-blur border-b border-slate-800 px-4 py-3 flex items-center gap-3">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className="p-2 rounded-xl bg-slate-800 text-slate-300 flex items-center gap-1"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <p className="text-sm font-bold text-white">{TAB_LABELS[activeTab] ?? activeTab}</p>
+        <header className="sticky top-0 z-30 px-4 py-3 flex items-center justify-between gap-3" style={{ background: '#0b1220', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className="p-2 rounded-xl flex items-center gap-1"
+              style={{ background: 'rgba(255,255,255,0.1)', color: '#cbd5e1' }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <p className="text-sm font-bold text-white">{TAB_LABELS[activeTab] ?? activeTab}</p>
+          </div>
         </header>
 
         {/* Render the actual tab content */}
-        <div className="flex-1 overflow-y-auto p-3 pb-24">
+        <div className="flex-1 overflow-y-auto p-3 pb-28">
           {activeTab === 'hearings' && (
             <HearingsView hearings={hearings} matters={matters} onAddNewHearing={handleAddNewHearing} onDeleteHearing={handleDeleteHearing} />
           )}
@@ -916,23 +919,29 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           )}
         </div>
 
-        {/* Mobile bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#080e1f]/95 backdrop-blur border-t border-slate-800 flex">
-          {[
-            { tab: 'dashboard' as NavTab,  label: 'Home',     icon: '🏠' },
-            { tab: 'matters'   as NavTab,  label: 'Cases',    icon: '⚖️' },
-            { tab: 'hearings'  as NavTab,  label: 'Calendar', icon: '📅' },
-            { tab: 'ai_chat'   as NavTab,  label: 'AI',       icon: '🤖' },
-          ].map((item) => (
-            <button
-              key={item.tab}
-              onClick={() => setActiveTab(item.tab)}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 text-[10px] font-medium transition-colors ${activeTab === item.tab ? 'text-amber-400' : 'text-slate-500'}`}
-            >
-              <span className="text-lg leading-none">{item.icon}</span>
-              {item.label}
-            </button>
-          ))}
+        {/* Mobile bottom nav — white, gold accent, matches MobileHomeView */}
+        <nav className="fixed bottom-0 left-0 right-0 z-40 flex pb-2" style={{ background: '#fff', borderTop: '1px solid #e2e8f0', boxShadow: '0 -2px 16px rgba(0,0,0,0.06)' }}>
+          {([
+            { tab: 'dashboard' as NavTab, label: 'Home',     svgPath: 'M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z' },
+            { tab: 'matters'   as NavTab, label: 'Cases',    svgPath: 'M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 14.5l-5-3 5-3 5 3-5 3z' },
+            { tab: 'hearings'  as NavTab, label: 'Calendar', svgPath: 'M8 2v3M16 2v3M3 8h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z' },
+            { tab: 'ai_chat'   as NavTab, label: 'AI',       svgPath: 'M12 2a10 10 0 110 20A10 10 0 0112 2zm-1 6v4l3 3 1-1-2.5-2.5V8H11z' },
+          ] as const).map((item) => {
+            const isActive = activeTab === item.tab;
+            const gold = '#B8881A';
+            return (
+              <button
+                key={item.tab}
+                onClick={() => setActiveTab(item.tab)}
+                className="flex-1 flex flex-col items-center justify-center gap-1 pt-2 pb-1"
+              >
+                <svg className="w-5 h-5" fill="none" stroke={isActive ? gold : '#94a3b8'} strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d={item.svgPath} />
+                </svg>
+                <span className="text-[10px] font-medium" style={{ color: isActive ? gold : '#94a3b8' }}>{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
 
         {/* Modals needed on mobile too */}

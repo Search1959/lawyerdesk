@@ -132,7 +132,7 @@ export const AiHelpAssistant: React.FC<AiHelpAssistantProps> = ({
       {/* Header */}
       <div className="p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border-b border-slate-800 flex items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-500/40 text-indigo-400 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-[#B8881A]/30 border border-[#B8881A]/40 text-[#D4A82A] flex items-center justify-center shrink-0">
             <Bot className="w-6 h-6 animate-pulse" />
           </div>
           <div>
@@ -173,7 +173,7 @@ export const AiHelpAssistant: React.FC<AiHelpAssistantProps> = ({
             className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {msg.sender === 'assistant' && (
-              <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+              <div className="w-8 h-8 rounded-xl bg-[#B8881A] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
                 <Bot className="w-4 h-4" />
               </div>
             )}
@@ -182,7 +182,7 @@ export const AiHelpAssistant: React.FC<AiHelpAssistantProps> = ({
               <div
                 className={`p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                   msg.sender === 'user'
-                    ? 'bg-indigo-600 text-white font-medium rounded-tr-none shadow-md'
+                    ? 'bg-[#B8881A] text-white font-medium rounded-tr-none shadow-md'
                     : msg.isNotFound
                     ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-900/60 rounded-tl-none font-medium'
                     : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-tl-none shadow-sm'
@@ -216,12 +216,12 @@ export const AiHelpAssistant: React.FC<AiHelpAssistantProps> = ({
                       <div
                         key={art.id}
                         onClick={() => onOpenArticle(art)}
-                        className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-indigo-200 dark:border-indigo-900/60 hover:border-indigo-500 cursor-pointer transition-all shadow-sm space-y-1 group"
+                        className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-indigo-200 dark:border-indigo-900/60 hover:border-[#B8881A] cursor-pointer transition-all shadow-sm space-y-1 group"
                       >
-                        <div className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase">
+                        <div className="text-[10px] font-bold text-[#B8881A] uppercase">
                           {art.categoryName}
                         </div>
-                        <div className="font-extrabold text-xs text-slate-900 dark:text-white line-clamp-1 group-hover:text-indigo-600">
+                        <div className="font-extrabold text-xs text-slate-900 dark:text-white line-clamp-1 group-hover:text-[#B8881A]">
                           {art.title[currentLang] || art.title.en}
                         </div>
                         <div className="text-[11px] text-indigo-500 flex items-center gap-1 font-bold">
@@ -244,7 +244,7 @@ export const AiHelpAssistant: React.FC<AiHelpAssistantProps> = ({
         ))}
 
         {isThinking && (
-          <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 animate-pulse">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#B8881A] animate-pulse">
             <Bot className="w-4 h-4" />
             <span>Searching LawyerDesk Help Articles...</span>
           </div>
@@ -258,7 +258,7 @@ export const AiHelpAssistant: React.FC<AiHelpAssistantProps> = ({
           <button
             key={idx}
             onClick={() => handleSendMessage(prompt)}
-            className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-500 hover:text-indigo-600 text-xs font-semibold whitespace-nowrap transition-all shadow-sm"
+            className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#B8881A] hover:text-[#B8881A] text-xs font-semibold whitespace-nowrap transition-all shadow-sm"
           >
             {prompt}
           </button>
@@ -278,12 +278,12 @@ export const AiHelpAssistant: React.FC<AiHelpAssistantProps> = ({
           value={inputQuery}
           onChange={(e) => setInputQuery(e.target.value)}
           placeholder="Ask AI Help Assistant (e.g. How to sync cause list, parse OCR, issue GST invoice)..."
-          className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 font-medium"
+          className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B8881A] font-medium"
         />
         <button
           type="submit"
           disabled={!inputQuery.trim() || isThinking}
-          className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition-all disabled:opacity-50"
+          className="px-4 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition-all disabled:opacity-50"
         >
           <Send className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Ask AI</span>

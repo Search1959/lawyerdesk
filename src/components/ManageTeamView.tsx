@@ -109,7 +109,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <Users className="w-4 h-4" /> Law Firm Counsel & Staff Roster
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Lawyer Team Directory</h1>
@@ -120,7 +120,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
+          className="inline-flex items-center gap-2 bg-[#B8881A] hover:bg-[#D4A82A] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
         >
           <Plus className="w-4 h-4" /> Add Advocate / Staff
         </button>
@@ -135,7 +135,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
             placeholder="Search advocate name, Bar No, department..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs font-medium focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#B8881A]"
           />
         </div>
       </div>
@@ -188,7 +188,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
               </div>
               <div>
                 <span className="block text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">Billing Rate</span>
-                <strong className="text-sm text-indigo-600 dark:text-indigo-400">₹{m.hourlyRateINR.toLocaleString()}/hr</strong>
+                <strong className="text-sm text-[#B8881A]">₹{m.hourlyRateINR.toLocaleString()}/hr</strong>
               </div>
             </div>
 
@@ -235,7 +235,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
               <div className="p-3 bg-indigo-50 dark:bg-indigo-950/50 rounded-xl border border-indigo-100 dark:border-indigo-900 flex justify-between items-center">
                 <div>
                   <div className="text-sm font-bold text-indigo-900 dark:text-indigo-200">{viewingMember.name}</div>
-                  <div className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">{viewingMember.role} • {viewingMember.department}</div>
+                  <div className="text-xs text-[#B8881A] font-semibold">{viewingMember.role} • {viewingMember.department}</div>
                 </div>
                 <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
                   {viewingMember.status}
@@ -249,7 +249,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
                 </div>
                 <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
                   <span className="text-[10px] font-bold text-slate-400 uppercase">Hourly Billing Rate</span>
-                  <div className="font-bold text-indigo-600 dark:text-indigo-400">₹{viewingMember.hourlyRateINR.toLocaleString()}/hr</div>
+                  <div className="font-bold text-[#B8881A]">₹{viewingMember.hourlyRateINR.toLocaleString()}/hr</div>
                 </div>
               </div>
 
@@ -376,7 +376,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-[#B8881A] hover:bg-[#D4A82A] rounded-lg shadow-sm"
                 >
                   Save Changes
                 </button>
@@ -440,7 +440,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
                   value={newMember.name}
                   onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
                   placeholder="e.g. Adv. Priya Sen"
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -450,7 +450,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
                   <select
                     value={newMember.role}
                     onChange={(e) => setNewMember({ ...newMember, role: e.target.value as any })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="Senior Lawyer">Senior Lawyer</option>
                     <option value="Firm Admin">Firm Admin</option>
@@ -466,7 +466,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
                     value={newMember.barCouncilNo}
                     onChange={(e) => setNewMember({ ...newMember, barCouncilNo: e.target.value })}
                     placeholder="e.g. D/1842/2016"
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -479,7 +479,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
                   value={newMember.department}
                   onChange={(e) => setNewMember({ ...newMember, department: e.target.value })}
                   placeholder="e.g. Commercial Litigation"
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -492,7 +492,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
                     value={newMember.email}
                     onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
                     placeholder="advocate@firm.in"
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
                 <div>
@@ -502,7 +502,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
                     required
                     value={newMember.hourlyRateINR}
                     onChange={(e) => setNewMember({ ...newMember, hourlyRateINR: Number(e.target.value) })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -517,7 +517,7 @@ export const ManageTeamView: React.FC<ManageTeamViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-[#B8881A] hover:bg-[#D4A82A] rounded-lg shadow-sm"
                 >
                   Save Team Member
                 </button>

@@ -40,21 +40,21 @@ export const Footer: React.FC = () => {
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm font-medium pt-1">
             <button
               onClick={() => setActivePolicyTab('privacy')}
-              className="text-indigo-400 hover:text-indigo-300 underline underline-offset-4 decoration-indigo-500/40 transition-colors"
+              className="text-[#D4A82A] hover:text-indigo-300 underline underline-offset-4 decoration-indigo-500/40 transition-colors"
             >
               Privacy Policy
             </button>
             <span className="text-slate-600">|</span>
             <button
               onClick={() => setActivePolicyTab('terms')}
-              className="text-indigo-400 hover:text-indigo-300 underline underline-offset-4 decoration-indigo-500/40 transition-colors"
+              className="text-[#D4A82A] hover:text-indigo-300 underline underline-offset-4 decoration-indigo-500/40 transition-colors"
             >
               Terms of Service
             </button>
             <span className="text-slate-600">|</span>
             <button
               onClick={() => setActivePolicyTab('support')}
-              className="text-indigo-400 hover:text-indigo-300 underline underline-offset-4 decoration-indigo-500/40 transition-colors"
+              className="text-[#D4A82A] hover:text-indigo-300 underline underline-offset-4 decoration-indigo-500/40 transition-colors"
             >
               App Support Page
             </button>

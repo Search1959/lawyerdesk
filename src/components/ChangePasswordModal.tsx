@@ -119,7 +119,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-[#B8881A]">
               <KeyRound className="w-5 h-5" />
             </div>
             <div>
@@ -127,7 +127,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                 Change Password
               </h3>
               <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                Update account credentials for <span className="text-indigo-600 dark:text-indigo-400 font-bold">{currentUser.email}</span>
+                Update account credentials for <span className="text-[#B8881A] font-bold">{currentUser.email}</span>
               </p>
             </div>
           </div>
@@ -167,7 +167,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="Enter your existing password"
                 required
-                className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
               />
               <button
                 type="button"
@@ -191,7 +191,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new strong password"
                 required
-                className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
               />
               <button
                 type="button"
@@ -215,7 +215,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter new password"
                 required
-                className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
               />
               <button
                 type="button"
@@ -275,7 +275,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-md hover:shadow-indigo-500/20 transition-all flex items-center gap-1.5"
+              className="px-5 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold shadow-md hover:shadow-indigo-500/20 transition-all flex items-center gap-1.5"
             >
               <Key className="w-4 h-4" />
               <span>{isSubmitting ? 'Updating...' : 'Update Password'}</span>

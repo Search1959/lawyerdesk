@@ -85,7 +85,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
         {/* Top Control Bar (Hidden on Print) */}
         <div className="no-print p-4 sm:p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-indigo-600/30 text-indigo-400 border border-indigo-500/40">
+            <div className="p-2.5 rounded-2xl bg-[#B8881A]/30 text-[#D4A82A] border border-[#B8881A]/40">
               <FileText className="w-6 h-6" />
             </div>
             <div>
@@ -97,7 +97,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs flex items-center gap-2 shadow-md transition-all"
+              className="px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-black text-xs flex items-center gap-2 shadow-md transition-all"
             >
               <Printer className="w-4 h-4" />
               <span>Print / Save as PDF</span>
@@ -115,7 +115,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
               onClick={handleCopyHtml}
               className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1.5 border border-slate-700 transition-all"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-indigo-400" />}
+              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-[#D4A82A]" />}
               <span>{copied ? 'Copied HTML!' : 'Copy Code'}</span>
             </button>
 
@@ -134,7 +134,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           <div className="border-b-2 border-indigo-600 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-black text-xs flex items-center justify-center">
+                <span className="w-8 h-8 rounded-xl bg-[#B8881A] text-white font-black text-xs flex items-center justify-center">
                   LD
                 </span>
                 <span className="font-black text-xl text-slate-900 uppercase tracking-tight">LAWYERDESK AI</span>
@@ -161,7 +161,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Quick Summary Banner */}
           <div className="p-5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-950 space-y-2">
             <div className="font-black text-sm uppercase text-indigo-900 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-indigo-600" />
+              <Sparkles className="w-4 h-4 text-[#B8881A]" />
               <span>Platform Executive Summary</span>
             </div>
             <p className="font-medium leading-relaxed">
@@ -172,7 +172,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 1: Grounded AI Legal Assistant */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <Bot className="w-5 h-5 text-indigo-600" />
+              <Bot className="w-5 h-5 text-[#B8881A]" />
               <span>1. Grounded AI Legal Assistant & Case RAG Engine</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -190,7 +190,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 2: e-Courts & NJDG Sync */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <Scale className="w-5 h-5 text-indigo-600" />
+              <Scale className="w-5 h-5 text-[#B8881A]" />
               <span>2. Automated e-Courts & NJDG Case Tracker</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -208,7 +208,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 3: Case Management & Case Diary */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <FileText className="w-5 h-5 text-indigo-600" />
+              <FileText className="w-5 h-5 text-[#B8881A]" />
               <span>3. Centralized Case Repository & Digital Case Diary</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -226,7 +226,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 4: Client CRM & Client Portal */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <Users className="w-5 h-5 text-indigo-600" />
+              <Users className="w-5 h-5 text-[#B8881A]" />
               <span>4. Client CRM & Client Portal Access</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -243,7 +243,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 5: Court Calendar & Scheduler */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <Calendar className="w-5 h-5 text-indigo-600" />
+              <Calendar className="w-5 h-5 text-[#B8881A]" />
               <span>5. Integrated Calendar, Appointments & Billable Time Tracker</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -261,7 +261,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 6: Hearings & Limitation Deadlines */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <Clock className="w-5 h-5 text-indigo-600" />
+              <Clock className="w-5 h-5 text-[#B8881A]" />
               <span>6. Upcoming Hearings Timeline & Limitation Period Deadlines</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -278,7 +278,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 7: GST Billing & Invoices */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <Receipt className="w-5 h-5 text-indigo-600" />
+              <Receipt className="w-5 h-5 text-[#B8881A]" />
               <span>7. GST-Compliant Billing, Tax Invoices & Fee Collection</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -295,7 +295,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 8: Document Vault & PaddleOCR Engine */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <FolderLock className="w-5 h-5 text-indigo-600" />
+              <FolderLock className="w-5 h-5 text-[#B8881A]" />
               <span>8. Secure Document Vault & PaddleOCR Multi-Lingual Engine</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -313,7 +313,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 9: WhatsApp Notifications */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <MessageSquare className="w-5 h-5 text-indigo-600" />
+              <MessageSquare className="w-5 h-5 text-[#B8881A]" />
               <span>9. Automated WhatsApp Alerts & Court Reminders</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -330,7 +330,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 10: Firm Management & Statutory Payroll */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <Building2 className="w-5 h-5 text-indigo-600" />
+              <Building2 className="w-5 h-5 text-[#B8881A]" />
               <span>10. Firm Management, Multi-Tenant Security & Statutory Payroll</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -347,7 +347,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           {/* Module 11: Help Center & Learning Hub */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 font-black text-base text-slate-900 border-b border-slate-200 pb-2">
-              <HelpCircle className="w-5 h-5 text-indigo-600" />
+              <HelpCircle className="w-5 h-5 text-[#B8881A]" />
               <span>11. Official Help Center, Video Academy & Grounded Support Copilot</span>
             </div>
             <div className="text-xs text-slate-700 space-y-2">
@@ -366,7 +366,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
           <div className="pt-6 border-t-2 border-slate-200 space-y-4">
             <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-2 text-xs">
               <div className="flex items-center justify-between font-bold">
-                <span className="flex items-center gap-1.5 text-indigo-400">
+                <span className="flex items-center gap-1.5 text-[#D4A82A]">
                   <ShieldCheck className="w-4 h-4" />
                   <span>Security & Regulatory Compliance Guarantee</span>
                 </span>

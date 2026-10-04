@@ -41,7 +41,7 @@ export const CaseDiaryView: React.FC<CaseDiaryViewProps> = ({
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <BookOpen className="w-4 h-4" /> Advocate Court Room Diary & Cause List
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Daily Case Diary</h1>
@@ -56,7 +56,7 @@ export const CaseDiaryView: React.FC<CaseDiaryViewProps> = ({
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 shadow-xs"
+            className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-[#B8881A] shadow-xs"
           />
         </div>
       </div>
@@ -69,7 +69,7 @@ export const CaseDiaryView: React.FC<CaseDiaryViewProps> = ({
               <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                 Court Cause List ({filteredHearings.length})
               </h3>
-              <span className="text-xs text-indigo-600 dark:text-indigo-400 font-bold">{selectedDate}</span>
+              <span className="text-xs text-[#B8881A] font-bold">{selectedDate}</span>
             </div>
 
             <div className="relative">
@@ -79,7 +79,7 @@ export const CaseDiaryView: React.FC<CaseDiaryViewProps> = ({
                 placeholder="Filter court, judge or case..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg text-xs focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-9 pr-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg text-xs focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
 
@@ -103,12 +103,12 @@ export const CaseDiaryView: React.FC<CaseDiaryViewProps> = ({
                       }}
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-300 dark:border-indigo-700 ring-2 ring-indigo-500/20 shadow-sm'
+                          ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-300 dark:border-indigo-700 ring-2 ring-[#B8881A]/20 shadow-sm'
                           : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-800'
                       }`}
                     >
                       <div className="flex items-center justify-between text-[11px] font-bold">
-                        <span className="text-indigo-600 dark:text-indigo-400 font-mono">{matter?.caseNumber}</span>
+                        <span className="text-[#B8881A] font-mono">{matter?.caseNumber}</span>
                         <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded">{h.time}</span>
                       </div>
 
@@ -174,7 +174,7 @@ export const CaseDiaryView: React.FC<CaseDiaryViewProps> = ({
                     </div>
                     <div>
                       <span className="block text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold">Hearing Stage</span>
-                      <strong className="text-indigo-600 dark:text-indigo-400">{h.stage}</strong>
+                      <strong className="text-[#B8881A]">{h.stage}</strong>
                     </div>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export const CaseDiaryView: React.FC<CaseDiaryViewProps> = ({
                               setNewNote(diaryNotes[h.id]);
                               setDiaryNotes({ ...diaryNotes, [h.id]: '' });
                             }}
-                            className="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px] font-bold"
+                            className="text-[#B8881A] hover:underline text-[11px] font-bold"
                           >
                             Edit Note
                           </button>
@@ -228,12 +228,12 @@ export const CaseDiaryView: React.FC<CaseDiaryViewProps> = ({
                         value={newNote}
                         onChange={(e) => setNewNote(e.target.value)}
                         placeholder="Type court hall notes, judge directives, opponent arguments, or order directions..."
-                        className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 font-serif"
+                        className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl p-3 text-sm focus:ring-2 focus:ring-[#B8881A] font-serif"
                       />
                       <button
                         onClick={() => handleSaveNote(h.id)}
                         disabled={!newNote.trim()}
-                        className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-sm transition-all"
+                        className="inline-flex items-center gap-2 bg-[#B8881A] hover:bg-[#D4A82A] disabled:opacity-50 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-sm transition-all"
                       >
                         <FileText className="w-4 h-4" /> Save Diary Entry
                       </button>

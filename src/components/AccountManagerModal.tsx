@@ -221,7 +221,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
         {/* Modal Header */}
         <div className="p-5 bg-slate-900 text-white border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-md">
+            <div className="p-2 rounded-xl bg-[#B8881A] text-white shadow-md">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -290,7 +290,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
               onClick={() => setActiveTab('firm')}
               className={`px-4 py-2.5 rounded-t-xl transition-all flex items-center gap-1.5 ${
                 activeTab === 'firm'
-                  ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 border-t-2 border-indigo-600 shadow-sm'
+                  ? 'bg-white dark:bg-slate-900 text-[#B8881A] border-t-2 border-indigo-600 shadow-sm'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
@@ -304,7 +304,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
               onClick={() => setActiveTab('lawyer')}
               className={`px-4 py-2.5 rounded-t-xl transition-all flex items-center gap-1.5 ${
                 activeTab === 'lawyer'
-                  ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 border-t-2 border-indigo-600 shadow-sm'
+                  ? 'bg-white dark:bg-slate-900 text-[#B8881A] border-t-2 border-indigo-600 shadow-sm'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
@@ -323,7 +323,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
             onClick={() => setActiveTab('overview')}
             className={`px-4 py-2.5 rounded-t-xl transition-all flex items-center gap-1.5 ${
               activeTab === 'overview'
-                ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 border-t-2 border-indigo-600 shadow-sm'
+                ? 'bg-white dark:bg-slate-900 text-[#B8881A] border-t-2 border-indigo-600 shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
@@ -409,7 +409,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     Change Account Password
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Update credentials for <strong className="text-indigo-600 dark:text-indigo-400">{currentUser.email}</strong> ({currentUser.role})
+                    Update credentials for <strong className="text-[#B8881A]">{currentUser.email}</strong> ({currentUser.role})
                   </p>
                 </div>
               </div>
@@ -425,7 +425,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     onChange={(e) => setCurrPass(e.target.value)}
                     placeholder="Enter current password"
                     required
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 pr-10 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 pr-10 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   />
                   <button
                     type="button"
@@ -448,7 +448,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     onChange={(e) => setNewPass(e.target.value)}
                     placeholder="Enter new strong password"
                     required
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 pr-10 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 pr-10 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   />
                   <button
                     type="button"
@@ -471,7 +471,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     onChange={(e) => setConfirmPass(e.target.value)}
                     placeholder="Re-enter new password"
                     required
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 pr-10 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 pr-10 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   />
                   <button
                     type="button"
@@ -540,7 +540,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="e.g. M/s Khaitan & Partners Advocates"
                     value={firmName}
                     onChange={(e) => setFirmName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
 
@@ -553,7 +553,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="e.g. KPA-DEL"
                     value={firmCode}
                     onChange={(e) => setFirmCode(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
 
@@ -565,7 +565,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     type="text"
                     value={firmCity}
                     onChange={(e) => setFirmCity(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
 
@@ -576,7 +576,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                   <select
                     value={firmPlan}
                     onChange={(e) => setFirmPlan(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="Partner Suite">Partner Suite (10TB Vault, PaddleOCR)</option>
                     <option value="Enterprise Unlimited">Enterprise Unlimited (Supreme Court AI)</option>
@@ -593,7 +593,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="e.g. Adv. Vikram Khaitan"
                     value={firmAdminName}
                     onChange={(e) => setFirmAdminName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
 
@@ -607,7 +607,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="e.g. admin@khaitanpartners.in"
                     value={firmAdminEmail}
                     onChange={(e) => setFirmAdminEmail(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A] font-mono"
                   />
                 </div>
 
@@ -622,7 +622,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                       placeholder="••••••••••••"
                       value={firmAdminPassword}
                       onChange={(e) => setFirmAdminPassword(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono pr-10"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A] font-mono pr-10"
                     />
                     <button
                       type="button"
@@ -644,7 +644,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="••••••••••••"
                     value={firmAdminConfirmPassword}
                     onChange={(e) => setFirmAdminConfirmPassword(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A] font-mono"
                   />
                 </div>
 
@@ -655,7 +655,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                   <select
                     value={firmAdminRole}
                     onChange={(e) => setFirmAdminRole(e.target.value as UserRole)}
-                    className="w-full px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-300 dark:border-indigo-700 text-indigo-950 dark:text-indigo-200 font-bold focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-300 dark:border-indigo-700 text-indigo-950 dark:text-indigo-200 font-bold focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="System Administrator">System Administrator (Full Owner & System Admin)</option>
                     <option value="Firm Admin">Firm Admin (Managing Partner / Firm Operations)</option>
@@ -701,7 +701,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                 <button
                   type="submit"
                   disabled={isDemo}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold shadow-md flex items-center gap-2 transition-all"
+                  className="px-5 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] disabled:opacity-50 text-white font-bold shadow-md flex items-center gap-2 transition-all"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Provision Law Firm & Firm Admin Account</span>
@@ -730,7 +730,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="e.g. Adv. Meenakshi Sundaram"
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
 
@@ -744,7 +744,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="e.g. meenakshi@lawyerdesk.in"
                     value={userEmail}
                     onChange={(e) => setUserEmail(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A] font-mono"
                   />
                 </div>
 
@@ -759,7 +759,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                       placeholder="••••••••••••"
                       value={userPassword}
                       onChange={(e) => setUserPassword(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono pr-10"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A] font-mono pr-10"
                     />
                     <button
                       type="button"
@@ -781,7 +781,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="••••••••••••"
                     value={userConfirmPassword}
                     onChange={(e) => setUserConfirmPassword(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A] font-mono"
                   />
                 </div>
 
@@ -792,7 +792,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                   <select
                     value={userRole}
                     onChange={(e) => setUserRole(e.target.value as UserRole)}
-                    className="w-full px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-300 dark:border-indigo-700 text-indigo-950 dark:text-indigo-200 font-bold focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-300 dark:border-indigo-700 text-indigo-950 dark:text-indigo-200 font-bold focus:ring-2 focus:ring-[#B8881A]"
                   >
                     {isSystemAdmin && <option value="System Administrator">System Administrator (Full Owner & Admin)</option>}
                     <option value="Firm Admin">Firm Admin (Managing Partner / Firm Ops)</option>
@@ -814,7 +814,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     placeholder="e.g. D/1842/2016"
                     value={barRegNo}
                     onChange={(e) => setBarRegNo(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
 
@@ -826,7 +826,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                     type="text"
                     value={userPhone}
                     onChange={(e) => setUserPhone(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -835,10 +835,10 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
               <div className="p-3.5 rounded-xl bg-slate-900 text-slate-200 border border-slate-800 space-y-2 shadow-inner">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2 font-bold text-indigo-300">
                   <span className="flex items-center gap-1.5 text-xs">
-                    <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                    <ShieldCheck className="w-4 h-4 text-[#D4A82A]" />
                     Role Authority & Privilege Matrix
                   </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">
+                  <span className="px-2 py-0.5 rounded text-[10px] bg-[#B8881A]/20 text-indigo-300 border border-[#B8881A]/30 font-mono">
                     {userRole}
                   </span>
                 </div>
@@ -934,7 +934,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                 <button
                   type="submit"
                   disabled={isDemo}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold shadow-md flex items-center gap-2 transition-all"
+                  className="px-5 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] disabled:opacity-50 text-white font-bold shadow-md flex items-center gap-2 transition-all"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Register Account & Send Access Credentials</span>
@@ -990,7 +990,7 @@ export const AccountManagerModal: React.FC<AccountManagerModalProps> = ({
                       className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs"
                     >
                       <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px]">
+                        <div className="w-7 h-7 rounded-lg bg-[#B8881A] text-white font-bold flex items-center justify-center text-[10px]">
                           {u.name.substring(0, 2).toUpperCase()}
                         </div>
                         <div>

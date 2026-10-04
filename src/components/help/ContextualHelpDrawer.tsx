@@ -46,7 +46,7 @@ export const ContextualHelpDrawer: React.FC<ContextualHelpDrawerProps> = ({
         {/* Drawer Header */}
         <div className="p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between border-b border-slate-800">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-indigo-600/30 text-indigo-400">
+            <div className="p-2 rounded-xl bg-[#B8881A]/30 text-[#D4A82A]">
               <HelpCircle className="w-5 h-5" />
             </div>
             <div>
@@ -68,7 +68,7 @@ export const ContextualHelpDrawer: React.FC<ContextualHelpDrawerProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search help articles..."
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 font-medium"
+              className="w-full pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B8881A] font-medium"
             />
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           </div>
@@ -87,14 +87,14 @@ export const ContextualHelpDrawer: React.FC<ContextualHelpDrawerProps> = ({
                 onOpenArticle(art);
                 onClose();
               }}
-              className="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 cursor-pointer transition-all space-y-1.5 group shadow-sm"
+              className="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-[#B8881A] cursor-pointer transition-all space-y-1.5 group shadow-sm"
             >
-              <div className="flex items-center justify-between text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase">
+              <div className="flex items-center justify-between text-[10px] font-bold text-[#B8881A] uppercase">
                 <span>{art.categoryName}</span>
                 <span>{art.estimatedReadTimeMin} min</span>
               </div>
 
-              <h4 className="font-extrabold text-xs text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+              <h4 className="font-extrabold text-xs text-slate-900 dark:text-white group-hover:text-[#B8881A] dark:group-hover:text-[#D4A82A]">
                 {art.title[currentLang] || art.title.en}
               </h4>
 
@@ -102,7 +102,7 @@ export const ContextualHelpDrawer: React.FC<ContextualHelpDrawerProps> = ({
                 {art.shortDescription[currentLang] || art.shortDescription.en}
               </p>
 
-              <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-1 pt-1">
+              <div className="text-[10px] text-[#B8881A] font-bold flex items-center gap-1 pt-1">
                 <span>Read Full Article</span>
                 <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </div>

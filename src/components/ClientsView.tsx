@@ -222,7 +222,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
       <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <Users className="w-5 h-5 text-[#B8881A]" />
             <h1 className="text-xl font-extrabold text-slate-900 dark:text-white">Client Management & KYC Vault</h1>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -241,7 +241,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
 
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white text-xs font-semibold shadow transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Add New Client</span>
@@ -273,7 +273,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                   onClick={() => setSelectedClient(c)}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-indigo-50 dark:bg-indigo-950/70 border-indigo-500 ring-1 ring-indigo-500'
+                      ? 'bg-indigo-50 dark:bg-indigo-950/70 border-[#B8881A] ring-1 ring-[#B8881A]'
                       : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300'
                   }`}
                 >
@@ -386,7 +386,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
             <div className="p-4 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <ShieldCheck className="w-4 h-4 text-[#B8881A]" />
                   <span className="font-bold text-xs text-indigo-950 dark:text-indigo-100">e-KYC Instant Verification (Surepass / Karza API)</span>
                   {selectedClient.kycVerified && (
                     <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/80 text-emerald-800 dark:text-emerald-200 font-extrabold text-[10px]">
@@ -405,7 +405,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                 <button
                   onClick={() => handleVerifyClientKyc('PAN')}
                   disabled={isVerifyingKyc}
-                  className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] disabled:opacity-50 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
                 >
                   {isVerifyingKyc ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
                   <span>Verify PAN</span>
@@ -472,7 +472,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                   value={newClientData.name}
                   onChange={(e) => setNewClientData({ ...newClientData, name: e.target.value })}
                   placeholder="e.g. Acme Legal Solutions Pvt Ltd or Adv. Rajeshwar"
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -482,7 +482,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                   <select
                     value={newClientData.type}
                     onChange={(e) => setNewClientData({ ...newClientData, type: e.target.value as any })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="Corporate Entity">Corporate Entity (Pvt Ltd / Ltd / MNC)</option>
                     <option value="Individual">Individual Client / Sole Litigant</option>
@@ -502,7 +502,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     value={newClientData.panNumber}
                     onChange={(e) => setNewClientData({ ...newClientData, panNumber: e.target.value.toUpperCase() })}
                     placeholder="ABCDE1234F"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -515,7 +515,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     value={newClientData.email}
                     onChange={(e) => setNewClientData({ ...newClientData, email: e.target.value })}
                     placeholder="client@company.com"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#B8881A] font-mono"
                   />
                 </div>
 
@@ -526,7 +526,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     value={newClientData.phone}
                     onChange={(e) => setNewClientData({ ...newClientData, phone: e.target.value })}
                     placeholder="+91 98000 00000"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -539,7 +539,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     value={newClientData.gstin}
                     onChange={(e) => setNewClientData({ ...newClientData, gstin: e.target.value.toUpperCase() })}
                     placeholder="07AAAAA0000A1Z5"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
 
@@ -550,7 +550,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     value={newClientData.address}
                     onChange={(e) => setNewClientData({ ...newClientData, address: e.target.value })}
                     placeholder="Barakhamba Road, New Delhi"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -562,7 +562,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     type="checkbox"
                     checked={provisionAccount}
                     onChange={(e) => setProvisionAccount(e.target.checked)}
-                    className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                    className="w-4 h-4 text-[#B8881A] rounded border-slate-300 focus:ring-[#B8881A]"
                   />
                   <span className="font-bold text-indigo-900 dark:text-indigo-200 text-xs flex items-center gap-1.5">
                     <Lock className="w-3.5 h-3.5 text-indigo-500" />
@@ -585,7 +585,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                           const randPass = 'Client#' + Math.floor(1000 + Math.random() * 9000) + '!';
                           setClientPassword(randPass);
                         }}
-                        className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-medium"
+                        className="text-[11px] text-[#B8881A] hover:underline flex items-center gap-1 font-medium"
                       >
                         <RefreshCw className="w-3 h-3" /> Auto-Generate
                       </button>
@@ -599,7 +599,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                         value={clientPassword}
                         onChange={(e) => setClientPassword(e.target.value)}
                         placeholder="e.g. Client@123"
-                        className="w-full pl-9 pr-10 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full pl-9 pr-10 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-xs focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                       />
                       <button
                         type="button"
@@ -619,7 +619,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                       <select
                         value={clientPrivilegeLevel}
                         onChange={(e) => setClientPrivilegeLevel(e.target.value as any)}
-                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                       >
                         <option value="standard">Standard Client Access (Assigned Cases, Orders & Invoices)</option>
                         <option value="restricted">Restricted Tracker (Upcoming Hearings & Case Status Only)</option>
@@ -631,7 +631,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     <div className="p-3 rounded-xl bg-slate-900 text-slate-200 text-[11px] space-y-2 border border-slate-800 shadow-inner">
                       <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 font-bold text-indigo-300">
                         <span>Client Account Privilege Matrix</span>
-                        <span className="px-2 py-0.5 rounded text-[9.5px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono uppercase">
+                        <span className="px-2 py-0.5 rounded text-[9.5px] bg-[#B8881A]/20 text-indigo-300 border border-[#B8881A]/30 font-mono uppercase">
                           {clientPrivilegeLevel} Privilege
                         </span>
                       </div>
@@ -678,7 +678,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     </div>
 
                     <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                      Share credentials (<span className="font-mono text-indigo-600 dark:text-indigo-300">{newClientData.email || 'client email'}</span> / <span className="font-mono text-indigo-600 dark:text-indigo-300">{clientPassword}</span>) with client for portal access.
+                      Share credentials (<span className="font-mono text-[#B8881A] dark:text-indigo-300">{newClientData.email || 'client email'}</span> / <span className="font-mono text-[#B8881A] dark:text-indigo-300">{clientPassword}</span>) with client for portal access.
                     </p>
                   </div>
                 )}
@@ -694,7 +694,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-colors shadow-md"
+                  className="px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold transition-colors shadow-md"
                 >
                   Save & Onboard Client
                 </button>
@@ -726,7 +726,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                   required
                   value={editingClient.name}
                   onChange={(e) => setEditingClient({ ...editingClient, name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -736,7 +736,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                   <select
                     value={editingClient.type}
                     onChange={(e) => setEditingClient({ ...editingClient, type: e.target.value as any })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="Corporate Entity">Corporate Entity</option>
                     <option value="Individual">Individual</option>
@@ -750,7 +750,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     required
                     value={editingClient.panNumber}
                     onChange={(e) => setEditingClient({ ...editingClient, panNumber: e.target.value.toUpperCase() })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -762,7 +762,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     type="email"
                     value={editingClient.email}
                     onChange={(e) => setEditingClient({ ...editingClient, email: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
                 <div>
@@ -771,7 +771,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                     type="text"
                     value={editingClient.phone}
                     onChange={(e) => setEditingClient({ ...editingClient, phone: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -782,7 +782,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                   type="text"
                   value={editingClient.gstin || ''}
                   onChange={(e) => setEditingClient({ ...editingClient, gstin: e.target.value.toUpperCase() })}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -792,7 +792,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                   type="text"
                   value={editingClient.address || ''}
                   onChange={(e) => setEditingClient({ ...editingClient, address: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -804,7 +804,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ clients, onAddNewClien
                 >
                   Cancel
                 </button>
-                <button type="submit" className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-colors shadow-md">
+                <button type="submit" className="px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold transition-colors shadow-md">
                   Save Changes
                 </button>
               </div>

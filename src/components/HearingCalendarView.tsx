@@ -37,7 +37,7 @@ export const HearingCalendarView: React.FC<HearingCalendarViewProps> = ({
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <CalendarDays className="w-4 h-4" /> Interactive Court Hearing Master Calendar
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Hearing Calendar</h1>
@@ -86,7 +86,7 @@ export const HearingCalendarView: React.FC<HearingCalendarViewProps> = ({
                   onClick={() => setSelectedDay(day)}
                   className={`h-20 p-2 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-indigo-50 dark:bg-indigo-950/80 border-indigo-400 ring-2 ring-indigo-500/20 shadow-sm'
+                      ? 'bg-indigo-50 dark:bg-indigo-950/80 border-indigo-400 ring-2 ring-[#B8881A]/20 shadow-sm'
                       : hearingsOnDay.length > 0
                       ? 'bg-amber-50/60 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 hover:bg-amber-100/60'
                       : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50'
@@ -96,7 +96,7 @@ export const HearingCalendarView: React.FC<HearingCalendarViewProps> = ({
                     <span
                       className={`text-xs font-black ${
                         isSelected
-                          ? 'text-indigo-600 dark:text-indigo-400'
+                          ? 'text-[#B8881A]'
                           : hearingsOnDay.length > 0
                           ? 'text-amber-900 dark:text-amber-300'
                           : 'text-slate-700 dark:text-slate-300'
@@ -160,7 +160,7 @@ export const HearingCalendarView: React.FC<HearingCalendarViewProps> = ({
                       className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-3"
                     >
                       <div className="flex items-center justify-between text-xs font-bold">
-                        <span className="text-indigo-600 dark:text-indigo-400 font-mono">{matter?.caseNumber}</span>
+                        <span className="text-[#B8881A] font-mono">{matter?.caseNumber}</span>
                         <span className="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 px-2 py-0.5 rounded font-mono">
                           {h.time}
                         </span>
@@ -173,7 +173,7 @@ export const HearingCalendarView: React.FC<HearingCalendarViewProps> = ({
                       <div className="text-xs text-slate-600 dark:text-slate-300 space-y-1 pt-2 border-t border-slate-200 dark:border-slate-800">
                         <div>🏛️ <strong>{h.courtName}</strong> ({h.courtHallNo})</div>
                         <div>⚖️ Presiding: {h.judgeName}</div>
-                        <div>📌 Stage: <span className="text-indigo-600 dark:text-indigo-400 font-bold">{h.stage}</span></div>
+                        <div>📌 Stage: <span className="text-[#B8881A] font-bold">{h.stage}</span></div>
                         <div>👤 Lead Lawyer: <strong>{h.assignedLawyerName}</strong></div>
                       </div>
 

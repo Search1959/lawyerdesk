@@ -176,7 +176,7 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
       case 'amber':
         return 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800';
       case 'indigo':
-        return 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800';
+        return 'bg-indigo-50 dark:bg-indigo-950/60 text-[#B8881A] border-indigo-200 dark:border-indigo-800';
       case 'rose':
         return 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800';
       case 'blue':
@@ -667,7 +667,7 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
                   onClick={() => setOcrStatusFilter('all')}
                   className={`px-2 py-0.5 rounded-md font-bold transition-all ${
                     ocrStatusFilter === 'all'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-[#B8881A] text-white'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                   }`}
                 >
@@ -1037,7 +1037,7 @@ export const DocumentEngineView: React.FC<DocumentEngineViewProps> = ({
                       emerald: 'bg-emerald-500',
                       purple: 'bg-purple-500',
                       amber: 'bg-amber-500',
-                      indigo: 'bg-indigo-500',
+                      indigo: 'bg-[#B8881A]',
                       rose: 'bg-rose-500',
                     }[clr];
 

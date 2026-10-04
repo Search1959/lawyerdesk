@@ -132,7 +132,7 @@ ${briefContent.keyPrecedents.map((p) => `• ${p.citation}: ${p.ratio}`).join('\
             <div>
               <span className="text-[10px] uppercase font-bold text-slate-400 block">Presiding Judge & Stage</span>
               <div className="font-bold text-slate-900 dark:text-white text-xs">{judgeName}</div>
-              <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">Stage: {stage}</div>
+              <div className="text-[11px] text-[#B8881A] font-semibold mt-0.5">Stage: {stage}</div>
             </div>
           </div>
 
@@ -181,7 +181,7 @@ ${briefContent.keyPrecedents.map((p) => `• ${p.citation}: ${p.ratio}`).join('\
             <div className="space-y-2">
               {briefContent.keyPrecedents.map((p, idx) => (
                 <div key={idx} className="p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
-                  <span className="font-extrabold text-indigo-600 dark:text-indigo-400 block">{p.citation}</span>
+                  <span className="font-extrabold text-[#B8881A] block">{p.citation}</span>
                   <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-300">{p.ratio}</p>
                 </div>
               ))}
@@ -203,7 +203,7 @@ ${briefContent.keyPrecedents.map((p) => `• ${p.citation}: ${p.ratio}`).join('\
           <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
             >
               <Printer className="w-4 h-4" />
               <span>Print Brief</span>

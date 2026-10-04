@@ -75,13 +75,13 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({
       <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 text-white shadow-2xl relative overflow-hidden space-y-6">
         
         {/* Glow Effects */}
-        <div className="absolute -top-12 -left-12 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-12 -left-12 w-40 h-40 bg-[#B8881A]/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-sky-500/20 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-indigo-600/30 border border-indigo-500/30 text-indigo-400">
+            <div className="p-2 rounded-xl bg-[#B8881A]/30 border border-[#B8881A]/30 text-[#D4A82A]">
               <Sparkles className="w-5 h-5 animate-pulse" />
             </div>
             <div>
@@ -131,13 +131,13 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({
                 ? 'Listening to command...'
                 : 'Tap Microphone to Speak'}
             </div>
-            <div className="text-xs text-indigo-400 min-h-[20px] font-mono">
+            <div className="text-xs text-[#D4A82A] min-h-[20px] font-mono">
               {transcript || (language === 'EN' ? 'e.g. "Show tomorrow\'s hearings"' : 'যেমন "আগামীকালের শুনানি দেখাও"')}
             </div>
           </div>
 
           {responseMessage && (
-            <div className="p-3 bg-indigo-950/80 border border-indigo-500/40 rounded-2xl text-xs font-bold text-emerald-300 flex items-center gap-2 animate-in fade-in duration-200">
+            <div className="p-3 bg-indigo-950/80 border border-[#B8881A]/40 rounded-2xl text-xs font-bold text-emerald-300 flex items-center gap-2 animate-in fade-in duration-200">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{responseMessage}</span>
             </div>
@@ -147,7 +147,7 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({
         {/* Quick Voice Commands */}
         <div className="space-y-2 pt-2 border-t border-slate-800">
           <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Command className="w-3.5 h-3.5 text-indigo-400" />
+            <Command className="w-3.5 h-3.5 text-[#D4A82A]" />
             <span>Sample Voice Commands:</span>
           </div>
 
@@ -157,7 +157,7 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({
               className="p-2.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl text-left text-slate-200 hover:text-white transition-all flex items-center justify-between"
             >
               <span>{language === 'EN' ? '"Show tomorrow\'s hearings"' : '"আগামীকালের শুনানি দেখাও"'}</span>
-              <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#D4A82A]" />
             </button>
 
             <button
@@ -165,7 +165,7 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({
               className="p-2.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl text-left text-slate-200 hover:text-white transition-all flex items-center justify-between"
             >
               <span>{language === 'EN' ? '"Court Intelligence"' : '"কলকাতা কোর্ট ইন্টেলিজেন্স"'}</span>
-              <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#D4A82A]" />
             </button>
 
             <button
@@ -173,7 +173,7 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({
               className="p-2.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl text-left text-slate-200 hover:text-white transition-all flex items-center justify-between"
             >
               <span>{language === 'EN' ? '"Draft Legal Notice"' : '"আইনি নোটিশ ড্রাফট করো"'}</span>
-              <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#D4A82A]" />
             </button>
 
             <button
@@ -181,7 +181,7 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({
               className="p-2.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl text-left text-slate-200 hover:text-white transition-all flex items-center justify-between"
             >
               <span>{language === 'EN' ? '"Calculate Limitation Period"' : '"লিমিটেশন ক্যালকুলেটর"'}</span>
-              <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#D4A82A]" />
             </button>
           </div>
         </div>

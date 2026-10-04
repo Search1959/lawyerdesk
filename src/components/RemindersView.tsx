@@ -304,7 +304,7 @@ export const RemindersView: React.FC = () => {
             placeholder="Search deadline title, type, or case..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs font-medium focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#B8881A]"
           />
         </div>
       </div>
@@ -414,7 +414,7 @@ export const RemindersView: React.FC = () => {
                 <select
                   value={newRem.matterId}
                   onChange={(e) => setNewRem({ ...newRem, matterId: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 >
                   {mockMatters.map(m => (
                     <option key={m.id} value={m.id}>
@@ -432,7 +432,7 @@ export const RemindersView: React.FC = () => {
                   value={newRem.title}
                   onChange={(e) => setNewRem({ ...newRem, title: e.target.value })}
                   placeholder="e.g. Deposit Ad Valorem Court Stamp Fees"
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -442,7 +442,7 @@ export const RemindersView: React.FC = () => {
                   <select
                     value={newRem.type}
                     onChange={(e) => setNewRem({ ...newRem, type: e.target.value as any })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="Limitation Period">Limitation Period</option>
                     <option value="Order Compliance">Order Compliance</option>
@@ -455,7 +455,7 @@ export const RemindersView: React.FC = () => {
                   <select
                     value={newRem.priority}
                     onChange={(e) => setNewRem({ ...newRem, priority: e.target.value as any })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="Critical">Critical</option>
                     <option value="High">High</option>
@@ -471,7 +471,7 @@ export const RemindersView: React.FC = () => {
                   required
                   value={newRem.dueDate}
                   onChange={(e) => setNewRem({ ...newRem, dueDate: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 

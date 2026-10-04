@@ -208,7 +208,7 @@ export const InvoiceEditModal: React.FC<InvoiceEditModalProps> = ({
       <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 my-auto max-h-[92vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <FileText className="w-5 h-5 text-[#B8881A]" />
             <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
               {isEditing ? `Edit GST Tax Invoice #${formData.invoiceNumber}` : 'Create New GST Legal Fee Invoice'}
             </h2>
@@ -331,7 +331,7 @@ export const InvoiceEditModal: React.FC<InvoiceEditModalProps> = ({
               <select
                 value={formData.taxType}
                 onChange={(e) => setFormData({ ...formData, taxType: e.target.value as any })}
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-indigo-600 dark:text-indigo-400"
+                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-[#B8881A]"
               >
                 <option value="CGST_SGST">Intra-state (CGST 9% + SGST 9%)</option>
                 <option value="IGST">Inter-state (IGST 18%)</option>
@@ -368,7 +368,7 @@ export const InvoiceEditModal: React.FC<InvoiceEditModalProps> = ({
               <button
                 type="button"
                 onClick={handleAddItem}
-                className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-bold hover:bg-indigo-100 flex items-center gap-1 border border-indigo-200 dark:border-indigo-800"
+                className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-[#B8881A] dark:text-indigo-300 font-bold hover:bg-indigo-100 flex items-center gap-1 border border-indigo-200 dark:border-indigo-800"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Item</span>
@@ -447,7 +447,7 @@ export const InvoiceEditModal: React.FC<InvoiceEditModalProps> = ({
 
             <div className="flex justify-between text-sm font-black text-slate-900 dark:text-white pt-2 border-t border-indigo-200 dark:border-indigo-800">
               <span>Grand Total Invoice Amount:</span>
-              <span className="text-indigo-600 dark:text-indigo-400">₹{grandTotal.toLocaleString('en-IN')}</span>
+              <span className="text-[#B8881A]">₹{grandTotal.toLocaleString('en-IN')}</span>
             </div>
           </div>
 
@@ -462,7 +462,7 @@ export const InvoiceEditModal: React.FC<InvoiceEditModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold shadow-md transition-all flex items-center gap-1.5"
+              className="px-6 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-extrabold shadow-md transition-all flex items-center gap-1.5"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{isEditing ? 'Save Invoice Changes' : 'Generate Tax Invoice'}</span>

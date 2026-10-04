@@ -74,7 +74,7 @@ export const ExpensesView: React.FC = () => {
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <Receipt className="w-4 h-4" /> Court Fee Stamps & Case Disbursements
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Disbursements & Expenses</h1>
@@ -85,7 +85,7 @@ export const ExpensesView: React.FC = () => {
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
+          className="inline-flex items-center gap-2 bg-[#B8881A] hover:bg-[#D4A82A] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
         >
           <Plus className="w-4 h-4" /> Log Case Expense
         </button>
@@ -96,7 +96,7 @@ export const ExpensesView: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
           <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Disbursements Logged</div>
           <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">₹{totalDisbursementsINR.toLocaleString()}</div>
-          <div className="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-1">All case expenses</div>
+          <div className="text-xs text-[#B8881A] font-medium mt-1">All case expenses</div>
         </div>
         <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
           <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Billed To Client</div>
@@ -123,14 +123,14 @@ export const ExpensesView: React.FC = () => {
             placeholder="Search expense description, case, or staff..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg text-sm focus:ring-2 focus:ring-[#B8881A]"
           />
         </div>
 
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-indigo-500"
+          className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-[#B8881A]"
         >
           <option value="All">All Categories</option>
           <option value="Court Fee Stamp">Court Fee Stamp</option>
@@ -160,7 +160,7 @@ export const ExpensesView: React.FC = () => {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
               {filteredExpenses.map((e) => (
                 <tr key={e.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
-                  <td className="p-3 font-bold text-xs text-indigo-600 dark:text-indigo-400">{e.category}</td>
+                  <td className="p-3 font-bold text-xs text-[#B8881A]">{e.category}</td>
                   <td className="p-3 font-semibold text-slate-900 dark:text-white max-w-xs truncate">{e.description}</td>
                   <td className="p-3 text-xs text-slate-600 dark:text-slate-300 max-w-xs truncate">{e.matterTitle}</td>
                   <td className="p-3 text-xs text-slate-700 dark:text-slate-300 font-medium">{e.spentBy}</td>
@@ -215,7 +215,7 @@ export const ExpensesView: React.FC = () => {
                 <select
                   value={newExp.matterId}
                   onChange={(e) => setNewExp({ ...newExp, matterId: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 >
                   {mockMatters.map(m => (
                     <option key={m.id} value={m.id}>
@@ -230,7 +230,7 @@ export const ExpensesView: React.FC = () => {
                 <select
                   value={newExp.category}
                   onChange={(e) => setNewExp({ ...newExp, category: e.target.value as any })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 >
                   <option value="Court Fee Stamp">Court Fee Stamp</option>
                   <option value="Process Server Fee">Process Server Fee</option>
@@ -248,7 +248,7 @@ export const ExpensesView: React.FC = () => {
                   value={newExp.description}
                   onChange={(e) => setNewExp({ ...newExp, description: e.target.value })}
                   placeholder="e.g. Ad Valorem Court Fee Stamp / Certified Copy Fees"
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -260,7 +260,7 @@ export const ExpensesView: React.FC = () => {
                     required
                     value={newExp.amountINR}
                     onChange={(e) => setNewExp({ ...newExp, amountINR: Number(e.target.value) })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
                 <div>
@@ -270,7 +270,7 @@ export const ExpensesView: React.FC = () => {
                     required
                     value={newExp.date}
                     onChange={(e) => setNewExp({ ...newExp, date: e.target.value })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -285,7 +285,7 @@ export const ExpensesView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-[#B8881A] hover:bg-[#D4A82A] rounded-lg shadow-sm"
                 >
                   Save Disbursement
                 </button>

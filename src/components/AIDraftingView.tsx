@@ -940,7 +940,7 @@ DEPONENT / PLAINTIFF`;
               onClick={() => setShowLibraryModal(true)}
               className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs flex items-center gap-1.5 active:scale-95 transition-all"
             >
-              <BookMarked className="w-4 h-4 text-indigo-400" />
+              <BookMarked className="w-4 h-4 text-[#D4A82A]" />
               <span>Draft Library ({savedDraftsLibrary.length})</span>
             </button>
 
@@ -1040,10 +1040,10 @@ DEPONENT / PLAINTIFF`;
 
       {/* STENOGRAPHER MODE NOTICE (if Stenographer Mode active) */}
       {userRoleMode === 'Stenographer' && (
-        <div className="p-3.5 rounded-2xl bg-indigo-950/60 border border-indigo-500/40 space-y-2 text-xs">
+        <div className="p-3.5 rounded-2xl bg-indigo-950/60 border border-[#B8881A]/40 space-y-2 text-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-indigo-300 font-black">
-              <UserCheck className="w-4 h-4 text-indigo-400" />
+              <UserCheck className="w-4 h-4 text-[#D4A82A]" />
               <span>STENOGRAPHER WORKSPACE ACTIVE</span>
               {activeStenoAssignment && (
                 <span className="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded text-[10px] border border-amber-500/30">
@@ -1067,7 +1067,7 @@ DEPONENT / PLAINTIFF`;
                 setSavedBanner('✅ Draft submitted to Senior Advocate for final review!');
                 setTimeout(() => setSavedBanner(null), 3000);
               }}
-              className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1 active:scale-95"
+              className="px-3 py-1.5 rounded-lg bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center gap-1 active:scale-95"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Submit Draft to Lawyer for Review</span>
@@ -1322,7 +1322,7 @@ DEPONENT / PLAINTIFF`;
                     setShowAssignStenoModal(true);
                   }
                 }}
-                className="px-2 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] flex items-center gap-1 ml-auto"
+                className="px-2 py-1 rounded bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-[10px] flex items-center gap-1 ml-auto"
               >
                 <UserCheck className="w-3 h-3" />
                 <span>Assign to Stenographer</span>
@@ -1417,7 +1417,7 @@ DEPONENT / PLAINTIFF`;
                   setSavedBanner("🚀 Natural Advocate Dictation loaded into Description Box!");
                   setTimeout(() => setSavedBanner(null), 3000);
                 }}
-                className="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1 active:scale-95 transition-all"
+                className="px-3 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center gap-1 active:scale-95 transition-all"
                 title="Simulate Advocate Dictation in 1 click"
               >
                 <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
@@ -1575,7 +1575,7 @@ DEPONENT / PLAINTIFF`;
                           `\n\n[RELIED UPON PRECEDENT]:\n"In State of Haryana v. Bhajan Lal (1992 Supp (1) SCC 335), the Hon'ble Supreme Court held that where allegations made in FIR do not disclose a cognizable offense, the same is liable to be set aside."`
                       )
                     }
-                    className="mt-1 text-[10px] text-indigo-400 hover:underline font-bold flex items-center gap-1"
+                    className="mt-1 text-[10px] text-[#D4A82A] hover:underline font-bold flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Insert Precedent Citation</span>
@@ -1673,7 +1673,7 @@ DEPONENT / PLAINTIFF`;
                   <MessageSquare className="w-4 h-4 text-amber-400" />
                   <span>AI Document Chat</span>
                 </span>
-                <span className="text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded font-mono font-bold">
+                <span className="text-[9px] bg-[#B8881A]/20 text-indigo-300 px-1.5 py-0.5 rounded font-mono font-bold">
                   Grounded
                 </span>
               </div>
@@ -1807,7 +1807,7 @@ DEPONENT / PLAINTIFF`;
           <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-5 space-y-4 shadow-2xl text-xs">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="font-extrabold text-sm text-white flex items-center gap-2">
-                <UserCheck className="w-5 h-5 text-indigo-400" />
+                <UserCheck className="w-5 h-5 text-[#D4A82A]" />
                 <span>Assign Draft to Stenographer</span>
               </div>
               <button onClick={() => setShowAssignStenoModal(false)} className="text-slate-400 hover:text-white">
@@ -1868,7 +1868,7 @@ DEPONENT / PLAINTIFF`;
               <button
                 type="button"
                 onClick={handleAssignToStenographer}
-                className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-lg active:scale-95 transition-all"
+                className="w-full py-3 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-extrabold text-xs shadow-lg active:scale-95 transition-all"
               >
                 Dispatch Task to Stenographer
               </button>

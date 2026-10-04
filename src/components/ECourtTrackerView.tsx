@@ -425,11 +425,11 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
           onClick={() => handleOpenLiveGatewayModal('DLHC010004202024', 'https://services.ecourts.gov.in/ecourtindia_v6/', 'search')}
           className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-600 hover:shadow-md transition-all flex items-center gap-3.5 group text-left cursor-pointer"
         >
-          <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+          <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-[#B8881A] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
             <Building2 className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 flex items-center gap-1">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#B8881A] dark:group-hover:text-[#D4A82A] flex items-center gap-1">
               <span>eCourts Terminal</span>
               <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
             </h3>
@@ -591,7 +591,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
           {/* Date Selector */}
           <div className="flex items-center gap-2 flex-wrap">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <Calendar className="w-4 h-4 text-[#B8881A]" />
               Cause List Date:
             </label>
             <input
@@ -842,7 +842,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
           <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
               <div>
-                <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-[#B8881A] uppercase tracking-widest">
                   eCourts Sync Audit Log
                 </span>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
@@ -868,7 +868,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                   setCnrInput(syncLogCase.cnrNumber || syncLogCase.cnr || '');
                   setSyncLogCase(null);
                 }}
-                className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-[#B8881A] hover:underline flex items-center gap-1"
               >
                 <Edit3 className="w-3.5 h-3.5" />
                 Edit CNR
@@ -925,7 +925,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                           <td className="p-2.5 text-slate-600 dark:text-slate-400">
                             {log.caseStage || log.courtName || 'Court Listing'}
                           </td>
-                          <td className="p-2.5 font-bold text-indigo-600 dark:text-indigo-400">
+                          <td className="p-2.5 font-bold text-[#B8881A]">
                             {log.itemNumber || '-'}
                           </td>
                         </tr>
@@ -963,7 +963,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
           <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
               <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Edit3 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <Edit3 className="w-5 h-5 text-[#B8881A]" />
                 Add / Update CNR Number
               </h3>
               <button onClick={() => setEditCnrCase(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
@@ -986,7 +986,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                   setCnrError(null);
                 }}
                 placeholder="e.g. WBCA010001232024"
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider focus:ring-2 focus:ring-indigo-500"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider focus:ring-2 focus:ring-[#B8881A]"
               />
               <p className="text-[11px] text-slate-400 mt-1">
                 Format: 4 uppercase letters + 10 digits (e.g. WBCA010001232024). Hyphens/spaces will be stripped automatically.
@@ -1042,7 +1042,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                   className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div>
-                    <div className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                    <div className="text-xs font-mono font-bold text-[#B8881A]">
                       {m.caseNumber}
                     </div>
                     <h4 className="text-xs font-bold text-slate-900 dark:text-white mt-0.5">
@@ -1101,7 +1101,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                 <span>✅ Cases Synced:</span>
                 <span>{bulkSummaryModal.synced} / {bulkSummaryModal.total}</span>
               </div>
-              <div className="flex justify-between items-center text-indigo-600 dark:text-indigo-400 font-bold">
+              <div className="flex justify-between items-center text-[#B8881A] font-bold">
                 <span>📅 Hearing Dates Updated & WhatsApp Sent:</span>
                 <span>{bulkSummaryModal.changed}</span>
               </div>
@@ -1199,7 +1199,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                         value={liveSearchQuery}
                         onChange={(e) => setLiveSearchQuery(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && executeLiveSearch(liveSearchQuery)}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                       />
                     </div>
                     <button
@@ -1296,7 +1296,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
 
                             <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-0.5">
                               <span className="text-[10px] font-bold uppercase text-slate-400">Next Hearing Date</span>
-                              <p className="font-extrabold text-indigo-600 dark:text-indigo-400">
+                              <p className="font-extrabold text-[#B8881A]">
                                 {resItem.nextHearingDate} ({resItem.itemNumber})
                               </p>
                             </div>
@@ -1375,7 +1375,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                     {/* eCourts Official Look & Feel Header */}
                     <div className="p-4 bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-900 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-300 font-black text-lg">
+                        <div className="w-10 h-10 rounded-xl bg-[#B8881A]/30 border border-[#B8881A]/40 flex items-center justify-center text-indigo-300 font-black text-lg">
                           🏛️
                         </div>
                         <div>
@@ -1401,7 +1401,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                           <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                             Select State / High Court
                           </label>
-                          <select className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                          <select className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]">
                             <option>Delhi (High Court & District Courts)</option>
                             <option>West Bengal (Calcutta High Court)</option>
                             <option>Maharashtra (Bombay High Court / NCLT)</option>
@@ -1414,7 +1414,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                           <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                             Search Mode
                           </label>
-                          <select className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                          <select className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]">
                             <option>14-Digit Unique CNR Number</option>
                             <option>Case Number & Filing Year</option>
                             <option>Party Name / Advocate Name</option>
@@ -1431,11 +1431,11 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                               type="text"
                               value={liveSearchQuery}
                               onChange={(e) => setLiveSearchQuery(e.target.value)}
-                              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono font-bold text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono font-bold text-indigo-300 focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                             />
                             <button
                               onClick={() => executeLiveSearch(liveSearchQuery)}
-                              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs shrink-0 cursor-pointer"
+                              className="px-4 py-2 bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold rounded-xl text-xs shrink-0 cursor-pointer"
                             >
                               Fetch
                             </button>
@@ -1446,7 +1446,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
                       {/* Portal Output Table / Cards */}
                       <div className="bg-slate-950/80 rounded-2xl border border-slate-800 p-4 space-y-3">
                         <div className="flex items-center justify-between text-xs border-b border-slate-800 pb-2">
-                          <span className="font-bold text-indigo-400 flex items-center gap-1.5">
+                          <span className="font-bold text-[#D4A82A] flex items-center gap-1.5">
                             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                             Live Portal Response (Grounded from eCourts API)
                           </span>
@@ -1515,7 +1515,7 @@ export const ECourtTrackerView: React.FC<ECourtTrackerViewProps> = ({
 
                     <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                       <span className="text-[10px] font-bold uppercase text-slate-400">WhatsApp Dispatcher</span>
-                      <p className="font-bold text-indigo-600 dark:text-indigo-400 mt-1">Active Gateway</p>
+                      <p className="font-bold text-[#B8881A] mt-1">Active Gateway</p>
                     </div>
                   </div>
                 </div>

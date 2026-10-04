@@ -33,7 +33,7 @@ export const FaqModule: React.FC<FaqModuleProps> = ({ faqs, currentLang }) => {
       {/* Search Header */}
       <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl text-white border border-slate-800 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/30">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B8881A]/20 text-indigo-300 text-xs font-bold border border-[#B8881A]/30">
             <HelpCircle className="w-3.5 h-3.5" /> Frequently Asked Questions
           </div>
           <h2 className="text-xl font-black">Search LawyerDesk AI FAQs</h2>
@@ -64,7 +64,7 @@ export const FaqModule: React.FC<FaqModuleProps> = ({ faqs, currentLang }) => {
               key={faq.id}
               className={`rounded-2xl border transition-all overflow-hidden ${
                 isExpanded
-                  ? 'bg-white dark:bg-slate-900 border-indigo-500/80 shadow-md'
+                  ? 'bg-white dark:bg-slate-900 border-[#B8881A]/80 shadow-md'
                   : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300'
               }`}
             >
@@ -73,7 +73,7 @@ export const FaqModule: React.FC<FaqModuleProps> = ({ faqs, currentLang }) => {
                 className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-xs shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-[#B8881A] flex items-center justify-center font-black text-xs shrink-0">
                     Q
                   </div>
                   <span className="font-extrabold text-sm text-slate-900 dark:text-white leading-snug">{qText}</span>
@@ -107,7 +107,7 @@ export const FaqModule: React.FC<FaqModuleProps> = ({ faqs, currentLang }) => {
 
                     <button
                       onClick={(e) => handleCopyAnswer(faq, e)}
-                      className="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 font-bold text-xs flex items-center gap-1.5 transition-all"
+                      className="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-[#B8881A] dark:text-indigo-300 font-bold text-xs flex items-center gap-1.5 transition-all"
                     >
                       {copiedId === faq.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{copiedId === faq.id ? 'Copied!' : 'Copy Answer'}</span>

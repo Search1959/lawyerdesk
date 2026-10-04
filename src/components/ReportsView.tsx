@@ -7,7 +7,7 @@ export const ReportsView: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <BarChart3 className="w-4 h-4" /> Legal Firm Intelligence & Practice Analytics
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Practice Performance & Reports</h1>
@@ -31,10 +31,10 @@ export const ReportsView: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
           <div className="flex items-center justify-between text-xs font-bold uppercase text-slate-400 dark:text-slate-500">
             <span>Annual Realized Fees</span>
-            <DollarSign className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <DollarSign className="w-4 h-4 text-[#B8881A]" />
           </div>
           <div className="text-3xl font-black text-slate-900 dark:text-white mt-2">₹1.48 Cr</div>
-          <div className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold mt-1">92% Realization Rate</div>
+          <div className="text-xs text-[#B8881A] font-semibold mt-1">92% Realization Rate</div>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
@@ -65,7 +65,7 @@ export const ReportsView: React.FC = () => {
           </h3>
           <div className="space-y-3">
             {[
-              { category: 'Commercial & High Court Suits', percentage: 42, revenue: '₹62,16,000', color: 'bg-indigo-600' },
+              { category: 'Commercial & High Court Suits', percentage: 42, revenue: '₹62,16,000', color: 'bg-[#B8881A]' },
               { category: 'Company & Insolvency (NCLT)', percentage: 28, revenue: '₹41,44,000', color: 'bg-blue-500' },
               { category: 'GST & Indirect Tax Writs', percentage: 18, revenue: '₹26,64,000', color: 'bg-emerald-500' },
               { category: 'Criminal & Special Leave Petitions', percentage: 12, revenue: '₹17,76,000', color: 'bg-amber-500' },
@@ -100,7 +100,7 @@ export const ReportsView: React.FC = () => {
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">{lawyer.role} • {lawyer.rate}</p>
                 </div>
                 <div className="text-right">
-                  <span className="font-black text-sm text-indigo-600 dark:text-indigo-400">{lawyer.hours} Hrs</span>
+                  <span className="font-black text-sm text-[#B8881A]">{lawyer.hours} Hrs</span>
                   <span className="block text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">94% Target Met</span>
                 </div>
               </div>

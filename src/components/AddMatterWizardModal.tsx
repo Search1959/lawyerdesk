@@ -83,8 +83,8 @@ const SourceTag: React.FC<{
     );
   }
   return (
-    <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1 shrink-0">
-      <Brain className="w-3 h-3 text-indigo-400" />
+    <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-[#B8881A]/20 text-indigo-300 border border-[#B8881A]/30 flex items-center gap-1 shrink-0">
+      <Brain className="w-3 h-3 text-[#D4A82A]" />
       <span>AI Generated</span>
     </span>
   );
@@ -655,12 +655,12 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
         {/* Modal Header */}
         <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+            <div className="w-10 h-10 rounded-2xl bg-[#B8881A]/20 border border-[#B8881A]/30 flex items-center justify-center text-[#D4A82A]">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-[#B8881A]/20 text-indigo-300 border border-[#B8881A]/30">
                   Smart Case Search & Import
                 </span>
                 <span className="text-xs text-slate-400 hidden sm:inline">eCourts NJDG Direct Integration</span>
@@ -711,12 +711,12 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                     setImportMethod('cnr');
                     setCurrentStep('cnr_input');
                   }}
-                  className="p-5 bg-gradient-to-br from-indigo-950/90 to-slate-900 border border-indigo-500/40 hover:border-indigo-400 rounded-2xl text-left space-y-3 transition-all group hover:scale-[1.01] shadow-lg relative overflow-hidden"
+                  className="p-5 bg-gradient-to-br from-indigo-950/90 to-slate-900 border border-[#B8881A]/40 hover:border-indigo-400 rounded-2xl text-left space-y-3 transition-all group hover:scale-[1.01] shadow-lg relative overflow-hidden"
                 >
                   <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     Method 1
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                  <div className="w-12 h-12 rounded-2xl bg-[#B8881A]/20 border border-[#B8881A]/30 flex items-center justify-center text-[#D4A82A] group-hover:bg-[#B8881A] group-hover:text-white transition-all">
                     <Search className="w-6 h-6" />
                   </div>
                   <div>
@@ -762,7 +762,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                       fileInputRef.current?.click();
                     }, 100);
                   }}
-                  className="p-5 bg-slate-900/80 border border-slate-800 hover:border-indigo-500/60 rounded-2xl text-left space-y-3 transition-all group hover:scale-[1.01] shadow-md"
+                  className="p-5 bg-slate-900/80 border border-slate-800 hover:border-[#B8881A]/60 rounded-2xl text-left space-y-3 transition-all group hover:scale-[1.01] shadow-md"
                 >
                   <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-all">
                     <FileText className="w-6 h-6" />
@@ -786,7 +786,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                       fileInputRef.current?.click();
                     }, 100);
                   }}
-                  className="p-5 bg-slate-900/80 border border-slate-800 hover:border-indigo-500/60 rounded-2xl text-left space-y-3 transition-all group hover:scale-[1.01] shadow-md"
+                  className="p-5 bg-slate-900/80 border border-slate-800 hover:border-[#B8881A]/60 rounded-2xl text-left space-y-3 transition-all group hover:scale-[1.01] shadow-md"
                 >
                   <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:bg-amber-500 group-hover:text-slate-950 transition-all">
                     <ScanLine className="w-6 h-6" />
@@ -807,7 +807,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                     setImportMethod('manual');
                     setCurrentStep('manual_form');
                   }}
-                  className="p-5 bg-slate-900/80 border border-slate-800 hover:border-indigo-500/60 rounded-2xl text-left space-y-3 transition-all group hover:scale-[1.01] shadow-md md:col-span-2"
+                  className="p-5 bg-slate-900/80 border border-slate-800 hover:border-[#B8881A]/60 rounded-2xl text-left space-y-3 transition-all group hover:scale-[1.01] shadow-md md:col-span-2"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-all shrink-0">
@@ -866,12 +866,12 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                       setCnrErrorMsg('');
                     }}
                     placeholder="e.g. WBNP010042182026"
-                    className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 font-mono font-bold text-sm text-amber-400 tracking-wider uppercase focus:outline-none focus:border-indigo-500"
+                    className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 font-mono font-bold text-sm text-amber-400 tracking-wider uppercase focus:outline-none focus:border-[#B8881A]"
                     onKeyDown={(e) => e.key === 'Enter' && handleSearchCNR()}
                   />
                   <button
                     onClick={() => handleSearchCNR()}
-                    className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs transition-all flex items-center gap-2 shadow-lg shrink-0"
+                    className="px-6 py-3 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-black text-xs transition-all flex items-center gap-2 shadow-lg shrink-0"
                   >
                     <Search className="w-4 h-4" />
                     <span>Search Case</span>
@@ -914,8 +914,8 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
               </div>
 
               {/* Official Court Notice */}
-              <div className="p-4 bg-indigo-950/40 border border-indigo-500/30 rounded-2xl flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+              <div className="p-4 bg-indigo-950/40 border border-[#B8881A]/30 rounded-2xl flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-[#D4A82A] shrink-0 mt-0.5" />
                 <div className="text-xs space-y-1">
                   <div className="font-bold text-white">Official eCourts Data Source</div>
                   <div className="text-slate-300">
@@ -962,7 +962,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                           if (firstCplx) setCaseSearchComplex(firstCplx.id);
                         }
                       }}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-[#B8881A]"
                     >
                       {mockStates.map((st) => (
                         <option key={st.id} value={st.id}>
@@ -982,7 +982,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                         const firstCplx = mockComplexes.find((c) => c.districtId === e.target.value);
                         if (firstCplx) setCaseSearchComplex(firstCplx.id);
                       }}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-[#B8881A]"
                     >
                       {filteredDistricts.map((dt) => (
                         <option key={dt.id} value={dt.id}>
@@ -1002,7 +1002,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                         const firstEst = mockEstablishments.find((est) => est.complexId === e.target.value);
                         if (firstEst) setCaseSearchEstablishment(firstEst.id);
                       }}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-[#B8881A]"
                     >
                       {filteredComplexes.map((cx) => (
                         <option key={cx.id} value={cx.id}>
@@ -1018,7 +1018,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                     <select
                       value={caseSearchEstablishment}
                       onChange={(e) => setCaseSearchEstablishment(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-[#B8881A]"
                     >
                       {filteredEstablishments.map((est) => (
                         <option key={est.id} value={est.id}>
@@ -1034,7 +1034,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                     <select
                       value={caseSearchCaseType}
                       onChange={(e) => setCaseSearchCaseType(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-amber-300 font-bold focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-amber-300 font-bold focus:outline-none focus:border-[#B8881A]"
                     >
                       {mockCaseTypes.map((ct) => (
                         <option key={ct.id} value={ct.id}>
@@ -1052,7 +1052,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                       value={caseSearchCaseNumber}
                       onChange={(e) => setCaseSearchCaseNumber(e.target.value)}
                       placeholder="e.g. 458"
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-mono font-bold focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-mono font-bold focus:outline-none focus:border-[#B8881A]"
                     />
                   </div>
 
@@ -1062,7 +1062,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                     <select
                       value={caseSearchFilingYear}
                       onChange={(e) => setCaseSearchFilingYear(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-[#B8881A]"
                     >
                       {['2026', '2025', '2024', '2023', '2022', '2021'].map((yr) => (
                         <option key={yr} value={yr}>
@@ -1100,8 +1100,8 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
           {(currentStep === 'cnr_loading' || currentStep === 'case_details_loading') && (
             <div className="py-16 text-center space-y-6 max-w-md mx-auto">
               <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin" />
-                <Search className="w-8 h-8 text-indigo-400 animate-pulse" />
+                <div className="absolute inset-0 rounded-full border-4 border-[#B8881A]/20 border-t-indigo-500 animate-spin" />
+                <Search className="w-8 h-8 text-[#D4A82A] animate-pulse" />
               </div>
 
               <div className="space-y-2">
@@ -1115,7 +1115,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                 <div className="flex items-center gap-2 text-emerald-400 font-bold">
                   <CheckCircle2 className="w-3.5 h-3.5" /> <span>Connecting to eCourts Direct Gateway</span>
                 </div>
-                <div className="flex items-center gap-2 text-indigo-400 font-bold">
+                <div className="flex items-center gap-2 text-[#D4A82A] font-bold">
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" /> <span>Extracting Litigants, Judge & Hearing Schedule</span>
                 </div>
               </div>
@@ -1138,7 +1138,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
 
               {/* Structured Field Display with Source Tags */}
               <div className="p-5 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-4">
-                <div className="text-xs font-black text-indigo-400 uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center justify-between">
+                <div className="text-xs font-black text-[#D4A82A] uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center justify-between">
                   <span>eCourts Retrieved Information</span>
                   <span className="text-[10px] text-slate-400 font-normal">Every field verified against court registry</span>
                 </div>
@@ -1258,7 +1258,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
 
                   <button
                     onClick={handleFinalSave}
-                    className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs shadow-lg flex items-center gap-2"
+                    className="px-6 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-black text-xs shadow-lg flex items-center gap-2"
                   >
                     <CheckCircle2 className="w-4 h-4 text-emerald-300" />
                     <span>Import Matter</span>
@@ -1359,10 +1359,10 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                   }
                 }}
                 className={`p-8 border-2 border-dashed rounded-3xl bg-slate-950/60 text-center space-y-4 transition-all cursor-pointer group ${
-                  isDragging ? 'border-indigo-400 bg-indigo-950/40 scale-[1.01]' : 'border-slate-700 hover:border-indigo-500'
+                  isDragging ? 'border-indigo-400 bg-indigo-950/40 scale-[1.01]' : 'border-slate-700 hover:border-[#B8881A]'
                 }`}
               >
-                <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mx-auto group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                <div className="w-16 h-16 rounded-2xl bg-[#B8881A]/10 border border-[#B8881A]/20 flex items-center justify-center text-[#D4A82A] mx-auto group-hover:scale-110 group-hover:bg-[#B8881A] group-hover:text-white transition-all">
                   <Upload className="w-8 h-8" />
                 </div>
 
@@ -1378,7 +1378,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                       e.stopPropagation();
                       fileInputRef.current?.click();
                     }}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2"
+                    className="px-5 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>Browse & Upload Document</span>
@@ -1439,21 +1439,21 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
           {currentStep === 'review_confirm' && (
             <div className="space-y-6">
               
-              <div className="flex items-center justify-between p-4 bg-indigo-950/40 border border-indigo-500/30 rounded-2xl">
+              <div className="flex items-center justify-between p-4 bg-indigo-950/40 border border-[#B8881A]/30 rounded-2xl">
                 <div>
                   <h3 className="font-bold text-white text-sm">Review & Verify Extracted Information</h3>
                   <p className="text-slate-300 text-xs">
                     Every field displays its explicit source origin badge. Verify or update before finalizing.
                   </p>
                 </div>
-                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-[#B8881A]/20 text-indigo-300 border border-[#B8881A]/30">
                   Source-Labeled Review
                 </span>
               </div>
 
               {/* Editable Fields Grid */}
               <div className="p-5 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-4">
-                <div className="text-xs font-black text-indigo-400 uppercase tracking-wider border-b border-slate-800 pb-2">
+                <div className="text-xs font-black text-[#D4A82A] uppercase tracking-wider border-b border-slate-800 pb-2">
                   Matter Parameters & Field Provenance
                 </div>
 
@@ -1604,7 +1604,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
 
               {/* AI Generated Insights Section */}
               {aiAnalysisSummary && (
-                <div className="p-5 bg-indigo-950/40 border border-indigo-500/30 rounded-2xl space-y-4">
+                <div className="p-5 bg-indigo-950/40 border border-[#B8881A]/30 rounded-2xl space-y-4">
                   <div className="flex items-center justify-between border-b border-indigo-900/60 pb-2">
                     <div className="flex items-center gap-2 font-bold text-indigo-300 text-xs">
                       <Sparkles className="w-4 h-4 text-amber-400" />
@@ -1700,7 +1700,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                   className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center shadow-2xl transition-all ${
                     isVoiceListening
                       ? 'bg-rose-500 ring-8 ring-rose-500/30 animate-pulse'
-                      : 'bg-indigo-600 hover:bg-indigo-500'
+                      : 'bg-[#B8881A] hover:bg-[#D4A82A]'
                   }`}
                 >
                   <Mic className="w-8 h-8 text-white" />
@@ -1747,7 +1747,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                     onClick={() => setManualTab(tab.id as any)}
                     className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all ${
                       manualTab === tab.id
-                        ? 'bg-indigo-600 text-white shadow-sm'
+                        ? 'bg-[#B8881A] text-white shadow-sm'
                         : 'text-slate-400 hover:text-white bg-slate-900/60'
                     }`}
                   >
@@ -1988,7 +1988,7 @@ export const AddMatterWizardModal: React.FC<AddMatterWizardModalProps> = ({
                     });
                     setCurrentStep('review_confirm');
                   }}
-                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs shadow-lg flex items-center gap-2"
                 >
                   <span>Review & Save Matter</span>
                   <ArrowRight className="w-4 h-4" />

@@ -92,7 +92,7 @@ export const EnquiriesView: React.FC = () => {
       {/* Top Banner Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <UserPlus className="w-4 h-4" /> Client Intake & Lead Management
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Enquiries & Prospect Desk</h1>
@@ -102,7 +102,7 @@ export const EnquiriesView: React.FC = () => {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
+          className="inline-flex items-center gap-2 bg-[#B8881A] hover:bg-[#D4A82A] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
         >
           <Plus className="w-4 h-4" /> New Client Enquiry
         </button>
@@ -130,11 +130,11 @@ export const EnquiriesView: React.FC = () => {
         </div>
         <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
           <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Consultations Fixed</div>
-          <div className="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1">
+          <div className="text-2xl font-black text-[#B8881A] mt-1">
             {enquiries.filter(e => e.status === 'Consultation Fixed').length}
           </div>
-          <div className="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-1 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+          <div className="text-xs text-[#B8881A] font-medium mt-1 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#B8881A]"></span>
             Chamber appointments
           </div>
         </div>
@@ -156,7 +156,7 @@ export const EnquiriesView: React.FC = () => {
             placeholder="Search prospect name, phone, or subject..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
           />
         </div>
 
@@ -167,7 +167,7 @@ export const EnquiriesView: React.FC = () => {
               onClick={() => setSelectedStatus(status)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                 selectedStatus === status
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-[#B8881A] text-white'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
@@ -239,7 +239,7 @@ export const EnquiriesView: React.FC = () => {
                   <select
                     value={enquiry.status}
                     onChange={(e) => handleStatusChange(enquiry.id, e.target.value as any)}
-                    className="text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-[#B8881A]"
                   >
                     <option value="New Lead">New Lead</option>
                     <option value="Consultation Fixed">Consultation Fixed</option>
@@ -313,7 +313,7 @@ export const EnquiriesView: React.FC = () => {
                   value={newEnquiry.clientName}
                   onChange={(e) => setNewEnquiry({ ...newEnquiry, clientName: e.target.value })}
                   placeholder="e.g. Adv. Rajesh Goel / M/s ABC Corp"
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -326,7 +326,7 @@ export const EnquiriesView: React.FC = () => {
                     value={newEnquiry.phone}
                     onChange={(e) => setNewEnquiry({ ...newEnquiry, phone: e.target.value })}
                     placeholder="+91 98765 43210"
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
                 <div>
@@ -337,7 +337,7 @@ export const EnquiriesView: React.FC = () => {
                     value={newEnquiry.email}
                     onChange={(e) => setNewEnquiry({ ...newEnquiry, email: e.target.value })}
                     placeholder="prospect@example.com"
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -348,7 +348,7 @@ export const EnquiriesView: React.FC = () => {
                   <select
                     value={newEnquiry.category}
                     onChange={(e) => setNewEnquiry({ ...newEnquiry, category: e.target.value as any })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="Civil">Civil</option>
                     <option value="Criminal">Criminal</option>
@@ -363,7 +363,7 @@ export const EnquiriesView: React.FC = () => {
                   <select
                     value={newEnquiry.source}
                     onChange={(e) => setNewEnquiry({ ...newEnquiry, source: e.target.value as any })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="Website Lead">Website Lead</option>
                     <option value="Client Referral">Client Referral</option>
@@ -381,7 +381,7 @@ export const EnquiriesView: React.FC = () => {
                   value={newEnquiry.subject}
                   onChange={(e) => setNewEnquiry({ ...newEnquiry, subject: e.target.value })}
                   placeholder="e.g. Sec 138 NI Act Dishonour Notice / High Court Injunction"
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -392,7 +392,7 @@ export const EnquiriesView: React.FC = () => {
                   value={newEnquiry.notes}
                   onChange={(e) => setNewEnquiry({ ...newEnquiry, notes: e.target.value })}
                   placeholder="Key background notes from preliminary phone conversation..."
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -406,7 +406,7 @@ export const EnquiriesView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-[#B8881A] hover:bg-[#D4A82A] rounded-lg shadow-sm"
                 >
                   Save Lead
                 </button>
@@ -445,7 +445,7 @@ export const EnquiriesView: React.FC = () => {
 
               <div className="p-3 bg-indigo-50 dark:bg-indigo-950/50 rounded-xl flex justify-between items-center border border-indigo-100 dark:border-indigo-900">
                 <span className="font-bold text-indigo-900 dark:text-indigo-200">Consultation Fee Quote</span>
-                <span className="text-lg font-black text-indigo-600 dark:text-indigo-400">₹{viewingEnquiry.consultFeeINR.toLocaleString()}</span>
+                <span className="text-lg font-black text-[#B8881A]">₹{viewingEnquiry.consultFeeINR.toLocaleString()}</span>
               </div>
 
               {viewingEnquiry.notes && (
@@ -457,7 +457,7 @@ export const EnquiriesView: React.FC = () => {
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setViewingEnquiry(null)}
-                className="px-4 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+                className="px-4 py-2 text-xs font-bold rounded-lg bg-[#B8881A] text-white hover:bg-[#9a7016]"
               >
                 Close
               </button>
@@ -493,7 +493,7 @@ export const EnquiriesView: React.FC = () => {
                   required
                   value={editingEnquiry.clientName}
                   onChange={(e) => setEditingEnquiry({ ...editingEnquiry, clientName: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -505,7 +505,7 @@ export const EnquiriesView: React.FC = () => {
                     required
                     value={editingEnquiry.phone}
                     onChange={(e) => setEditingEnquiry({ ...editingEnquiry, phone: e.target.value })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
                 <div>
@@ -515,7 +515,7 @@ export const EnquiriesView: React.FC = () => {
                     required
                     value={editingEnquiry.email}
                     onChange={(e) => setEditingEnquiry({ ...editingEnquiry, email: e.target.value })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -527,7 +527,7 @@ export const EnquiriesView: React.FC = () => {
                   required
                   value={editingEnquiry.subject}
                   onChange={(e) => setEditingEnquiry({ ...editingEnquiry, subject: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -541,7 +541,7 @@ export const EnquiriesView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-[#B8881A] hover:bg-[#D4A82A] rounded-lg shadow-sm"
                 >
                   Update Lead
                 </button>

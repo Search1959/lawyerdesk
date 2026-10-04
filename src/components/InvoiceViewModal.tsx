@@ -83,7 +83,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
         {/* Header Action Bar (Hidden when printing) */}
         <div className="p-4 bg-slate-100 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3 print:hidden">
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <FileText className="w-5 h-5 text-[#B8881A]" />
             <span className="font-extrabold text-sm text-slate-900 dark:text-white">
               Official Tax Invoice #{invoice.invoiceNumber}
             </span>
@@ -124,7 +124,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
 
             <button
               onClick={handlePrint}
-              className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print / Save PDF</span>
@@ -145,7 +145,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
           <div className="border-b-2 border-indigo-600 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <div className="text-2xl font-black text-indigo-950 dark:text-indigo-200 tracking-tight flex items-center gap-2">
-                <Building className="w-6 h-6 text-indigo-600" />
+                <Building className="w-6 h-6 text-[#B8881A]" />
                 <span>{firmName}</span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
@@ -171,7 +171,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
             {/* Left: Law Firm Details */}
             <div className="space-y-1.5 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-700 pb-4 md:pb-0 md:pr-4">
               <div className="font-extrabold text-xs text-indigo-900 dark:text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                <ShieldCheck className="w-4 h-4 text-[#B8881A]" />
                 <span>Service Provider (Law Firm)</span>
               </div>
               <div className="font-bold text-sm text-slate-900 dark:text-white">{firmName}</div>
@@ -187,7 +187,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
             {/* Right: Client Details */}
             <div className="space-y-1.5">
               <div className="font-extrabold text-xs text-indigo-900 dark:text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
-                <User className="w-4 h-4 text-indigo-600" />
+                <User className="w-4 h-4 text-[#B8881A]" />
                 <span>Service Receiver (Billed To)</span>
               </div>
               <div className="font-bold text-sm text-slate-900 dark:text-white">{clientName}</div>
@@ -197,7 +197,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
               </div>
               {matter && (
                 <div className="mt-2 p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[11px]">
-                  <span className="font-bold text-indigo-600 dark:text-indigo-400">Matter Reference:</span> {matter.caseNumber} - {matter.title} ({matter.court})
+                  <span className="font-bold text-[#B8881A]">Matter Reference:</span> {matter.caseNumber} - {matter.title} ({matter.court})
                 </div>
               )}
             </div>
@@ -269,7 +269,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
                   <div><strong>Account No:</strong> <span className="font-bold text-slate-900 dark:text-white">{bankAcc}</span></div>
                   <div><strong>IFSC Code:</strong> <span className="font-bold text-slate-900 dark:text-white">{bankIfsc}</span></div>
                   <div><strong>Branch:</strong> {bankBranch}</div>
-                  <div className="col-span-2"><strong>UPI VPA ID:</strong> <span className="font-bold text-indigo-600 dark:text-indigo-400">{upiId}</span></div>
+                  <div className="col-span-2"><strong>UPI VPA ID:</strong> <span className="font-bold text-[#B8881A]">{upiId}</span></div>
                 </div>
               </div>
             </div>
@@ -320,7 +320,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
             <div className="text-center sm:text-right space-y-1">
               <div className="text-xs font-bold text-slate-900 dark:text-white">For {firmName}</div>
               <div className="h-10 my-1 flex items-center justify-end">
-                <span className="font-serif italic text-indigo-600 text-sm font-bold tracking-widest border-b border-indigo-400 pb-0.5">
+                <span className="font-serif italic text-[#B8881A] text-sm font-bold tracking-widest border-b border-indigo-400 pb-0.5">
                   Adv. Rajeshwar V. Sharma
                 </span>
               </div>

@@ -151,7 +151,7 @@ const PaginationControls: React.FC<PaginationProps> = ({
               onClick={() => onPageChange(pageNum)}
               className={`w-7 h-7 rounded-lg text-xs font-bold transition-all ${
                 pageNum === currentPage
-                  ? 'bg-indigo-600 text-white shadow-xs'
+                  ? 'bg-[#B8881A] text-white shadow-xs'
                   : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
               }`}
             >
@@ -545,11 +545,11 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1600px] mx-auto text-slate-900 dark:text-slate-100 font-sans">
       {/* Header Banner */}
       <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white border border-slate-800 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#B8881A]/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <span className="p-2.5 rounded-2xl bg-indigo-600/30 text-indigo-400 border border-indigo-500/40">
+              <span className="p-2.5 rounded-2xl bg-[#B8881A]/30 text-[#D4A82A] border border-[#B8881A]/40">
                 <Gavel className="w-7 h-7" />
               </span>
               <div>
@@ -557,7 +557,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                   <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
                     Court Intelligence & Litigation Command Center
                   </h1>
-                  <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-xs font-bold border border-indigo-500/30">
+                  <span className="px-3 py-1 rounded-full bg-[#B8881A]/20 text-indigo-300 font-mono text-xs font-bold border border-[#B8881A]/30">
                     ENTERPRISE V3.6
                   </span>
                 </div>
@@ -574,7 +574,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 setActiveTab('voice_assistant');
                 startMicListening();
               }}
-              className="px-4.5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
+              className="px-4.5 py-2.5 rounded-2xl bg-[#B8881A] hover:bg-[#D4A82A] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
               title="Click to launch Voice AI Copilot & Speech Recognition"
             >
               <Mic className="w-4 h-4 text-indigo-200 animate-pulse" />
@@ -621,11 +621,11 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 }
               }}
               placeholder="Universal Search across CNR, Case No, Client Name, Judge, Court, Belghoria, Order Text..."
-              className="w-full pl-12 pr-28 py-3 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-inner"
+              className="w-full pl-12 pr-28 py-3 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#B8881A] shadow-inner"
             />
             <button
               onClick={() => setActiveTab('universal_search')}
-              className="absolute right-2 top-2 px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all"
+              className="absolute right-2 top-2 px-4 py-1.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs transition-all"
             >
               Search All
             </button>
@@ -660,7 +660,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-2 transition-all ${
                 isActive
-                  ? 'bg-indigo-600 text-white shadow-md'
+                  ? 'bg-[#B8881A] text-white shadow-md'
                   : 'bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
@@ -723,12 +723,12 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
             <div className="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <div className="flex flex-wrap items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 gap-2">
                 <div className="flex items-center gap-2 font-black text-base text-slate-900 dark:text-white">
-                  <Gavel className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <Gavel className="w-5 h-5 text-[#B8881A]" />
                   <span>Court Appearance Roster ({formatDisplayDate(causeListDate)})</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
-                    <Calendar className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 ml-1" />
+                    <Calendar className="w-3.5 h-3.5 text-[#B8881A] ml-1" />
                     <input
                       type="date"
                       value={causeListDate}
@@ -737,14 +737,14 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     />
                     <button
                       onClick={() => setCauseListDate('2026-07-28')}
-                      className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-bold transition-all shadow-xs"
+                      className="px-2 py-0.5 bg-[#B8881A] hover:bg-[#D4A82A] text-white rounded-lg text-[10px] font-bold transition-all shadow-xs"
                     >
                       Today
                     </button>
                   </div>
                   <button
                     onClick={() => setActiveTab('cause_list')}
-                    className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 ml-1"
+                    className="text-xs font-bold text-[#B8881A] hover:underline flex items-center gap-1 ml-1"
                   >
                     <span>View Cause List</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -756,14 +756,14 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 {paginatedDashboardRoster.map((item) => (
                   <div
                     key={item.id}
-                    className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-indigo-500 transition-all"
+                    className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#B8881A] transition-all"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="px-2 py-0.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300 font-mono text-[10px] font-bold">
                           Item #{item.itemNo}
                         </span>
-                        <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                        <span className="font-mono text-xs font-bold text-[#B8881A]">
                           {item.caseNumber}
                         </span>
                         <span className="px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold">
@@ -786,7 +786,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => setActiveTab('ai_assistant')}
-                        className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1 shadow-sm"
+                        className="px-3 py-1.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center gap-1 shadow-sm"
                       >
                         <Bot className="w-3.5 h-3.5" />
                         <span>AI Prep</span>
@@ -816,7 +816,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
             {/* Recent AI Recommendations & Action Items */}
             <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <div className="flex items-center gap-2 font-black text-base border-b border-slate-100 dark:border-slate-800 pb-3">
-                <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <Sparkles className="w-5 h-5 text-[#B8881A]" />
                 <span>Grounded AI Recommendations</span>
               </div>
 
@@ -824,14 +824,14 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/50 space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-indigo-900 dark:text-indigo-300">
                     <span>Pre-Hearing Cross Examination</span>
-                    <span className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">HIGH PRIORITY</span>
+                    <span className="text-[10px] font-mono text-[#B8881A]">HIGH PRIORITY</span>
                   </div>
                   <p className="text-xs text-slate-700 dark:text-slate-300">
                     PW-1 cross-examination scheduled for CIVIL/877/2024. Review 3 contradict statements extracted from municipal tax receipts by PaddleOCR engine.
                   </p>
                   <button
                     onClick={() => setActiveTab('ai_assistant')}
-                    className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                    className="text-xs font-bold text-[#B8881A] hover:underline flex items-center gap-1"
                   >
                     <span>View Questions & Citations</span>
                     <ChevronRight className="w-3 h-3" />
@@ -870,7 +870,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <Search className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <Search className="w-5 h-5 text-[#B8881A]" />
                   <span>Universal Litigation Search Results</span>
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -884,7 +884,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                   value={universalQuery}
                   onChange={(e) => setUniversalQuery(e.target.value)}
                   placeholder="Search across all legal data..."
-                  className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64"
+                  className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#B8881A] w-64"
                 />
                 {universalQuery && (
                   <button
@@ -920,7 +920,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                   );
                 }).length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-mono font-bold uppercase text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <h3 className="text-xs font-mono font-bold uppercase text-[#B8881A] flex items-center gap-1.5">
                       <Scale className="w-4 h-4" />
                       <span>Matching Matters & Case Files ({
                         activeMattersList.filter(m => {
@@ -953,7 +953,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                           <div key={m.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div className="space-y-1">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 font-mono text-[10px] font-black">
+                                <span className="px-2 py-0.5 rounded-md bg-[#B8881A]/10 border border-[#B8881A]/30 text-[#B8881A] font-mono text-[10px] font-black">
                                   CNR: {m.cnrNumber || m.cnr || 'WBHC010042182026'}
                                 </span>
                                 <span className="text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400">{m.caseNumber}</span>
@@ -968,7 +968,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                               {onSelectMatter ? (
                                 <button
                                   onClick={() => onSelectMatter(m)}
-                                  className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
+                                  className="px-3.5 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
                                 >
                                   <Eye className="w-3.5 h-3.5" />
                                   <span>Open Matter File</span>
@@ -980,7 +980,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                                     handleFetchCnr();
                                     setActiveTab('case_tracker');
                                   }}
-                                  className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
+                                  className="px-3.5 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
                                 >
                                   <Search className="w-3.5 h-3.5" />
                                   <span>Track Status</span>
@@ -996,7 +996,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 {/* 2. Courts Match */}
                 {mockCourtDirectory.filter(c => c.name.toLowerCase().includes(universalQuery.toLowerCase()) || c.city.toLowerCase().includes(universalQuery.toLowerCase()) || c.state.toLowerCase().includes(universalQuery.toLowerCase())).length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-mono font-bold uppercase text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <h3 className="text-xs font-mono font-bold uppercase text-[#B8881A] flex items-center gap-1.5">
                       <Building2 className="w-4 h-4" />
                       <span>Matching Courts & Tribunals</span>
                     </h3>
@@ -1011,7 +1011,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                             </div>
                             <button
                               onClick={() => { setSelectedCourt(c); setActiveTab('court_directory'); }}
-                              className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[11px]"
+                              className="px-2.5 py-1 rounded-lg bg-[#B8881A] text-white font-bold text-[11px]"
                             >
                               Open Court
                             </button>
@@ -1024,7 +1024,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 {/* 3. Judges Match */}
                 {mockJudgeDirectory.filter(j => j.name.toLowerCase().includes(universalQuery.toLowerCase()) || j.courtName.toLowerCase().includes(universalQuery.toLowerCase()) || j.currentAssignment.toLowerCase().includes(universalQuery.toLowerCase())).length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-mono font-bold uppercase text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <h3 className="text-xs font-mono font-bold uppercase text-[#B8881A] flex items-center gap-1.5">
                       <UserCheck className="w-4 h-4" />
                       <span>Matching Judicial Officers</span>
                     </h3>
@@ -1035,11 +1035,11 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                           <div key={j.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between">
                             <div>
                               <div className="font-bold text-xs text-slate-900 dark:text-white">{j.name}</div>
-                              <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">{j.designation} • {j.courtName}</div>
+                              <div className="text-[11px] text-[#B8881A] font-bold">{j.designation} • {j.courtName}</div>
                             </div>
                             <button
                               onClick={() => { setSelectedJudge(j); setShowJudgeModal(true); }}
-                              className="px-2.5 py-1 rounded-lg bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 font-bold text-[11px]"
+                              className="px-2.5 py-1 rounded-lg bg-[#B8881A]/10 hover:bg-[#B8881A]/20 text-[#B8881A] font-bold text-[11px]"
                             >
                               View Profile
                             </button>
@@ -1052,7 +1052,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 {/* 4. Cause List Match */}
                 {mockCauseListItems.filter(item => item.caseNumber.toLowerCase().includes(universalQuery.toLowerCase()) || item.matterTitle.toLowerCase().includes(universalQuery.toLowerCase()) || item.clientName.toLowerCase().includes(universalQuery.toLowerCase()) || item.judgeName.toLowerCase().includes(universalQuery.toLowerCase())).length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-mono font-bold uppercase text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <h3 className="text-xs font-mono font-bold uppercase text-[#B8881A] flex items-center gap-1.5">
                       <FileText className="w-4 h-4" />
                       <span>Matching Cause List Hearings</span>
                     </h3>
@@ -1062,13 +1062,13 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                         .map(item => (
                           <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between text-xs">
                             <div>
-                              <div className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{item.caseNumber} - Item #{item.itemNo}</div>
+                              <div className="font-mono font-bold text-[#B8881A]">{item.caseNumber} - Item #{item.itemNo}</div>
                               <div className="font-bold text-slate-900 dark:text-white">{item.matterTitle}</div>
                               <div className="text-slate-500">{item.courtName} ({item.courtRoomNo}) • Judge: {item.judgeName}</div>
                             </div>
                             <button
                               onClick={() => setActiveTab('cause_list')}
-                              className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs"
+                              className="px-3 py-1.5 rounded-xl bg-[#B8881A] text-white font-bold text-xs"
                             >
                               Go to Roster
                             </button>
@@ -1079,7 +1079,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 )}
 
                 {/* 5. Live eCourts Sync Action for CNR or Keyword */}
-                <div className="p-6 rounded-2xl bg-slate-900 text-white border border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4">
+                <div className="p-6 rounded-2xl bg-slate-900 text-white border border-[#B8881A]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
@@ -1094,7 +1094,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                       handleFetchCnr();
                       setActiveTab('case_tracker');
                     }}
-                    className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg cursor-pointer shrink-0"
+                    className="px-4 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center gap-2 shadow-lg cursor-pointer shrink-0"
                   >
                     <Search className="w-4 h-4" />
                     <span>Fetch eCourts Record</span>
@@ -1129,7 +1129,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     <select
                       value={courtSearchCategory}
                       onChange={(e) => setCourtSearchCategory(e.target.value)}
-                      className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
+                      className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#B8881A] appearance-none cursor-pointer"
                     >
                       <option value="All">All Categories (Supreme, High, District & Tribunals)</option>
                       <option value="Supreme Court">Supreme Court of India</option>
@@ -1143,7 +1143,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
 
                 {/* Dropdown 2: Direct Select High Court / District Court */}
                 <div>
-                  <label className="block text-[10px] font-mono font-bold text-indigo-500 dark:text-indigo-400 uppercase mb-1">
+                  <label className="block text-[10px] font-mono font-bold text-indigo-500 dark:text-[#D4A82A] uppercase mb-1">
                     2. Select High Court / District Court
                   </label>
                   <div className="relative">
@@ -1153,7 +1153,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                         const found = mockCourtDirectory.find((c) => c.id === e.target.value);
                         if (found) setSelectedCourt(found);
                       }}
-                      className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs font-black text-indigo-900 dark:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
+                      className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs font-black text-indigo-900 dark:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-[#B8881A] appearance-none cursor-pointer"
                     >
                       <optgroup label="Apex Supreme Court">
                         {mockCourtDirectory
@@ -1208,7 +1208,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                       value={courtSearchText}
                       onChange={(e) => setCourtSearchText(e.target.value)}
                       placeholder="e.g. Delhi, Bombay, Saket, Madras..."
-                      className="w-full pl-9 pr-7 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full pl-9 pr-7 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                     />
                     {courtSearchText && (
                       <button
@@ -1245,7 +1245,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     }}
                     className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
                       selectedCourt?.id === item.id
-                        ? 'bg-indigo-600 text-white font-bold shadow-xs'
+                        ? 'bg-[#B8881A] text-white font-bold shadow-xs'
                         : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >
@@ -1264,7 +1264,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 {courtSearchText && (
                   <button
                     onClick={() => setCourtSearchText('')}
-                    className="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px]"
+                    className="text-[#B8881A] hover:underline text-[11px]"
                   >
                     Clear Filter
                   </button>
@@ -1277,11 +1277,11 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                   onClick={() => setSelectedCourt(court)}
                   className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                     selectedCourt?.id === court.id
-                      ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-600 dark:border-indigo-500 shadow-md'
+                      ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-600 dark:border-[#B8881A] shadow-md'
                       : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300'
                   }`}
                 >
-                  <div className="flex items-center justify-between text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#B8881A]">
                     <span>{court.category}</span>
                     <span className="text-[10px] text-slate-400">{court.city}, {court.state}</span>
                   </div>
@@ -1328,7 +1328,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     </button>
                     <button
                       onClick={() => handleOpenLink(selectedCourt.causeListUrl, 'Live Cause List Portal', selectedCourt.name)}
-                      className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                      className="px-3 py-1.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
                     >
                       <FileText className="w-3.5 h-3.5" />
                       <span>Live Cause List</span>
@@ -1339,7 +1339,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 {/* Live Interactive GPS & Court Entrance Map */}
                 <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-3 relative overflow-hidden border border-slate-800 shadow-md">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-bold border-b border-slate-800 pb-2.5">
-                    <div className="flex items-center gap-2 text-indigo-400">
+                    <div className="flex items-center gap-2 text-[#D4A82A]">
                       <MapPin className="w-4 h-4 shrink-0 text-red-500 animate-pulse" />
                       <span className="text-white text-sm font-black">GPS Geo Location & Interactive Court Entrance Map</span>
                     </div>
@@ -1350,7 +1350,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                         <button
                           onClick={() => setMapProvider('gmaps')}
                           className={`px-2 py-0.5 rounded-md font-semibold transition-all ${
-                            mapProvider === 'gmaps' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                            mapProvider === 'gmaps' ? 'bg-[#B8881A] text-white font-bold' : 'text-slate-400 hover:text-white'
                           }`}
                         >
                           Google Map
@@ -1358,7 +1358,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                         <button
                           onClick={() => setMapProvider('satellite')}
                           className={`px-2 py-0.5 rounded-md font-semibold transition-all ${
-                            mapProvider === 'satellite' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                            mapProvider === 'satellite' ? 'bg-[#B8881A] text-white font-bold' : 'text-slate-400 hover:text-white'
                           }`}
                         >
                           Satellite
@@ -1366,7 +1366,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                         <button
                           onClick={() => setMapProvider('osm')}
                           className={`px-2 py-0.5 rounded-md font-semibold transition-all ${
-                            mapProvider === 'osm' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                            mapProvider === 'osm' ? 'bg-[#B8881A] text-white font-bold' : 'text-slate-400 hover:text-white'
                           }`}
                         >
                           OpenStreetMap
@@ -1424,7 +1424,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                             setCopiedGps(true);
                             setTimeout(() => setCopiedGps(false), 2000);
                           }}
-                          className="text-[10px] font-mono text-indigo-400 hover:text-indigo-300 font-semibold px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 shrink-0 flex items-center gap-1"
+                          className="text-[10px] font-mono text-[#D4A82A] hover:text-indigo-300 font-semibold px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 shrink-0 flex items-center gap-1"
                         >
                           {copiedGps ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                           <span>{copiedGps ? 'Copied' : `${selectedCourt.latitude}, ${selectedCourt.longitude}`}</span>
@@ -1470,7 +1470,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                             handleSendNotification('Document Vault', `Saved template for ${form.name}`);
                             handleOpenLink(form.url, form.name, selectedCourt.name);
                           }}
-                          className="p-1.5 rounded-lg bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center gap-1 transition-all"
+                          className="p-1.5 rounded-lg bg-[#B8881A]/10 hover:bg-[#B8881A]/20 text-[#B8881A] font-bold text-xs flex items-center gap-1 transition-all"
                         >
                           <Download className="w-3.5 h-3.5" />
                           <span>Download</span>
@@ -1503,7 +1503,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 value={judgeSearchQuery}
                 onChange={(e) => setJudgeSearchQuery(e.target.value)}
                 placeholder="Search Judge Name or Bench..."
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
           </div>
@@ -1513,7 +1513,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
               {paginatedJudges.map((judge) => (
                 <div
                   key={judge.id}
-                  className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 hover:border-indigo-500 transition-all flex flex-col justify-between"
+                  className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 hover:border-[#B8881A] transition-all flex flex-col justify-between"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -1524,7 +1524,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     </div>
 
                     <h3 className="font-black text-base text-slate-900 dark:text-white">{judge.name}</h3>
-                    <div className="text-xs text-indigo-600 dark:text-indigo-400 font-bold">{judge.designation}</div>
+                    <div className="text-xs text-[#B8881A] font-bold">{judge.designation}</div>
                     <div className="text-xs text-slate-500 dark:text-slate-400">{judge.courtName}</div>
 
                     <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs space-y-1">
@@ -1540,7 +1540,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                         setSelectedJudge(judge);
                         setShowJudgeModal(true);
                       }}
-                      className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                      className="text-xs font-bold text-[#B8881A] hover:underline"
                     >
                       View Profile
                     </button>
@@ -1587,7 +1587,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     onClick={() => setCaseSearchType(type.id as any)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                       caseSearchType === type.id
-                        ? 'bg-indigo-600 text-white shadow-sm'
+                        ? 'bg-[#B8881A] text-white shadow-sm'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                     }`}
                   >
@@ -1604,11 +1604,11 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                   onChange={(e) => setCnrSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleFetchCnr()}
                   placeholder="Enter 16-Digit CNR (e.g., DLHC010045212024 or CIVIL/877/2024)..."
-                  className="w-full pl-10 pr-24 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-10 pr-24 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                 />
                 <button
                   onClick={handleFetchCnr}
-                  className="absolute right-1.5 top-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs"
+                  className="absolute right-1.5 top-1.5 px-3 py-1.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs"
                 >
                   Fetch CNR
                 </button>
@@ -1702,7 +1702,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     FOUND IN FIRM RECORDS
                   </span>
                   {fetchedCnrResult.cnrNumber && (
-                    <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                    <span className="font-mono text-xs font-bold text-[#B8881A]">
                       CNR: {fetchedCnrResult.cnrNumber}
                     </span>
                   )}
@@ -1734,7 +1734,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
                 <span className="text-slate-500 font-bold uppercase text-[10px]">Item No. in Cause List</span>
-                <div className="font-black text-sm text-indigo-600 dark:text-indigo-400">Item #{fetchedCnrResult.itemNo}</div>
+                <div className="font-black text-sm text-[#B8881A]">Item #{fetchedCnrResult.itemNo}</div>
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
                 <span className="text-slate-500 font-bold uppercase text-[10px]">Acts & Sections</span>
@@ -1770,7 +1770,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
               />
               <button
                 onClick={() => window.print()}
-                className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm"
+                className="px-3.5 py-1.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>Print Roster</span>
@@ -1795,7 +1795,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
                 {paginatedCauseList.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="py-3.5 font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                    <td className="py-3.5 font-mono font-bold text-[#B8881A]">
                       #{item.itemNo}
                     </td>
                     <td className="py-3.5">
@@ -1804,7 +1804,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     </td>
                     <td className="py-3.5 text-slate-700 dark:text-slate-300 font-bold">{item.judgeName}</td>
                     <td className="py-3.5">
-                      <div className="font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400">{item.caseNumber}</div>
+                      <div className="font-mono font-bold text-xs text-[#B8881A]">{item.caseNumber}</div>
                       <div className="text-[11px] text-slate-600 dark:text-slate-300 font-bold max-w-xs truncate">{item.matterTitle}</div>
                     </td>
                     <td className="py-3.5">
@@ -1825,7 +1825,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     <td className="py-3.5 text-right">
                       <button
                         onClick={() => setActiveTab('ai_assistant')}
-                        className="px-2.5 py-1 rounded-lg bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 font-bold text-[11px]"
+                        className="px-2.5 py-1 rounded-lg bg-[#B8881A]/10 hover:bg-[#B8881A]/20 text-[#B8881A] font-bold text-[11px]"
                       >
                         AI Brief
                       </button>
@@ -1855,7 +1855,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <Bot className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                <Bot className="w-6 h-6 text-[#B8881A]" />
                 <h2 className="text-xl font-black text-slate-900 dark:text-white">AI Pre-Hearing Assistant & Argue Cockpit</h2>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -1865,7 +1865,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
 
             <button
               onClick={() => window.print()}
-              className="px-4 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-sm"
+              className="px-4 py-2 rounded-2xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center gap-2 shadow-sm"
             >
               <Printer className="w-4 h-4" />
               <span>Print 1-Page Hearing Brief</span>
@@ -1921,7 +1921,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {mockAIHearingBrief.recentJudgments.map((j, idx) => (
                   <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-1 text-xs">
-                    <div className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{j.citation}</div>
+                    <div className="font-mono font-bold text-[#B8881A]">{j.citation}</div>
                     <p className="text-slate-700 dark:text-slate-300 leading-relaxed font-medium">{j.ratio}</p>
                   </div>
                 ))}
@@ -1982,13 +1982,13 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
 
             <div className="p-5 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/50 space-y-3">
               <div className="font-black text-sm text-indigo-900 dark:text-indigo-300 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-600" />
+                <Sparkles className="w-4 h-4 text-[#B8881A]" />
                 <span>AI Health Improvement Recommendations</span>
               </div>
               <ul className="space-y-2 text-xs text-slate-700 dark:text-slate-300 font-medium">
                 {mockCaseHealthScore.aiRecommendations.map((rec, idx) => (
                   <li key={idx} className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-1.5 shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#B8881A] mt-1.5 shrink-0" />
                     <span>{rec}</span>
                   </li>
                 ))}
@@ -2009,7 +2009,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
               </p>
             </div>
 
-            <div className="relative pl-6 border-l-2 border-indigo-500 space-y-6 py-2">
+            <div className="relative pl-6 border-l-2 border-[#B8881A] space-y-6 py-2">
               {[
                 { date: '14 Jul 2024', title: 'Plaint Instituted in Barasat / Tis Hazari', desc: 'Suit for Partition and Injunction filed on behalf of Plaintiff Arun Kumar Jaiswal.', type: 'Filing' },
                 { date: '20 Sep 2024', title: 'Written Statement Filed', desc: 'Defendant No. 1 filed WS claiming prior oral partition in 1998.', type: 'Pleading' },
@@ -2017,8 +2017,8 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 { date: formatDisplayDate(causeListDate), title: 'Today: Cross Examination PW-1', desc: 'PW-1 chief affidavit marked Ex PW1/A. Cross examination in Court Room 312.', type: 'Hearing' },
               ].map((event, idx) => (
                 <div key={idx} className="relative space-y-1">
-                  <span className="w-3.5 h-3.5 rounded-full bg-indigo-600 border-4 border-white dark:border-slate-900 absolute -left-[31px] top-1" />
-                  <div className="flex items-center gap-2 text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#B8881A] border-4 border-white dark:border-slate-900 absolute -left-[31px] top-1" />
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#B8881A]">
                     <span>{event.date}</span>
                     <span className="px-2 py-0.2 rounded bg-indigo-100 dark:bg-indigo-950 text-[9px]">{event.type}</span>
                   </div>
@@ -2047,7 +2047,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
               {mockKnowledgeGraphNodes.map((node) => (
                 <div
                   key={node.id}
-                  className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1 text-xs hover:border-indigo-500 transition-all"
+                  className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1 text-xs hover:border-[#B8881A] transition-all"
                 >
                   <span className="px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 font-mono text-[9px] font-bold">
                     {node.type}
@@ -2260,7 +2260,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                           </span>
                         </td>
                         <td className="py-2.5 font-bold text-slate-900 dark:text-white">{log.recipient}</td>
-                        <td className="py-2.5 font-mono text-indigo-600 dark:text-indigo-400 font-bold">{log.caseNo}</td>
+                        <td className="py-2.5 font-mono text-[#B8881A] font-bold">{log.caseNo}</td>
                         <td className="py-2.5 text-right font-mono text-emerald-500 font-bold">{log.status}</td>
                       </tr>
                     ))}
@@ -2294,7 +2294,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
                 <span className="text-slate-500 font-bold">Case Status</span>
-                <div className="font-bold text-sm text-indigo-600 dark:text-indigo-400">PW-1 Cross Examination</div>
+                <div className="font-bold text-sm text-[#B8881A]">PW-1 Cross Examination</div>
                 <div className="text-slate-500">Matter CIVIL/877/2024</div>
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-1">
@@ -2350,7 +2350,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
 
               {/* Status Indicator */}
               <div className="flex items-center gap-2 self-start sm:self-auto">
-                <span className={`w-2.5 h-2.5 rounded-full ${isListening ? 'bg-rose-500 animate-ping' : isSpeaking ? 'bg-indigo-500 animate-pulse' : 'bg-emerald-500'}`} />
+                <span className={`w-2.5 h-2.5 rounded-full ${isListening ? 'bg-rose-500 animate-ping' : isSpeaking ? 'bg-[#B8881A] animate-pulse' : 'bg-emerald-500'}`} />
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-300 font-mono">
                   {isListening ? 'MICROPHONE RECORDING' : isSpeaking ? 'AI SPEAKING AUDIO' : 'VOICE ENGINE READY'}
                 </span>
@@ -2369,7 +2369,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                   className={`p-3.5 rounded-2xl text-white font-bold text-xs flex items-center justify-center transition-all shadow-md shrink-0 cursor-pointer ${
                     isListening
                       ? 'bg-rose-600 animate-pulse ring-4 ring-rose-500/30'
-                      : 'bg-indigo-600 hover:bg-indigo-500'
+                      : 'bg-[#B8881A] hover:bg-[#D4A82A]'
                   }`}
                   title="Click to activate Web Speech Recognition"
                 >
@@ -2383,11 +2383,11 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     onChange={(e) => setCustomVoiceInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleTriggerVoice(customVoiceInput)}
                     placeholder="Type or dictate command (e.g., 'Find cases listed before Justice Swarana Kanta Sharma', 'Show tomorrow hearings')..."
-                    className="w-full pl-4 pr-12 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-4 pr-12 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
                   />
                   <button
                     onClick={() => handleTriggerVoice(customVoiceInput)}
-                    className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
+                    className="absolute right-2 top-2 p-2 bg-[#B8881A] hover:bg-[#D4A82A] text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
                     title="Run Voice AI Command"
                   >
                     <Send className="w-3.5 h-3.5" />
@@ -2414,7 +2414,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                       setCustomVoiceInput(phrase);
                       handleTriggerVoice(phrase);
                     }}
-                    className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-indigo-600 hover:text-white font-bold text-xs text-slate-700 dark:text-slate-300 transition-all cursor-pointer shadow-2xs border border-slate-200/60 dark:border-slate-700/60"
+                    className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-[#B8881A] hover:text-white font-bold text-xs text-slate-700 dark:text-slate-300 transition-all cursor-pointer shadow-2xs border border-slate-200/60 dark:border-slate-700/60"
                   >
                     "{phrase}"
                   </button>
@@ -2424,7 +2424,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
 
             {/* Listening State Card */}
             {isListening && (
-              <div className="p-5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center justify-between gap-3 animate-in fade-in">
+              <div className="p-5 rounded-2xl bg-[#B8881A]/10 border border-[#B8881A]/30 text-[#B8881A] font-bold text-xs flex items-center justify-between gap-3 animate-in fade-in">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 rounded-xl bg-rose-500/20 text-rose-500 animate-pulse">
                     <Mic className="w-5 h-5" />
@@ -2439,7 +2439,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="w-1.5 h-6 bg-indigo-500 rounded-full animate-bounce" />
+                  <span className="w-1.5 h-6 bg-[#B8881A] rounded-full animate-bounce" />
                   <span className="w-1.5 h-8 bg-rose-500 rounded-full animate-bounce delay-100" />
                   <span className="w-1.5 h-4 bg-emerald-500 rounded-full animate-bounce delay-200" />
                 </div>
@@ -2451,7 +2451,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
               <div className="p-6 rounded-2xl bg-slate-900 text-white space-y-4 border border-slate-800 font-sans text-xs shadow-xl animate-in fade-in">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-xl bg-indigo-600/30 border border-indigo-500/40 text-indigo-400">
+                    <div className="p-2 rounded-xl bg-[#B8881A]/30 border border-[#B8881A]/40 text-[#D4A82A]">
                       <Bot className="w-4 h-4" />
                     </div>
                     <div>
@@ -2467,7 +2467,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                       className={`px-3 py-1.5 rounded-xl font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer ${
                         isSpeaking
                           ? 'bg-rose-600 hover:bg-rose-500 text-white animate-pulse'
-                          : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                          : 'bg-[#B8881A] hover:bg-[#D4A82A] text-white'
                       }`}
                     >
                       {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
@@ -2508,7 +2508,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                     onClick={() => setNotificationSent('✓ Generated AI Hearing Briefing Note from Voice Output!')}
                     className="px-3 py-1.5 rounded-xl bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-800 text-indigo-300 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
                   >
-                    <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                    <FileText className="w-3.5 h-3.5 text-[#D4A82A]" />
                     <span>Save to Hearing Prep File</span>
                   </button>
                 </div>
@@ -2532,7 +2532,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
 
               <button
                 onClick={handleCopySql}
-                className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm"
+                className="px-3.5 py-1.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm"
               >
                 {copiedSql ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
                 <span>{copiedSql ? 'Copied DDL!' : 'Copy SQL Schema'}</span>
@@ -2585,7 +2585,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
           <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
-                <span className="p-2 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
+                <span className="p-2 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-[#B8881A]">
                   <Globe className="w-5 h-5" />
                 </span>
                 <div>
@@ -2608,7 +2608,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
             <div className="space-y-3">
               <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1.5">
                 <div className="text-[10px] font-mono text-slate-400 uppercase font-bold">Target Portal URL</div>
-                <div className="font-mono text-xs text-indigo-600 dark:text-indigo-400 break-all select-all font-bold">
+                <div className="font-mono text-xs text-[#B8881A] break-all select-all font-bold">
                   {activeLinkModal.url}
                 </div>
               </div>
@@ -2627,7 +2627,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                       setActiveTab('cause_list');
                       setActiveLinkModal(null);
                     }}
-                    className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs shrink-0"
+                    className="px-2.5 py-1 rounded-lg bg-[#B8881A] text-white font-bold text-xs shrink-0"
                   >
                     Open Roster
                   </button>
@@ -2643,7 +2643,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 onClick={() => {
                   setTimeout(() => setActiveLinkModal(null), 500);
                 }}
-                className="w-full sm:flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all text-center"
+                className="w-full sm:flex-1 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all text-center"
               >
                 <ExternalLink className="w-4 h-4" />
                 <span>Open in New Tab</span>
@@ -2667,14 +2667,14 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
           <div className="w-full max-w-2xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-lg">
+                <div className="w-12 h-12 rounded-2xl bg-[#B8881A]/10 text-[#B8881A] flex items-center justify-center font-black text-lg">
                   <UserCheck className="w-6 h-6" />
                 </div>
                 <div>
                   <h3 className="font-black text-slate-900 dark:text-white text-lg">
                     {selectedJudge.name}
                   </h3>
-                  <p className="text-xs text-indigo-600 dark:text-indigo-400 font-bold">
+                  <p className="text-xs text-[#B8881A] font-bold">
                     {selectedJudge.designation} • {selectedJudge.courtName}
                   </p>
                 </div>
@@ -2719,7 +2719,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                 {selectedJudge.notableJudgments.map((j, idx) => (
                   <div key={idx} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1 text-xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{j.citation}</span>
+                      <span className="font-mono font-bold text-[#B8881A]">{j.citation}</span>
                       <span className="text-[10px] text-slate-400">{j.date}</span>
                     </div>
                     <div className="font-bold text-slate-900 dark:text-white">{j.title}</div>
@@ -2748,7 +2748,7 @@ export const CourtIntelligenceView: React.FC<CourtIntelligenceViewProps> = ({
                   setShowJudgeModal(false);
                   setActiveTab('cause_list');
                 }}
-                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs"
+                className="px-4 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs"
               >
                 View Roster in Cause List
               </button>

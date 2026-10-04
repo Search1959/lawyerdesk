@@ -406,7 +406,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <Scale className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <Scale className="w-5 h-5 text-[#B8881A]" />
             <h1 className="text-xl font-black text-slate-900 dark:text-white">Litigation & Case Directory</h1>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -443,7 +443,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
 
           <button
             onClick={onOpenNewMatter}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm transition-all shrink-0"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white text-xs font-bold shadow-sm transition-all shrink-0"
           >
             <Plus className="w-4 h-4" />
             <span>New Matter Intake</span>
@@ -482,7 +482,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
             placeholder="Filter by case number, title, or client..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
           />
         </div>
 
@@ -494,7 +494,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
               onClick={() => setCategoryFilter(cat)}
               className={`px-3 py-1 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
                 categoryFilter === cat
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-[#B8881A] text-white'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
@@ -521,12 +521,12 @@ export const MattersView: React.FC<MattersViewProps> = ({
                 }}
                 className={`p-4 rounded-2xl border transition-all cursor-pointer relative ${
                   isSelected
-                    ? 'bg-indigo-50/70 dark:bg-indigo-950/50 border-indigo-500 shadow-md ring-1 ring-indigo-500'
+                    ? 'bg-indigo-50/70 dark:bg-indigo-950/50 border-[#B8881A] shadow-md ring-1 ring-[#B8881A]'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <span className="text-xs font-mono font-black text-indigo-600 dark:text-indigo-400 bg-indigo-100/60 dark:bg-indigo-900/40 px-2 py-0.5 rounded-lg border border-indigo-200 dark:border-indigo-800/60">
+                  <span className="text-xs font-mono font-black text-[#B8881A] bg-indigo-100/60 dark:bg-indigo-900/40 px-2 py-0.5 rounded-lg border border-indigo-200 dark:border-indigo-800/60">
                     {m.caseNumber}
                   </span>
                   <span
@@ -575,7 +575,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
               {/* Line 1: Case Number, Title, Court & Back Button */}
               <div className="flex items-center justify-between gap-3 w-full">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-[#B8881A] flex items-center justify-center shrink-0">
                     <FolderOpen className="w-5 h-5" />
                   </div>
                   <div className="min-w-0">
@@ -602,7 +602,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                 {onOpenCaseBrain && (
                   <button
                     onClick={() => onOpenCaseBrain(selectedMatter)}
-                    className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md transition-all ring-2 ring-indigo-500/20 cursor-pointer"
+                    className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md transition-all ring-2 ring-[#B8881A]/20 cursor-pointer"
                   >
                     <Brain className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
                     <span>AI Case Brain</span>
@@ -676,7 +676,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
 
                 <button
                   onClick={() => onOpenAIChatForMatter(selectedMatter)}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                  className="px-3 py-1.5 bg-[#B8881A] hover:bg-[#D4A82A] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
                 >
                   <Bot className="w-3.5 h-3.5 text-amber-300" />
                   <span>Ask AI</span>
@@ -703,7 +703,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                         <div
                           className={`w-8 h-8 rounded-full font-extrabold text-xs flex items-center justify-center transition-all ${
                             isActive
-                              ? 'bg-indigo-600 text-white ring-4 ring-indigo-100 dark:ring-indigo-950 scale-110 shadow-md'
+                              ? 'bg-[#B8881A] text-white ring-4 ring-indigo-100 dark:ring-indigo-950 scale-110 shadow-md'
                               : isCompleted
                               ? 'bg-emerald-500 text-white'
                               : 'bg-white dark:bg-slate-800 text-slate-500 border border-slate-300 dark:border-slate-700 group-hover:border-indigo-400'
@@ -714,7 +714,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                         <span
                           className={`text-[11px] font-bold tracking-tight ${
                             isActive
-                              ? 'text-indigo-600 dark:text-indigo-400 font-black'
+                              ? 'text-[#B8881A] font-black'
                               : 'text-slate-500 dark:text-slate-400'
                           }`}
                         >
@@ -760,7 +760,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
 
                   <div>
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">Client</span>
-                    <span className="text-indigo-600 dark:text-indigo-400 font-bold">{selectedMatter.clientName}</span>
+                    <span className="text-[#B8881A] font-bold">{selectedMatter.clientName}</span>
                   </div>
                 </div>
               </div>
@@ -790,7 +790,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                       {matterHearings.map((h) => (
                         <div key={h.id} className="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/60 text-xs">
                           <div className="flex justify-between font-bold text-slate-900 dark:text-white">
-                            <span className="text-indigo-600 dark:text-indigo-400 font-mono">📅 {h.date} ({h.time})</span>
+                            <span className="text-[#B8881A] font-mono">📅 {h.date} ({h.time})</span>
                             <span className="text-[10px] bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 px-1.5 py-0.5 rounded">
                               {h.stage}
                             </span>
@@ -834,7 +834,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                           <span className="font-medium text-slate-800 dark:text-slate-200 truncate">{doc.fileName}</span>
                           <button
                             onClick={() => alert(`Downloading document: ${doc.fileName}`)}
-                            className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 p-1 shrink-0"
+                            className="text-[#B8881A] hover:text-indigo-500 dark:text-[#D4A82A] p-1 shrink-0"
                             title="Download document"
                           >
                             <Download className="w-3.5 h-3.5" />
@@ -865,7 +865,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                     onClick={() => setActiveSubTab(tab.id as any)}
                     className={`px-3 py-2 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
                       activeSubTab === tab.id
-                        ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                        ? 'border-indigo-600 text-[#B8881A]'
                         : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
@@ -931,7 +931,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                           <div className="font-bold text-slate-900 dark:text-white">{tl.title}</div>
                           <div className="text-slate-600 dark:text-slate-300 mt-0.5">{tl.description}</div>
                           {tl.docCitation && (
-                            <div className="mt-1 text-[10px] font-mono text-indigo-600 dark:text-indigo-400">
+                            <div className="mt-1 text-[10px] font-mono text-[#B8881A]">
                               Citation: {tl.docCitation}
                             </div>
                           )}
@@ -948,7 +948,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                     <h4 className="text-xs font-bold uppercase text-slate-400">Document Vault ({matterDocs.length})</h4>
                     <button
                       onClick={() => onUploadDocToMatter(selectedMatter.id)}
-                      className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                      className="text-xs font-bold text-[#B8881A] hover:underline flex items-center gap-1"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Upload & OCR</span>
@@ -1004,7 +1004,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                     <div key={ord.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60 text-xs space-y-2">
                       <div className="flex items-center justify-between font-bold text-slate-900 dark:text-white">
                         <span>{ord.type} ({ord.orderDate})</span>
-                        <span className="text-indigo-600">{ord.judgeName}</span>
+                        <span className="text-[#B8881A]">{ord.judgeName}</span>
                       </div>
                       <p className="text-slate-700 dark:text-slate-300">{ord.summary}</p>
                       <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200/60 text-[11px] text-slate-600 dark:text-slate-400">
@@ -1053,7 +1053,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                   <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                     <div>
                       <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                        CNR Number: <span className="font-mono text-indigo-600 dark:text-indigo-400">{selectedMatter.cnrNumber || selectedMatter.cnr || 'Not Added'}</span>
+                        CNR Number: <span className="font-mono text-[#B8881A]">{selectedMatter.cnrNumber || selectedMatter.cnr || 'Not Added'}</span>
                       </h4>
                       <p className="text-[11px] text-slate-500 mt-0.5">
                         Last synced at: {selectedMatter.courtSyncAt || 'Never'} • Status: {selectedMatter.courtSyncStatus || 'Pending'}
@@ -1062,7 +1062,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                     <button
                       onClick={handleSyncCurrentCase}
                       disabled={isSyncingCurrentCase}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center gap-2 shadow-sm disabled:opacity-50"
+                      className="px-4 py-2 bg-[#B8881A] hover:bg-[#D4A82A] text-white text-xs font-bold rounded-xl flex items-center gap-2 shadow-sm disabled:opacity-50"
                     >
                       <Clock className={`w-3.5 h-3.5 ${isSyncingCurrentCase ? 'animate-spin' : ''}`} />
                       <span>{isSyncingCurrentCase ? 'Syncing...' : 'Sync with eCourts'}</span>
@@ -1104,7 +1104,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
                               </td>
                               <td className="p-3 font-bold text-slate-900 dark:text-white">{log.nextHearing || 'N/A'}</td>
                               <td className="p-3 text-slate-600 dark:text-slate-300">{log.caseStage || log.courtName || '-'}</td>
-                              <td className="p-3 font-bold text-indigo-600 dark:text-indigo-400">{log.itemNumber || '-'}</td>
+                              <td className="p-3 font-bold text-[#B8881A]">{log.itemNumber || '-'}</td>
                             </tr>
                           ))
                         )}
@@ -1226,7 +1226,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
           <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <h3 className="text-base font-extrabold flex items-center gap-2">
-                <Edit3 className="w-4 h-4 text-indigo-600" />
+                <Edit3 className="w-4 h-4 text-[#B8881A]" />
                 <span>Edit Case Details</span>
               </h3>
               <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-slate-600">✕</button>
@@ -1267,7 +1267,7 @@ export const MattersView: React.FC<MattersViewProps> = ({
 
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setShowEditModal(false)} className="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-400">Cancel</button>
-                <button type="submit" className="px-4 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-xs">Save Changes</button>
+                <button type="submit" className="px-4 py-1.5 bg-[#B8881A] text-white text-xs font-bold rounded-xl shadow-xs">Save Changes</button>
               </div>
             </form>
           </div>

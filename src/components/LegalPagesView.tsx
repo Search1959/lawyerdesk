@@ -111,12 +111,12 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
             </button>
           )}
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30 font-bold">
+            <div className="w-8 h-8 rounded-lg bg-[#B8881A] flex items-center justify-center text-white shadow-lg shadow-indigo-600/30 font-bold">
               <Scale className="w-5 h-5" />
             </div>
             <div>
               <div className="text-base font-black text-white tracking-tight flex items-center gap-1.5">
-                LAWYERDESK AI <span className="text-xs font-mono text-indigo-400 font-normal">(lawyerdesk.co.in)</span>
+                LAWYERDESK AI <span className="text-xs font-mono text-[#D4A82A] font-normal">(lawyerdesk.co.in)</span>
               </div>
               <div className="text-[11px] text-slate-400">
                 Legal Compliance & Regulatory Standards Portal
@@ -138,7 +138,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
             onClick={() => setActiveTab('privacy')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
               activeTab === 'privacy'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-[#B8881A] text-white shadow-lg shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
@@ -150,7 +150,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
             onClick={() => setActiveTab('terms')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
               activeTab === 'terms'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-[#B8881A] text-white shadow-lg shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
@@ -162,7 +162,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
             onClick={() => setActiveTab('support')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
               activeTab === 'support'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-[#B8881A] text-white shadow-lg shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
@@ -192,14 +192,14 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
           <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-10 space-y-8 shadow-xl text-left">
             <div className="border-b border-slate-800 pb-6 space-y-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950 border border-indigo-700/60 text-indigo-300 text-xs font-semibold">
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#D4A82A]" />
                 <span>Effective Date: July 2026 • DPDP Act 2023 Compliant</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white">
                 Privacy Policy & Data Processing Standards
               </h1>
               <p className="text-slate-400 text-xs sm:text-sm">
-                Official privacy standards for LawyerDesk AI (<span className="text-indigo-400">lawyerdesk.co.in</span>), operated by <strong className="text-white">M/s Deinrim Solutionss (P) Ltd.</strong>
+                Official privacy standards for LawyerDesk AI (<span className="text-[#D4A82A]">lawyerdesk.co.in</span>), operated by <strong className="text-white">M/s Deinrim Solutionss (P) Ltd.</strong>
               </p>
             </div>
 
@@ -281,7 +281,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
           <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-10 space-y-8 shadow-xl text-left">
             <div className="border-b border-slate-800 pb-6 space-y-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950 border border-indigo-700/60 text-indigo-300 text-xs font-semibold">
-                <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                <FileText className="w-3.5 h-3.5 text-[#D4A82A]" />
                 <span>Terms & Conditions • LawyerDesk AI Framework v3.5</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white">
@@ -342,7 +342,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
           <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-10 space-y-8 shadow-xl text-left">
             <div className="border-b border-slate-800 pb-6 space-y-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950 border border-indigo-700/60 text-indigo-300 text-xs font-semibold">
-                <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
+                <HelpCircle className="w-3.5 h-3.5 text-[#D4A82A]" />
                 <span>24/7 Corporate Technical Desk</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white">
@@ -363,7 +363,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
               </div>
 
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1">
-                <Building2 className="w-5 h-5 text-indigo-400 mb-1" />
+                <Building2 className="w-5 h-5 text-[#D4A82A] mb-1" />
                 <div className="text-xs font-bold text-slate-400 uppercase">Operating Headquarters</div>
                 <div className="text-sm font-bold text-white">M/s Deinrim Solutionss (P) Ltd.</div>
                 <div className="text-[11px] text-slate-500">Kolkata, West Bengal (WB), India</div>
@@ -380,7 +380,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
             {/* Support Ticket Submission Form */}
             <div className="bg-slate-950 p-6 rounded-xl border border-slate-800 space-y-4">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Send className="w-4 h-4 text-indigo-400" />
+                <Send className="w-4 h-4 text-[#D4A82A]" />
                 Submit Technical Support Ticket
               </h3>
 
@@ -425,7 +425,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                         value={supportForm.name}
                         onChange={(e) => setSupportForm({ ...supportForm, name: e.target.value })}
                         placeholder="Adv. Rajesh Sharma"
-                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-[#B8881A] focus:outline-none"
                       />
                     </div>
 
@@ -437,7 +437,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                         value={supportForm.email}
                         onChange={(e) => setSupportForm({ ...supportForm, email: e.target.value })}
                         placeholder="advocate@lawfirm.in"
-                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-[#B8881A] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -451,7 +451,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                         value={supportForm.phone}
                         onChange={(e) => setSupportForm({ ...supportForm, phone: e.target.value })}
                         placeholder="+91 98000 00000"
-                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-[#B8881A] focus:outline-none"
                       />
                     </div>
 
@@ -460,7 +460,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                       <select
                         value={supportForm.courtJurisdiction}
                         onChange={(e) => setSupportForm({ ...supportForm, courtJurisdiction: e.target.value })}
-                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-[#B8881A] focus:outline-none"
                       >
                         <option value="Delhi High Court">Delhi High Court</option>
                         <option value="Bombay High Court">Bombay High Court</option>
@@ -477,7 +477,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                       <select
                         value={supportForm.category}
                         onChange={(e) => setSupportForm({ ...supportForm, category: e.target.value })}
-                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-[#B8881A] focus:outline-none"
                       >
                         <option value="e-Courts Cause List Sync">e-Courts Cause List Sync</option>
                         <option value="PaddleOCR Document Search">PaddleOCR Document Search</option>
@@ -496,7 +496,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                       value={supportForm.subject}
                       onChange={(e) => setSupportForm({ ...supportForm, subject: e.target.value })}
                       placeholder="e.g. Cause list auto-fetch error for Item No. 14"
-                      className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-[#B8881A] focus:outline-none"
                     />
                   </div>
 
@@ -508,13 +508,13 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                       value={supportForm.message}
                       onChange={(e) => setSupportForm({ ...supportForm, message: e.target.value })}
                       placeholder="Please provide details about the issue or question..."
-                      className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:ring-2 focus:ring-[#B8881A] focus:outline-none"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2"
+                    className="px-6 py-3 bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2"
                   >
                     <Send className="w-4 h-4" />
                     Submit Support Ticket to Deinrim Engineers
@@ -537,7 +537,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                 Data Deletion Request Portal
               </h1>
               <p className="text-slate-400 text-xs sm:text-sm">
-                Initiate full tenant database purge and legal document shredding under DEINRIM Framework v3.5 protocol on <span className="text-indigo-400">lawyerdesk.co.in</span>.
+                Initiate full tenant database purge and legal document shredding under DEINRIM Framework v3.5 protocol on <span className="text-[#D4A82A]">lawyerdesk.co.in</span>.
               </p>
             </div>
 

@@ -92,7 +92,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <Calendar className="w-4 h-4" /> Chamber & Client Appointments
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Consultation Scheduler</h1>
@@ -102,7 +102,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
+          className="inline-flex items-center gap-2 bg-[#B8881A] hover:bg-[#D4A82A] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all shrink-0"
         >
           <Plus className="w-4 h-4" /> Schedule Appointment
         </button>
@@ -117,7 +117,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
             placeholder="Search client, advocate or purpose..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#B8881A]"
           />
         </div>
 
@@ -128,7 +128,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
               onClick={() => setSelectedMode(mode)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
                 selectedMode === mode
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-[#B8881A] text-white'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
@@ -167,7 +167,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">{apt.clientName}</h3>
                 {apt.matterTitle && (
-                  <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5 truncate">
+                  <p className="text-xs text-[#B8881A] font-semibold mt-0.5 truncate">
                     {apt.matterTitle}
                   </p>
                 )}
@@ -213,7 +213,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 </button>
                 <button
                   onClick={() => setViewingApt(apt)}
-                  className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="p-1.5 rounded-lg text-slate-500 hover:text-[#B8881A] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   title="View Details"
                 >
                   <Eye className="w-3.5 h-3.5" />
@@ -346,7 +346,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   required
                   value={editingApt.clientName}
                   onChange={(e) => setEditingApt({ ...editingApt, clientName: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -356,7 +356,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   type="text"
                   value={editingApt.matterTitle || ''}
                   onChange={(e) => setEditingApt({ ...editingApt, matterTitle: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -368,7 +368,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                     required
                     value={editingApt.date}
                     onChange={(e) => setEditingApt({ ...editingApt, date: e.target.value })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
                 <div>
@@ -378,7 +378,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                     required
                     value={editingApt.time}
                     onChange={(e) => setEditingApt({ ...editingApt, time: e.target.value })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -389,7 +389,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   <select
                     value={editingApt.mode}
                     onChange={(e) => setEditingApt({ ...editingApt, mode: e.target.value as any })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="Chamber Meeting">Chamber Meeting</option>
                     <option value="Video Call (Google Meet)">Video Call (Google Meet)</option>
@@ -404,7 +404,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                     required
                     value={editingApt.lawyerName}
                     onChange={(e) => setEditingApt({ ...editingApt, lawyerName: e.target.value })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -416,7 +416,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   required
                   value={editingApt.purpose}
                   onChange={(e) => setEditingApt({ ...editingApt, purpose: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -430,7 +430,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-[#B8881A] hover:bg-[#D4A82A] rounded-lg shadow-sm"
                 >
                   Save Changes
                 </button>
@@ -494,7 +494,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   value={newApt.clientName}
                   onChange={(e) => setNewApt({ ...newApt, clientName: e.target.value })}
                   placeholder="Client / Company Name"
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -503,7 +503,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 <select
                   value={newApt.matterTitle}
                   onChange={(e) => setNewApt({ ...newApt, matterTitle: e.target.value })}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 >
                   <option value="">-- Standalone Consultation --</option>
                   {matters.map((m) => (
@@ -522,7 +522,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                     required
                     value={newApt.date}
                     onChange={(e) => setNewApt({ ...newApt, date: e.target.value })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
                 <div>
@@ -533,7 +533,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                     value={newApt.time}
                     onChange={(e) => setNewApt({ ...newApt, time: e.target.value })}
                     placeholder="e.g. 03:30 PM"
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   />
                 </div>
               </div>
@@ -544,7 +544,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   <select
                     value={newApt.mode}
                     onChange={(e) => setNewApt({ ...newApt, mode: e.target.value as any })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   >
                     <option value="Chamber Meeting">Chamber Meeting</option>
                     <option value="Video Call (Google Meet)">Video Call (Google Meet)</option>
@@ -557,7 +557,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   <select
                     value={newApt.lawyerName}
                     onChange={(e) => setNewApt({ ...newApt, lawyerName: e.target.value })}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                   >
                     {users.map((u) => (
                       <option key={u.id} value={u.name}>{u.name}</option>
@@ -574,7 +574,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   value={newApt.purpose}
                   onChange={(e) => setNewApt({ ...newApt, purpose: e.target.value })}
                   placeholder="e.g. Senior Counsel Briefing for High Court Interim Stay Arguments..."
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#B8881A]"
                 />
               </div>
 
@@ -588,7 +588,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-[#B8881A] hover:bg-[#D4A82A] rounded-lg shadow-sm"
                 >
                   Save Appointment
                 </button>

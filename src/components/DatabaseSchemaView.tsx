@@ -471,7 +471,7 @@ export default router;
       <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <Database className="w-6 h-6 text-indigo-400" />
+            <Database className="w-6 h-6 text-[#D4A82A]" />
             <h1 className="text-2xl font-black tracking-tight">Enterprise Database Schema & Auth Architecture</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
@@ -492,7 +492,7 @@ export default router;
           onClick={() => setActiveTab('postgres')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'postgres'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? 'bg-[#B8881A] text-white shadow-md'
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
@@ -504,7 +504,7 @@ export default router;
           onClick={() => setActiveTab('prisma')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'prisma'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? 'bg-[#B8881A] text-white shadow-md'
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
@@ -516,7 +516,7 @@ export default router;
           onClick={() => setActiveTab('middleware')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'middleware'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? 'bg-[#B8881A] text-white shadow-md'
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
@@ -528,7 +528,7 @@ export default router;
           onClick={() => setActiveTab('endpoints')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'endpoints'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? 'bg-[#B8881A] text-white shadow-md'
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
@@ -541,7 +541,7 @@ export default router;
       <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative">
         <div className="flex items-center justify-between bg-slate-900/90 px-4 py-2.5 border-b border-slate-800">
           <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-            <Code2 className="w-4 h-4 text-indigo-400" />
+            <Code2 className="w-4 h-4 text-[#D4A82A]" />
             <span>
               {activeTab === 'postgres' && 'schema.sql (PostgreSQL DDL)'}
               {activeTab === 'prisma' && 'schema.prisma (Prisma ORM)'}

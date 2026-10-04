@@ -165,7 +165,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
       <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <CalendarDays className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <CalendarDays className="w-5 h-5 text-[#B8881A]" />
             <h1 className="text-xl font-extrabold text-slate-900 dark:text-white">Hearing Calendar & e-Cause List</h1>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -180,7 +180,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
               onClick={() => setViewMode('calendar')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
                 viewMode === 'calendar'
-                  ? 'bg-indigo-600 text-white shadow'
+                  ? 'bg-[#B8881A] text-white shadow'
                   : 'text-slate-600 dark:text-slate-300 hover:text-white'
               }`}
             >
@@ -191,7 +191,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
               onClick={() => setViewMode('list')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
                 viewMode === 'list'
-                  ? 'bg-indigo-600 text-white shadow'
+                  ? 'bg-[#B8881A] text-white shadow'
                   : 'text-slate-600 dark:text-slate-300 hover:text-white'
               }`}
             >
@@ -213,7 +213,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
           {/* AI Post-Hearing Voice Briefing Button */}
           <button
             onClick={() => setShowVoiceModal(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 hover:bg-indigo-500/20 text-xs font-bold transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#B8881A]/10 text-[#B8881A] border border-[#B8881A]/30 hover:bg-[#D4A82A]/20 text-xs font-bold transition-all"
           >
             <Mic className="w-3.5 h-3.5 text-indigo-500" />
             <span>Voice Hearing Dictation</span>
@@ -225,7 +225,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
               setNewHearing((prev) => ({ ...prev, date: selectedDateStr }));
               setShowModal(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow transition-all active:scale-95"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white text-xs font-bold shadow transition-all active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>Schedule Hearing</span>
@@ -241,7 +241,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
           <select
             value={selectedCourt}
             onChange={(e) => setSelectedCourt(e.target.value)}
-            className="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500"
+            className="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B8881A]"
           >
             <option value="ALL">All Courts ({hearings.length} Total Hearings)</option>
             <option value="Delhi High Court">Delhi High Court</option>
@@ -254,7 +254,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
 
         <div className="flex items-center gap-4 text-slate-500 dark:text-slate-400 font-medium">
           <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span> High Court
+            <span className="w-2.5 h-2.5 rounded-full bg-[#B8881A] inline-block"></span> High Court
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> District Court
@@ -273,7 +273,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
             {/* Month Switcher Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <CalendarIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <CalendarIcon className="w-5 h-5 text-[#B8881A]" />
                 <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
                   {monthNames[currentMonth]} {currentYear}
                 </h2>
@@ -332,7 +332,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                     onClick={() => setSelectedDateStr(cell.dateStr)}
                     className={`h-16 sm:h-20 p-1.5 rounded-xl border text-left flex flex-col justify-between transition-all relative ${
                       isSelected
-                        ? 'bg-indigo-50 dark:bg-indigo-950/80 border-indigo-500 shadow-md ring-2 ring-indigo-500/20'
+                        ? 'bg-indigo-50 dark:bg-indigo-950/80 border-[#B8881A] shadow-md ring-2 ring-[#B8881A]/20'
                         : 'bg-white dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
@@ -340,7 +340,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                       <span
                         className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
                           isSelected
-                            ? 'bg-indigo-600 text-white'
+                            ? 'bg-[#B8881A] text-white'
                             : 'text-slate-700 dark:text-slate-300'
                         }`}
                       >
@@ -358,7 +358,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                       {dayHearings.slice(0, 2).map((h) => (
                         <div
                           key={h.id}
-                          className="text-[9px] font-semibold px-1 py-0.5 rounded truncate bg-indigo-600/10 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20"
+                          className="text-[9px] font-semibold px-1 py-0.5 rounded truncate bg-[#B8881A]/10 text-[#B8881A] dark:text-indigo-300 border border-[#B8881A]/20"
                         >
                           {h.courtName.split(' ')[0]} • {h.stage.slice(0, 10)}
                         </div>
@@ -379,7 +379,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
           <div className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
-                <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400">Selected Date Roster</div>
+                <div className="text-xs font-bold text-[#B8881A]">Selected Date Roster</div>
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white">{selectedDateStr}</h3>
               </div>
               <button
@@ -387,7 +387,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                   setNewHearing((prev) => ({ ...prev, date: selectedDateStr }));
                   setShowModal(true);
                 }}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500 transition-colors flex items-center gap-1"
+                className="px-3 py-1.5 rounded-lg bg-[#B8881A] text-white text-xs font-bold hover:bg-[#D4A82A] transition-colors flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Date</span>
@@ -611,7 +611,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                 >
                   Cancel
                 </button>
-                <button type="submit" className="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold">
+                <button type="submit" className="px-4 py-2 rounded-xl bg-[#B8881A] text-white font-bold">
                   Save Schedule
                 </button>
               </div>
@@ -626,7 +626,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
           <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                <div className="p-2 rounded-xl bg-[#B8881A]/10 text-indigo-500 border border-[#B8881A]/20">
                   <Mic className="w-5 h-5" />
                 </div>
                 <div>
@@ -660,7 +660,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                   placeholder="e.g. Matter listed in Delhi High Court Court 24. Bench granted interim stay on recovery. Next hearing fixed for 24 October 2026. Directed junior advocate to file rejoinder affidavit within 2 weeks."
                   value={voiceTranscript}
                   onChange={(e) => setVoiceTranscript(e.target.value)}
-                  className="w-full p-3 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-[#B8881A]"
                 />
                 <button
                   type="button"
@@ -676,7 +676,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                   className={`absolute right-3 bottom-3 p-2 rounded-xl transition-all ${
                     isRecordingVoice
                       ? 'bg-rose-500 text-white animate-pulse'
-                      : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow'
+                      : 'bg-[#B8881A] hover:bg-[#D4A82A] text-white shadow'
                   }`}
                   title="Click to Dictate"
                 >
@@ -703,7 +703,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
                       });
                     }, 1200);
                   }}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>{isProcessingVoice ? 'Structuring Briefing...' : 'Process AI Voice Briefing'}</span>
@@ -714,7 +714,7 @@ export const HearingsView: React.FC<HearingsViewProps> = ({
             {voiceSummaryResult && (
               <div className="p-4 rounded-2xl bg-indigo-950/60 border border-indigo-800/80 text-indigo-200 text-xs space-y-3 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b border-indigo-800 pb-2">
-                  <span className="font-extrabold uppercase tracking-wider text-[10px] text-indigo-400">
+                  <span className="font-extrabold uppercase tracking-wider text-[10px] text-[#D4A82A]">
                     AI Structuring Complete
                   </span>
                   <span className="px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-black text-[10px]">

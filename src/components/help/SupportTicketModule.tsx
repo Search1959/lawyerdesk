@@ -75,7 +75,7 @@ export const SupportTicketModule: React.FC<SupportTicketModuleProps> = ({
       {/* Header Banner */}
       <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl border border-slate-800 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/30">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B8881A]/20 text-indigo-300 text-xs font-bold border border-[#B8881A]/30">
             <LifeBuoy className="w-3.5 h-3.5" /> LawyerDesk Engineering Support
           </div>
           <h2 className="text-xl font-black">Support Desk & Ticket Tracking</h2>
@@ -84,7 +84,7 @@ export const SupportTicketModule: React.FC<SupportTicketModuleProps> = ({
 
         <button
           onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs flex items-center gap-2 shadow-md transition-all shrink-0"
+          className="px-4 py-2.5 rounded-2xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-extrabold text-xs flex items-center gap-2 shadow-md transition-all shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Create New Support Ticket</span>
@@ -108,12 +108,12 @@ export const SupportTicketModule: React.FC<SupportTicketModuleProps> = ({
                   onClick={() => setActiveTicketId(tkt.id)}
                   className={`p-4 rounded-2xl border cursor-pointer transition-all space-y-2 ${
                     isSelected
-                      ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-slate-900 dark:text-white shadow-md'
+                      ? 'bg-indigo-50 dark:bg-indigo-950/40 border-[#B8881A] text-slate-900 dark:text-white shadow-md'
                       : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-800 dark:text-slate-200'
                   }`}
                 >
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{tkt.ticketNumber}</span>
+                    <span className="font-mono font-bold text-[#B8881A]">{tkt.ticketNumber}</span>
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-extrabold ${
                         tkt.status === 'Open'
@@ -145,7 +145,7 @@ export const SupportTicketModule: React.FC<SupportTicketModuleProps> = ({
             {/* Ticket Metadata Header */}
             <div className="space-y-3 pb-4 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-black px-2.5 py-1 rounded bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400">
+                <span className="font-mono text-xs font-black px-2.5 py-1 rounded bg-indigo-50 dark:bg-indigo-950/80 text-[#B8881A]">
                   {activeTicket.ticketNumber} • Priority: {activeTicket.priority}
                 </span>
                 <span className="text-xs text-slate-400">Created: {activeTicket.createdAt}</span>
@@ -175,7 +175,7 @@ export const SupportTicketModule: React.FC<SupportTicketModuleProps> = ({
                     <div className="flex items-center justify-between font-bold text-slate-900 dark:text-white">
                       <div className="flex items-center gap-2">
                         {cm.isStaff ? (
-                          <ShieldCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                          <ShieldCheck className="w-4 h-4 text-[#B8881A]" />
                         ) : (
                           <User className="w-4 h-4 text-slate-500" />
                         )}
@@ -200,12 +200,12 @@ export const SupportTicketModule: React.FC<SupportTicketModuleProps> = ({
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 placeholder="Add comment or reply to support..."
-                className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 font-medium"
+                className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B8881A] font-medium"
               />
               <button
                 type="submit"
                 disabled={!commentText.trim()}
-                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition-all disabled:opacity-50"
+                className="px-4 py-2.5 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition-all disabled:opacity-50"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Reply</span>
@@ -225,7 +225,7 @@ export const SupportTicketModule: React.FC<SupportTicketModuleProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in overflow-y-auto">
           <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 my-8">
             <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
-              <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-base">
+              <div className="flex items-center gap-2 text-[#B8881A] font-black text-base">
                 <LifeBuoy className="w-5 h-5" />
                 <span>Create Support Ticket</span>
               </div>
@@ -323,7 +323,7 @@ export const SupportTicketModule: React.FC<SupportTicketModuleProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black shadow-md"
+                  className="px-5 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-black shadow-md"
                 >
                   Submit Ticket
                 </button>

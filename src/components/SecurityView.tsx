@@ -461,7 +461,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
       <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-indigo-400" />
+            <ShieldCheck className="w-6 h-6 text-[#D4A82A]" />
             <h1 className="text-2xl font-black tracking-tight">System Security & RBAC Command Center</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
@@ -480,7 +480,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
 
           <button
             onClick={() => setShowCreateUserModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all"
           >
             <UserPlus className="w-4 h-4" />
             <span>Provision User</span>
@@ -537,7 +537,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
           onClick={() => setActiveSubTab('users')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeSubTab === 'users'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? 'bg-[#B8881A] text-white shadow-md'
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
@@ -549,7 +549,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
           onClick={() => setActiveSubTab('firms')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeSubTab === 'firms'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? 'bg-[#B8881A] text-white shadow-md'
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
@@ -561,7 +561,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
           onClick={() => setActiveSubTab('sessions')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeSubTab === 'sessions'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? 'bg-[#B8881A] text-white shadow-md'
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
@@ -573,7 +573,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
           onClick={() => setActiveSubTab('matrix')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeSubTab === 'matrix'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? 'bg-[#B8881A] text-white shadow-md'
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
@@ -585,7 +585,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
           onClick={() => setActiveSubTab('audit')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeSubTab === 'audit'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? 'bg-[#B8881A] text-white shadow-md'
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
@@ -597,7 +597,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
           onClick={() => setActiveSubTab('court_master')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeSubTab === 'court_master'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? 'bg-[#B8881A] text-white shadow-md'
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
@@ -617,7 +617,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                 value={userSearchTerm}
                 onChange={(e) => setUserSearchTerm(e.target.value)}
                 placeholder="Filter users by name, email, or role..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500"
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B8881A]"
               />
             </div>
 
@@ -695,7 +695,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                               setResetModalUser(usr);
                               setResetNewPassword('Reset@Lawyer2026');
                             }}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950 transition-all"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-[#B8881A] hover:bg-indigo-50 dark:hover:bg-indigo-950 transition-all"
                             title="Reset Password"
                           >
                             <RefreshCw className="w-4 h-4" />
@@ -728,13 +728,13 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
         <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
             <h2 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-indigo-600" />
+              <Building2 className="w-4 h-4 text-[#B8881A]" />
               <span>Registered Law Firms & Multi-Branch Offices</span>
             </h2>
 
             <button
               onClick={() => setShowCreateFirmModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#B8881A] text-white text-xs font-bold hover:bg-[#D4A82A]"
             >
               <Plus className="w-4 h-4" /> New Law Firm
             </button>
@@ -779,7 +779,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
       {activeSubTab === 'sessions' && (
         <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
-            <Globe className="w-4 h-4 text-indigo-600" />
+            <Globe className="w-4 h-4 text-[#B8881A]" />
             <span>Active Authenticated Sessions Monitor</span>
           </h2>
 
@@ -800,7 +800,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                   <tr key={sess.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                     <td className="p-3">
                       <div className="font-bold text-slate-900 dark:text-white">{sess.userName}</div>
-                      <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold">{sess.userRole}</div>
+                      <div className="text-[10px] text-[#B8881A] font-semibold">{sess.userRole}</div>
                     </td>
                     <td className="p-3 font-mono text-slate-600 dark:text-slate-300">{sess.ipAddress}</td>
                     <td className="p-3 text-slate-600 dark:text-slate-300">
@@ -841,7 +841,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
       {activeSubTab === 'matrix' && (
         <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
-            <KeyRound className="w-4 h-4 text-indigo-600" />
+            <KeyRound className="w-4 h-4 text-[#B8881A]" />
             <span>Configurable Access Matrix (11 Enterprise Roles)</span>
           </h2>
 
@@ -892,7 +892,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
           <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-sm">
-                <Database className="w-5 h-5 text-indigo-600" />
+                <Database className="w-5 h-5 text-[#B8881A]" />
                 <span>eCourts NJDG & High Court API Gateways</span>
               </div>
               <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
@@ -921,7 +921,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                   </div>
                   <div className="flex items-center justify-between text-[11px] font-semibold">
                     <span className="text-slate-500">Total Synced Cases:</span>
-                    <span className="text-indigo-400 font-mono font-bold">{int.totalSyncedCases.toLocaleString()}</span>
+                    <span className="text-[#D4A82A] font-mono font-bold">{int.totalSyncedCases.toLocaleString()}</span>
                   </div>
                 </div>
               ))}
@@ -935,7 +935,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
             <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                 <span className="font-bold text-slate-900 dark:text-white text-xs">States Master ({mockStates.length})</span>
-                <span className="text-[10px] font-bold text-indigo-400 uppercase">National Scope</span>
+                <span className="text-[10px] font-bold text-[#D4A82A] uppercase">National Scope</span>
               </div>
               <div className="space-y-1.5 max-h-48 overflow-y-auto">
                 {mockStates.map((st) => (
@@ -1041,7 +1041,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+            <div className="flex items-center gap-2 text-[#D4A82A] font-bold text-sm">
               <Building2 className="w-5 h-5" /> Create New Law Firm (Clean Workspace)
             </div>
 
@@ -1065,7 +1065,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                   value={newFirmName}
                   onChange={(e) => setNewFirmName(e.target.value)}
                   placeholder="M/s Trilegal & Partners Advocates"
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-sans"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#B8881A] font-sans"
                 />
               </div>
 
@@ -1077,7 +1077,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                   value={newFirmCode}
                   onChange={(e) => setNewFirmCode(e.target.value)}
                   placeholder="TLG-DEL"
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#B8881A] font-mono"
                 />
               </div>
 
@@ -1086,7 +1086,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                 <select
                   value={newFirmPlan}
                   onChange={(e) => setNewFirmPlan(e.target.value as any)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-[#B8881A]"
                 >
                   <option value="Enterprise Unlimited">Enterprise Unlimited (500 GB)</option>
                   <option value="Partner Suite">Partner Suite (200 GB)</option>
@@ -1104,7 +1104,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500"
+                  className="px-4 py-2 rounded-xl bg-[#B8881A] text-white text-xs font-bold hover:bg-[#D4A82A]"
                 >
                   Create Firm Workspace
                 </button>
@@ -1125,7 +1125,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+            <div className="flex items-center gap-2 text-[#D4A82A] font-bold text-sm">
               <UserPlus className="w-5 h-5" /> Provision User Account (System Admin)
             </div>
 
@@ -1150,7 +1150,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                     value={newUserName}
                     onChange={(e) => setNewUserName(e.target.value)}
                     placeholder="Adv. Vikramaditya Roy"
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#B8881A]"
                   />
                 </div>
 
@@ -1162,7 +1162,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                     value={newUserEmail}
                     onChange={(e) => setNewUserEmail(e.target.value)}
                     placeholder="vikram@lawyerdesk.in"
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#B8881A] font-mono"
                   />
                 </div>
               </div>
@@ -1173,7 +1173,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                   <select
                     value={newUserRole}
                     onChange={(e) => setNewUserRole(e.target.value as UserRole)}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-[#B8881A]"
                   >
                     <option value="Law Firm">Law Firm (Managing Partner)</option>
                     <option value="Senior Advocate">Senior Advocate</option>
@@ -1191,7 +1191,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                   <select
                     value={newUserFirmId}
                     onChange={(e) => setNewUserFirmId(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-[#B8881A] font-mono"
                   >
                     {firmsList.map((f) => (
                       <option key={f.id} value={f.id}>
@@ -1213,7 +1213,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                       const generated = 'Pass#' + Math.floor(100000 + Math.random() * 900000) + '!';
                       setNewUserPassword(generated);
                     }}
-                    className="text-[11px] text-indigo-400 hover:underline flex items-center gap-1 font-medium"
+                    className="text-[11px] text-[#D4A82A] hover:underline flex items-center gap-1 font-medium"
                   >
                     <RefreshCw className="w-3 h-3" /> Auto-Generate
                   </button>
@@ -1225,7 +1225,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                     value={newUserPassword}
                     onChange={(e) => setNewUserPassword(e.target.value)}
                     placeholder="e.g. Pass#928134!"
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono pr-10"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-[#B8881A] font-mono pr-10"
                   />
                 </div>
                 <p className="text-[10px] text-slate-500 mt-1">
@@ -1243,7 +1243,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500"
+                  className="px-4 py-2 rounded-xl bg-[#B8881A] text-white text-xs font-bold hover:bg-[#D4A82A]"
                 >
                   Provision User Account
                 </button>
@@ -1264,7 +1264,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+            <div className="flex items-center gap-2 text-[#D4A82A] font-bold text-sm">
               <RefreshCw className="w-5 h-5" /> Admin Reset Password for {resetModalUser.name}
             </div>
 
@@ -1290,7 +1290,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                   required
                   value={resetNewPassword}
                   onChange={(e) => setResetNewPassword(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-[#B8881A] font-mono"
                 />
               </div>
 
@@ -1304,7 +1304,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500"
+                  className="px-4 py-2 rounded-xl bg-[#B8881A] text-white text-xs font-bold hover:bg-[#D4A82A]"
                 >
                   Update Password
                 </button>

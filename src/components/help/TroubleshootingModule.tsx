@@ -133,7 +133,7 @@ export const TroubleshootingModule: React.FC<TroubleshootingModuleProps> = ({
 
             {/* Root Cause Analysis */}
             <div className="space-y-2">
-              <div className="text-xs font-black uppercase text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+              <div className="text-xs font-black uppercase text-[#B8881A] flex items-center gap-1.5">
                 <Wrench className="w-4 h-4" />
                 <span>Root Cause Analysis</span>
               </div>
@@ -169,7 +169,7 @@ export const TroubleshootingModule: React.FC<TroubleshootingModuleProps> = ({
               {relatedArt ? (
                 <button
                   onClick={() => onOpenArticle(relatedArt)}
-                  className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                  className="flex items-center gap-2 text-xs font-bold text-[#B8881A] hover:underline"
                 >
                   <FileText className="w-4 h-4" />
                   <span>Read Full Article: {relatedArt.title[currentLang] || relatedArt.title.en}</span>
@@ -181,7 +181,7 @@ export const TroubleshootingModule: React.FC<TroubleshootingModuleProps> = ({
 
               <button
                 onClick={onRequestSupport}
-                className="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-md transition-all shrink-0"
+                className="px-4 py-2.5 rounded-2xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs flex items-center gap-2 shadow-md transition-all shrink-0"
               >
                 <LifeBuoy className="w-4 h-4" />
                 <span>Contact Engineering Support</span>

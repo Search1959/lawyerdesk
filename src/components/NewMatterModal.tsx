@@ -68,7 +68,7 @@ export const NewMatterModal: React.FC<NewMatterModalProps> = ({
       <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 my-8">
         <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <Scale className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <Scale className="w-5 h-5 text-[#B8881A]" />
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Intake New Litigation Matter</h2>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
@@ -209,7 +209,7 @@ export const NewMatterModal: React.FC<NewMatterModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-md"
+              className="px-5 py-2 rounded-xl bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold shadow-md"
             >
               Create Matter
             </button>

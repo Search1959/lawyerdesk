@@ -114,7 +114,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       {/* Top Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[#B8881A] font-bold text-xs uppercase tracking-wider">
             <Settings className="w-4 h-4" /> Firm System Preferences & eCourts API Configuration
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white mt-1">Law Firm Settings</h1>
@@ -144,7 +144,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         {/* Section 1: Firm Identity */}
         <div className="space-y-4">
           <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-            <Building className="w-4 h-4 text-indigo-600" /> Firm Identity & Bar Council Registration
+            <Building className="w-4 h-4 text-[#B8881A]" /> Firm Identity & Bar Council Registration
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -155,7 +155,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 value={firmConfig.firmName}
                 onChange={(e) => setFirmConfig({ ...firmConfig, firmName: e.target.value })}
                 required
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
             <div>
@@ -164,7 +164,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 type="text"
                 value={firmConfig.managingPartner}
                 onChange={(e) => setFirmConfig({ ...firmConfig, managingPartner: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
             <div>
@@ -173,7 +173,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 type="text"
                 value={firmConfig.barRegistrationNo}
                 onChange={(e) => setFirmConfig({ ...firmConfig, barRegistrationNo: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
             <div>
@@ -182,7 +182,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 type="text"
                 value={firmConfig.defaultCourt}
                 onChange={(e) => setFirmConfig({ ...firmConfig, defaultCourt: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
           </div>
@@ -191,7 +191,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         {/* Section 2: Contact & Office Address */}
         <div className="space-y-4 pt-2">
           <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-            <PhoneCall className="w-4 h-4 text-indigo-600" /> Chambers Contact & Head Office Address
+            <PhoneCall className="w-4 h-4 text-[#B8881A]" /> Chambers Contact & Head Office Address
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -201,7 +201,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 type="text"
                 value={firmConfig.phone}
                 onChange={(e) => setFirmConfig({ ...firmConfig, phone: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
             <div>
@@ -210,7 +210,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 type="email"
                 value={firmConfig.email}
                 onChange={(e) => setFirmConfig({ ...firmConfig, email: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
           </div>
@@ -221,7 +221,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               type="text"
               value={firmConfig.address}
               onChange={(e) => setFirmConfig({ ...firmConfig, address: e.target.value })}
-              className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
             />
           </div>
         </div>
@@ -229,7 +229,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         {/* Section 3: Taxation, GSTIN & Banking */}
         <div className="space-y-4 pt-2">
           <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-            <FileText className="w-4 h-4 text-indigo-600" /> Taxation, GSTIN & Bank Account Details
+            <FileText className="w-4 h-4 text-[#B8881A]" /> Taxation, GSTIN & Bank Account Details
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -239,7 +239,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 type="text"
                 value={firmConfig.gstin}
                 onChange={(e) => setFirmConfig({ ...firmConfig, gstin: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono uppercase text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono uppercase text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
             <div>
@@ -248,7 +248,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 type="text"
                 value={firmConfig.panNumber}
                 onChange={(e) => setFirmConfig({ ...firmConfig, panNumber: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono uppercase text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono uppercase text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
             <div>
@@ -257,7 +257,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 type="text"
                 value={firmConfig.tanNumber}
                 onChange={(e) => setFirmConfig({ ...firmConfig, tanNumber: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono uppercase text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono uppercase text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
           </div>
@@ -270,7 +270,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 value={firmConfig.bankName}
                 onChange={(e) => setFirmConfig({ ...firmConfig, bankName: e.target.value })}
                 placeholder="e.g. State Bank of India"
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
             <div>
@@ -280,7 +280,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 value={firmConfig.bankAccountNo}
                 onChange={(e) => setFirmConfig({ ...firmConfig, bankAccountNo: e.target.value })}
                 placeholder="e.g. 38901234567"
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
             <div>
@@ -290,7 +290,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 value={firmConfig.bankIfsc}
                 onChange={(e) => setFirmConfig({ ...firmConfig, bankIfsc: e.target.value })}
                 placeholder="e.g. SBIN0000691"
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono uppercase text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono uppercase text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               />
             </div>
           </div>
@@ -301,7 +301,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               rows={2}
               value={firmConfig.invoiceHeaderNotes}
               onChange={(e) => setFirmConfig({ ...firmConfig, invoiceHeaderNotes: e.target.value })}
-              className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
             />
           </div>
         </div>
@@ -309,7 +309,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         {/* Section 4: eCourts API */}
         <div className="space-y-4 pt-2">
           <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-            <Shield className="w-4 h-4 text-indigo-600" /> eCourts India API Gateway Sync
+            <Shield className="w-4 h-4 text-[#B8881A]" /> eCourts India API Gateway Sync
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -319,7 +319,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 type="password"
                 value={firmConfig.eCourtsApiKey}
                 onChange={(e) => setFirmConfig({ ...firmConfig, eCourtsApiKey: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-[#B8881A]"
               />
               <p className="text-[11px] text-slate-500 mt-1">
                 Used to fetch live Cause Lists and Certified Orders directly from District Courts & High Courts.
@@ -331,7 +331,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 type="text"
                 value={firmConfig.eCourtsAdvocateCode}
                 onChange={(e) => setFirmConfig({ ...firmConfig, eCourtsAdvocateCode: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-[#B8881A]"
               />
               <p className="text-[11px] text-slate-500 mt-1">
                 Enables automatic hearing status updates for CNR tracking across tribunals.
@@ -345,7 +345,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               id="autoSyncCauseList"
               checked={firmConfig.autoSyncCauseList}
               onChange={(e) => setFirmConfig({ ...firmConfig, autoSyncCauseList: e.target.checked })}
-              className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+              className="w-4 h-4 text-[#B8881A] rounded focus:ring-[#B8881A]"
             />
             <label htmlFor="autoSyncCauseList" className="text-slate-700 dark:text-slate-300 font-bold cursor-pointer">
               Enable Daily Automated eCourts Cause List Sync at 06:00 AM IST
@@ -356,7 +356,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         {/* Section 5: AI Reasoning Engine */}
         <div className="space-y-4 pt-2">
           <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-            <Database className="w-4 h-4 text-indigo-600" /> Legal AI Engine & LLM Provider Switcher
+            <Database className="w-4 h-4 text-[#B8881A]" /> Legal AI Engine & LLM Provider Switcher
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -365,7 +365,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <select
                 value={firmConfig.aiModel || 'Gemini 3.6 Flash (Grounded Legal RAG)'}
                 onChange={(e) => setFirmConfig({ ...firmConfig, aiModel: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg p-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#B8881A]"
               >
                 <option value="Gemini 3.6 Flash (Grounded Legal RAG)">Gemini 3.6 Flash (Grounded RAG + Citation Engine) - [Default Recommended]</option>
                 <option value="Gemini 3.5 Pro Legal">Gemini 3.5 Pro (Deep Case Analytics)</option>
@@ -382,7 +382,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   id="hallucinationShield"
                   checked={firmConfig.strictGrounding ?? true}
                   onChange={(e) => setFirmConfig({ ...firmConfig, strictGrounding: e.target.checked })}
-                  className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                  className="w-4 h-4 text-[#B8881A] rounded focus:ring-[#B8881A]"
                 />
                 <label htmlFor="hallucinationShield" className="text-slate-700 dark:text-slate-300 font-bold cursor-pointer">
                   Require verified case record citations for every response
@@ -425,7 +425,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <button
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-[#B8881A] hover:bg-[#D4A82A] text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all disabled:opacity-50"
           >
             <Save className="w-4 h-4" /> {isSaving ? 'Saving to Database...' : 'Save Firm Settings'}
           </button>
