@@ -19,14 +19,14 @@ const P = {
   parchment:  '#F5F1E8',
   ink:        '#1A1410',
   navy:       '#1B3A6B',
-  navyDark:   '#112549',
+  navyDark:   '#0b1220',
   gold:       '#B8881A',
   goldLight:  '#D4A82A',
   crimson:    '#8B1A1A',
   surface:    '#FFFFFF',
   muted:      '#7A6A54',
   border:     '#D6CCBA',
-  navyBorder: '#2A5298',
+  navyBorder: 'rgba(255,255,255,0.08)',
 };
 
 // ─── Feature Cards ────────────────────────────────────────────────────────────
@@ -312,8 +312,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onHelpCl
       </nav>
 
       {/* ── Hero ────────────────────────────────────────────────────────────── */}
-      {/* Navy letterhead band */}
-      <div style={{ background: P.navyDark, borderBottom: `3px solid ${P.gold}` }} className="px-6 pt-14 pb-16">
+      <div style={{ background: 'linear-gradient(160deg, #0b1220 0%, #0f1a2e 55%, #0d2440 100%)', borderBottom: `3px solid ${P.gold}`, position: 'relative', overflow: 'hidden' }} className="px-6 pt-14 pb-16">
+        {/* Radial glow overlays — Real Estate OS style */}
+        <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '700px', height: '500px', background: 'radial-gradient(ellipse, rgba(184,136,26,0.18) 0%, transparent 65%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-160px', left: '-80px', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
           {/* Left -- headline */}
