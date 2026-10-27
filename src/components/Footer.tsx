@@ -15,7 +15,7 @@ export const Footer: React.FC = () => {
             OPERATED & DEVELOPED BY
           </div>
           <div className="text-white font-bold text-base sm:text-lg tracking-tight">
-            M/s Deinrim Solutionss (P) ltd.
+            M/s Apex7tech (P) Ltd.
           </div>
           <div className="text-slate-300 text-xs sm:text-sm">
             Kolkata, West Bengal (WB), India

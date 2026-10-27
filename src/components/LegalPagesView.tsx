@@ -127,7 +127,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
 
         <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400">
           <Building2 className="w-4 h-4 text-orange-400" />
-          <span>M/s Deinrim Solutionss (P) Ltd.</span>
+          <span>M/s Apex7tech (P) Ltd.</span>
         </div>
       </header>
 
@@ -199,7 +199,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                 Privacy Policy & Data Processing Standards
               </h1>
               <p className="text-slate-400 text-xs sm:text-sm">
-                Official privacy standards for LawyerDesk AI (<span className="text-[#D4A82A]">lawyerdesk.co.in</span>), operated by <strong className="text-white">M/s Deinrim Solutionss (P) Ltd.</strong>
+                Official privacy standards for LawyerDesk AI (<span className="text-[#D4A82A]">lawyerdesk.co.in</span>), operated by <strong className="text-white">M/s Apex7tech (P) Ltd.</strong>
               </p>
             </div>
 
@@ -210,7 +210,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                   1. Corporate Identity & Domain Notice
                 </h3>
                 <p>
-                  LawyerDesk AI, accessible via <strong className="text-white">lawyerdesk.co.in</strong>, is developed, owned, and operated exclusively by <strong>M/s Deinrim Solutionss (P) Ltd.</strong>, headquartered in Kolkata, West Bengal (WB), India.
+                  LawyerDesk AI, accessible via <strong className="text-white">lawyerdesk.co.in</strong>, is developed, owned, and operated exclusively by <strong>M/s Apex7tech (P) Ltd.</strong>, headquartered in Kolkata, West Bengal (WB), India.
                   We provide an AI-First Enterprise Legal Operating System tailored for Indian High Courts, District Courts, NCLT, DRT, and corporate advocate chambers.
                 </p>
               </section>
@@ -266,7 +266,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                   For privacy officer inquiries or data handling audits, please contact:
                 </p>
                 <div className="bg-slate-950/80 p-4 rounded-xl border border-slate-800 text-xs space-y-1">
-                  <div><strong className="text-white">Entity:</strong> M/s Deinrim Solutionss (P) Ltd.</div>
+                  <div><strong className="text-white">Entity:</strong> M/s Apex7tech (P) Ltd.</div>
                   <div><strong className="text-white">Address:</strong> Kolkata, West Bengal (WB), India</div>
                   <div><strong className="text-white">Direct Hotline:</strong> <span className="text-amber-400 font-mono font-bold">+91 98361-30393</span></div>
                   <div><strong className="text-white">Official Domain:</strong> lawyerdesk.co.in</div>
@@ -288,7 +288,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                 Terms of Service & Operational Standards
               </h1>
               <p className="text-slate-400 text-xs sm:text-sm">
-                Legal terms governing usage of lawyerdesk.co.in, operated by <strong className="text-white">M/s Deinrim Solutionss (P) Ltd.</strong>
+                Legal terms governing usage of lawyerdesk.co.in, operated by <strong className="text-white">M/s Apex7tech (P) Ltd.</strong>
               </p>
             </div>
 
@@ -320,7 +320,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                   3. Service Level Agreement (SLA) & Uptime
                 </h3>
                 <p>
-                  M/s Deinrim Solutionss (P) Ltd. provides a <strong className="text-emerald-400">99.9% Uptime SLA</strong> for active cloud workspaces, backed by automated container health monitors and real-time database replication.
+                  M/s Apex7tech (P) Ltd. provides a <strong className="text-emerald-400">99.9% Uptime SLA</strong> for active cloud workspaces, backed by automated container health monitors and real-time database replication.
                 </p>
               </section>
 
@@ -349,7 +349,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                 App Support Page & Technical HelpDesk
               </h1>
               <p className="text-slate-400 text-xs sm:text-sm">
-                Direct support portal for advocate accounts on lawyerdesk.co.in operated by M/s Deinrim Solutionss (P) Ltd.
+                Direct support portal for advocate accounts on lawyerdesk.co.in operated by M/s Apex7tech (P) Ltd.
               </p>
             </div>
 
@@ -365,7 +365,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1">
                 <Building2 className="w-5 h-5 text-[#D4A82A] mb-1" />
                 <div className="text-xs font-bold text-slate-400 uppercase">Operating Headquarters</div>
-                <div className="text-sm font-bold text-white">M/s Deinrim Solutionss (P) Ltd.</div>
+                <div className="text-sm font-bold text-white">M/s Apex7tech (P) Ltd.</div>
                 <div className="text-[11px] text-slate-500">Kolkata, West Bengal (WB), India</div>
               </div>
 
@@ -394,7 +394,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                     Ticket ID: <span className="font-mono text-amber-400 font-bold">{supportTicketId}</span>
                   </div>
                   <p className="text-xs text-slate-400">
-                    Our technical team at M/s Deinrim Solutionss (P) Ltd. will investigate your inquiry and contact you at <strong className="text-white">{supportForm.email}</strong> or <strong className="text-white">{supportForm.phone}</strong> shortly.
+                    Our technical team at M/s Apex7tech (P) Ltd. will investigate your inquiry and contact you at <strong className="text-white">{supportForm.email}</strong> or <strong className="text-white">{supportForm.phone}</strong> shortly.
                   </p>
                   <button
                     onClick={() => {
@@ -517,7 +517,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                     className="px-6 py-3 bg-[#B8881A] hover:bg-[#D4A82A] text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2"
                   >
                     <Send className="w-4 h-4" />
-                    Submit Support Ticket to Deinrim Engineers
+                    Submit Support Ticket to Apex7tech Engineers
                   </button>
                 </form>
               )}
@@ -537,7 +537,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                 Data Deletion Request Portal
               </h1>
               <p className="text-slate-400 text-xs sm:text-sm">
-                Initiate full tenant database purge and legal document shredding under DEINRIM Framework v3.5 protocol on <span className="text-[#D4A82A]">lawyerdesk.co.in</span>.
+                Initiate full tenant database purge and legal document shredding under Apex7tech Framework v3.5 protocol on <span className="text-[#D4A82A]">lawyerdesk.co.in</span>.
               </p>
             </div>
 
@@ -547,7 +547,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                 Data Purge Terms & Scope
               </h3>
               <p>
-                Submitting a deletion request will trigger an immutable tenant purge across M/s Deinrim Solutionss (P) Ltd. isolated cloud infrastructure:
+                Submitting a deletion request will trigger an immutable tenant purge across M/s Apex7tech (P) Ltd. isolated cloud infrastructure:
               </p>
               <ul className="list-disc pl-5 space-y-1 text-slate-400 text-xs">
                 <li>Permanent deletion of all case files, cause list hearings, and client contacts.</li>
@@ -568,7 +568,7 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed">
                   Your tenant erasure request for <strong className="text-white">{deletionForm.firmName}</strong> (<span className="font-mono text-emerald-300">{deletionForm.adminEmail}</span>) has been logged in our compliance ledger.
-                  M/s Deinrim Solutionss (P) Ltd. Data Protection Officer will complete the isolated tenant purge within 24 hours.
+                  M/s Apex7tech (P) Ltd. Data Protection Officer will complete the isolated tenant purge within 24 hours.
                 </p>
                 <div className="text-xs text-slate-400 pt-2 border-t border-emerald-800/60">
                   For emergency cancellation prior to purge, contact corporate support at <strong className="text-amber-400 font-mono">+91 98361-30393</strong>.
@@ -665,8 +665,8 @@ export const LegalPagesView: React.FC<LegalPagesViewProps> = ({
 
       {/* Footer Notice */}
       <footer className="bg-[#050810] border-t border-slate-800/80 py-6 px-4 text-center text-xs text-slate-500 space-y-1">
-        <div>LAWYERDESK AI • <span className="text-slate-300">lawyerdesk.co.in</span> • Operated & Developed by M/s Deinrim Solutionss (P) Ltd.</div>
-        <div>DEINRIM Legal OS Framework v3.5 • Isolated Multi-Tenant High-Performance Legal Architecture</div>
+        <div>LAWYERDESK AI • <span className="text-slate-300">lawyerdesk.co.in</span> • Operated & Developed by M/s Apex7tech (P) Ltd.</div>
+        <div>Apex7tech Legal OS Framework v3.5 • Isolated Multi-Tenant High-Performance Legal Architecture</div>
       </footer>
     </div>
   );

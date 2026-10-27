@@ -151,7 +151,7 @@ export const ClientPrintableGuide: React.FC<ClientPrintableGuideProps> = ({ isOp
             </div>
 
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1 shrink-0 font-mono">
-              <div className="font-bold text-slate-900">M/s Deinrim Solutionss (P) Ltd.</div>
+              <div className="font-bold text-slate-900">M/s Apex7tech (P) Ltd.</div>
               <div className="text-slate-600">Official Portal: lawyerdesk.co.in</div>
               <div className="text-slate-600">Corporate Contact: +91 98361 30393</div>
               <div className="text-slate-600">Kolkata, West Bengal (WB), India</div>
