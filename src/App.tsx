@@ -42,6 +42,8 @@ import { ClientPortalView } from './components/ClientPortalView';
 import { LawyerPocketView } from './components/LawyerPocketView';
 import { Lock, AlertCircle, Database, RefreshCw, X, Sparkles, Plus } from 'lucide-react';
 import { MobileHomeView } from './components/MobileHomeView';
+import { AllMenusView } from './components/AllMenusView';
+import { ProductTourView } from './components/ProductTourView';
 import { subscribeCollection, saveDocument, removeDocument } from './lib/firebase';
 
 import {
@@ -820,6 +822,22 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           setViewMode('app');
           setActiveTab('dashboard');
         }}
+        onDemoLogin={(email, password) => {
+          // Find the mock user by email and auto-login
+          const found = [...mockUsers].find(
+            (u) => u.email.toLowerCase() === email.toLowerCase()
+          );
+          if (found) {
+            handleLoginSuccess(
+              found.email,
+              found.role as any,
+              found.name,
+              !!(found as any).isDemoUser || found.role === 'Demo User'
+            );
+          } else {
+            setViewMode('login');
+          }
+        }}
       />
     );
   }
@@ -860,6 +878,7 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
       invoices: 'Invoices', client_portal: 'Client Portal', clients: 'Clients',
       hearing_calendar: 'Hearing Calendar', messages: 'Messages',
       ai_drafting: 'AI Drafting', reports: 'Reports', settings: 'Settings',
+      all_menus: 'All Menus', product_tour: 'Product Tour',
     };
     return (
       <div className="min-h-screen flex flex-col" style={{ background: '#f1f5f9', color: '#1e293b' }}>
@@ -916,6 +935,12 @@ DOCUMENT DETAILS & STATEMENT OF FACTS:
           {activeTab === 'reports' && <ReportsView />}
           {activeTab === 'settings' && (
             <SettingsView currentFirm={currentFirm} currentUser={currentUser} onUpdateFirm={handleUpdateFirm} onOpenChangePassword={() => setShowChangePasswordModal(true)} />
+          )}
+          {activeTab === 'all_menus' && (
+            <AllMenusView onNavigate={setActiveTab} onLogout={() => setViewMode('login')} onClose={() => setActiveTab('dashboard')} />
+          )}
+          {activeTab === 'product_tour' && (
+            <ProductTourView onClose={() => setActiveTab('dashboard')} onTryDemo={() => setActiveTab('dashboard')} />
           )}
         </div>
 

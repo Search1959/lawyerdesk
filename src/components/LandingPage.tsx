@@ -1,18 +1,90 @@
 import React, { useState, useEffect } from 'react';
 import { Footer } from './Footer';
+import { ProductTourView } from './ProductTourView';
 import {
   Scale, Sparkles, ShieldCheck, CalendarDays, FileText,
   Users, LogIn, CheckCircle2, HelpCircle, ArrowRight,
   Bot, Receipt, Lock, ChevronLeft, ChevronRight,
   ExternalLink, Play, Pause, Landmark, MessageSquare,
-  BarChart3, Zap,
+  BarChart3, Zap, MapPin,
 } from 'lucide-react';
 
 interface LandingPageProps {
   onLoginClick:   () => void;
   onHelpClick:    () => void;
   onExploreDemo:  () => void;
+  onDemoLogin?:   (email: string, password: string) => void;
 }
+
+// ─── Demo Roles (Real Estate OS pattern) ─────────────────────────────────────
+const DEMO_ROLES = [
+  {
+    key: 'managing_partner',
+    email: 'firmadmin@apexlaw.in',
+    password: 'Rajesh@Apex#99',
+    name: 'Managing Partner',
+    person: 'Rajesh Sharma',
+    desc: 'Full access — firm setup, all cases, billing, team, approvals',
+    icon: '⚖️',
+    color: '#B8881A',
+    bg: '#FEF3C7',
+  },
+  {
+    key: 'senior_advocate',
+    email: 'rvsharma@shardul-legal.in',
+    password: 'Shardul@RVS2022',
+    name: 'Senior Advocate',
+    person: 'Adv. Rajeshwar V. Sharma',
+    desc: 'Own matters, hearings, AI copilot, documents, invoices',
+    icon: '🏛️',
+    color: '#4F46E5',
+    bg: '#EEF2FF',
+  },
+  {
+    key: 'firm_admin',
+    email: 'ananya.roy@shardul-legal.in',
+    password: 'Ananya@Roy#22',
+    name: 'Firm Admin',
+    person: 'Adv. Ananya Roy',
+    desc: 'Manage staff, clients, onboarding and firm settings',
+    icon: '🗂️',
+    color: '#059669',
+    bg: '#ECFDF5',
+  },
+  {
+    key: 'associate',
+    email: 'vikram.singh@shardul-legal.in',
+    password: 'Vikram@Singh#18',
+    name: 'Associate Advocate',
+    person: 'Adv. Vikramaditya Singh',
+    desc: 'Assigned matters, document uploads, AI drafting',
+    icon: '📋',
+    color: '#7C3AED',
+    bg: '#F5F3FF',
+  },
+  {
+    key: 'client',
+    email: 'siddharth.varma@apexinfra.com',
+    password: 'Siddharth@23',
+    name: 'Client Portal',
+    person: 'Siddharth Varma',
+    desc: 'View own cases, hearings, invoices and documents',
+    icon: '👤',
+    color: '#E11D48',
+    bg: '#FFF1F2',
+  },
+  {
+    key: 'guest',
+    email: 'demo.evaluator@lawyerdesk.in',
+    password: 'Demo@1234',
+    name: 'Guest Evaluator',
+    person: 'Read-Only Demo',
+    desc: 'Explore all screens — no changes saved',
+    icon: '🔍',
+    color: '#64748B',
+    bg: '#F8FAFC',
+  },
+];
 
 // ─── Palette (CSS vars injected inline on the wrapper) ───────────────────────
 const P = {
@@ -241,10 +313,12 @@ const SLIDES = [
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onHelpClick, onExploreDemo }) => {
-  const [activeFaq,  setActiveFaq]  = useState<number | null>(0);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [autoPlay,    setAutoPlay]    = useState(true);
+export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onHelpClick, onExploreDemo, onDemoLogin }) => {
+  const [activeFaq,    setActiveFaq]    = useState<number | null>(0);
+  const [activeSlide,  setActiveSlide]  = useState(0);
+  const [autoPlay,     setAutoPlay]     = useState(true);
+  const [showTour,     setShowTour]     = useState(false);
+  const [demoLoading,  setDemoLoading]  = useState<string | null>(null);
 
   useEffect(() => {
     document.title = "LawyerDesk -- India's Complete Legal Practice Platform";
@@ -258,6 +332,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onHelpCl
 
   const nextSlide = () => setActiveSlide((p) => (p + 1) % SLIDES.length);
   const prevSlide = () => setActiveSlide((p) => (p - 1 + SLIDES.length) % SLIDES.length);
+
+  const handleDemoLogin = (role: typeof DEMO_ROLES[0]) => {
+    if (!onDemoLogin) { onExploreDemo(); return; }
+    setDemoLoading(role.key);
+    onDemoLogin(role.email, role.password);
+  };
+
+  if (showTour) {
+    return (
+      <ProductTourView
+        onClose={() => setShowTour(false)}
+        onTryDemo={() => {
+          setShowTour(false);
+          if (onDemoLogin) handleDemoLogin(DEMO_ROLES[0]);
+          else onExploreDemo();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="font-inter" style={{ background: P.parchment, color: P.ink, minHeight: '100vh' }}>
@@ -292,15 +385,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onHelpCl
               {label}
             </a>
           ))}
+          <a href="#demo" className="hover:text-white transition-colors">Live Demo</a>
+          <button onClick={() => setShowTour(true)} className="hover:text-white transition-colors">Product Tour</button>
         </div>
 
         {/* CTAs */}
         <div className="flex items-center gap-2">
-          <button onClick={onExploreDemo}
+          <button onClick={() => setShowTour(true)}
                   className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
                   style={{ background: 'rgba(255,255,255,0.08)', border: `1px solid rgba(255,255,255,0.15)`, color: '#fff' }}>
-            <Sparkles className="w-3.5 h-3.5" style={{ color: P.goldLight }} />
-            Live Demo
+            <Play className="w-3.5 h-3.5" style={{ color: P.goldLight }} />
+            Product Tour
           </button>
           <button onClick={onLoginClick}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all"
@@ -615,6 +710,57 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick, onHelpCl
         <p className="text-center text-xs mt-6" style={{ color: P.muted }}>
           All plans include 7-day free trial · No credit card required · India data residency
         </p>
+      </section>
+
+      {/* ── Live Demo ───────────────────────────────────────────────────────── */}
+      <section id="demo" className="py-20 px-6" style={{ background: P.navyDark }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: P.gold }}>Live Demo</p>
+            <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-white mb-3">
+              See it through your team's eyes
+            </h2>
+            <p className="text-sm max-w-lg mx-auto" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              Each role sees only what it needs. Pick one to sign in instantly with sample data — no signup required.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {DEMO_ROLES.map((role) => (
+              <div key={role.key} className="rounded-2xl p-5 flex flex-col gap-3"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl"
+                    style={{ background: role.bg }}>{role.icon}</div>
+                  <div>
+                    <p className="text-sm font-bold text-white">{role.name}</p>
+                    <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.45)' }}>{role.person}</p>
+                  </div>
+                </div>
+                <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>{role.desc}</p>
+                <button
+                  onClick={() => handleDemoLogin(role)}
+                  disabled={demoLoading === role.key}
+                  className="w-full py-2.5 rounded-xl text-xs font-bold transition-all"
+                  style={{ background: demoLoading === role.key ? 'rgba(184,136,26,0.5)' : P.gold, color: '#fff' }}>
+                  {demoLoading === role.key ? 'Signing in…' : `Try as ${role.name}`}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button onClick={() => setShowTour(true)}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}>
+              <Play className="w-4 h-4" style={{ color: P.gold }} />
+              Watch Product Tour Instead
+            </button>
+          </div>
+          <p className="text-center text-xs mt-5" style={{ color: 'rgba(255,255,255,0.3)' }}>
+            Demo data is shared and may be reset periodically. Please don't enter real client information.
+          </p>
+        </div>
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────────────────── */}

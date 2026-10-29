@@ -29,7 +29,7 @@ const QUICK_MENU = [
   { tab: 'tasks'          as NavTab, label: 'Tasks',      icon: <CheckSquare className="w-6 h-6" />,  bg: '#F5F3FF', color: '#7C3AED' },
   { tab: 'invoices'       as NavTab, label: 'Invoices',   icon: <Receipt className="w-6 h-6" />,      bg: '#FFF7ED', color: '#EA580C' },
   { tab: 'clients'        as NavTab, label: 'Clients',    icon: <Users className="w-6 h-6" />,        bg: '#FFF1F2', color: '#E11D48' },
-  { tab: 'ai_drafting'    as NavTab, label: 'All Menus',  icon: <MoreHorizontal className="w-6 h-6" />, bg: '#B8881A', color: '#fff' },
+  { tab: 'all_menus'      as NavTab, label: 'All Menus',  icon: <MoreHorizontal className="w-6 h-6" />, bg: '#B8881A', color: '#fff' },
 ];
 
 // ─── Bottom Nav ───────────────────────────────────────────────────────────────

@@ -635,7 +635,9 @@ export type NavTab =
   | 'settings'
   | 'database'
   | 'security'
-  | 'help';
+  | 'help'
+  | 'all_menus'
+  | 'product_tour';
 
 export interface CourtDirectoryProfile {
   id: string;
